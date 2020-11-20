@@ -360,7 +360,7 @@ table th {
   .dropdown-content {
     display: none;
     position: absolute;
-    background-color: lightgray;
+    background-color:lightgrey;
     color:black;
     min-width: 160px;
     /* overflow: auto; */

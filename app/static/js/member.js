@@ -125,10 +125,13 @@ if (memberID.value == 'undefined' | memberID.value == ''){
 }
 else
 {
-    // SHOW roles and notes buttons in member menu
-    document.getElementById('noteBtnID').classList.remove('disabled')
-    document.getElementById('classSignUpBtnID').classList.remove('disabled')
-    document.getElementById('rolesBtnID').classList.remove('disabled')
+    // SHOW member options buttons in member menu
+    document.getElementById('clearScreenBtnID').removeAttribute('disabled')
+    document.getElementById('noteBtnID').removeAttribute('disabled')
+    document.getElementById('classSignUpBtnID').removeAttribute('disabled')
+    document.getElementById('rolesBtnID').removeAttribute('disabled')
+    document.getElementById('mntrSchedBtnID').removeAttribute('disabled')
+    document.getElementById('showPhotoBtn').removeAttribute('disabled')
 }   
            
 
@@ -574,53 +577,6 @@ function rolesRoutine() {
 function cancelRole() {
     $('#roleModalID').modal('hide')
 }
-function updateRoles() {
-    
-    memberID = document.getElementById('memberID').value
-    show = document.getElementById('showAtCheckIn')
-    send = document.getElementById('sendEmail')
-    msg = document.getElementById('msgID').value
-    eMailAddr = document.getElementById('eMailID').value
-    //console.log('memberID - '+memberID + '\nshow - '+show.checked+'\nsend - '
-    //+send.checked+'\nmsg - '+msg+'\neMailAddr - '+eMailAddr)
-    
-    if (show.checked) {
-        showAtCheckIn='true'
-    }
-    else {
-        showAtCheckIn='false'
-    }
-    if (send.checked) {
-        //console.log('send routine ...')
-        sendEmail = 'true'
-        
-        //console.log ('eMailAddr - ' + eMailAddr)
-        //alert ('emailAddress - '+eMailAddr)
-    }
-    else {
-        sendEmail = 'false' 
-    } 
-      
-    $.ajax({
-        url : "/processNoteToMember",
-        type: "GET",
-        data : {
-            showAtCheckIn: showAtCheckIn,
-            sendEmail: sendEmail,
-            memberID:memberID,
-            eMailAddr:'hartl1r@gmail.com',
-            msg:msg},
-
-        success: function(data, textStatus, jqXHR)
-        {
-            alert(data)
-        },
-        error: function(result){
-            alert("Error ..."+result)
-        }
-    }) 
-}
-    $('#noteModalID').modal('hide')
 
 function setPhotoSrc() {
     photo = document.getElementsByClassName('memberImgID')
@@ -716,4 +672,13 @@ function acceptDues() {
             alert("Error ..."+result)
         }
     }) 
+}
+
+function classSignUp() {
+    alert ('routine not ready')
+    return
+}
+
+function linkToMonitorSchedule() {
+    alert('link not ready')
 }

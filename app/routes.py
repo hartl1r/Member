@@ -374,16 +374,6 @@ def saveAltAddress():
 @app.route('/saveEmergency', methods=['POST'])
 def saveEmergency():
     
-    # show what is in form for testing -
-    print('request.form - ', request.form)
-    print ('.........................................')
-
-    data = request.form
-    for key, value in data.items():
-        print("received", key, "with value", value)
-
-    print ('otherDiagnosis - ', request.form['otherDiagnosis'])
-    
     #  DID USER CANCEL?
     memberID = request.form['memberID']
     if request.form['emergAction'] == 'CANCEL':
@@ -973,13 +963,14 @@ def saveMonitorDuty():
 
 @app.route("/getNoteToMember")
 def getNoteToMember():
+    print('/getNoteToMember')
     memberID = request.args.get('memberID')
     currentNote = db.session.query(NotesToMembers).filter(NotesToMembers.memberID == memberID).first()
     todays_date = datetime.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
     if (currentNote):
         msg = currentNote.noteToMember
-        msg += '\n' + todaysSTR + '\n'
+        msg += '\n' + todaySTR + '\n'
     else:
         msg = todaySTR + '\n'
         print('return msg')
@@ -1021,7 +1012,7 @@ def processNoteToMember():
     # PREPARE AN EMAIL, IF REQUESTED
     if (sendEmail == 'true'):
         # PREPARE AN EMAIL
-        recipient = eMailAddress
+        recipient = emailAddress
         #recipient = ("Richard Hartley", "hartl1r@gmail.com")
         #bcc=("Woodshop","villagesWoodShop@embarqmail.com")
         recipientList = []
@@ -1128,11 +1119,6 @@ def newMemberApplication():
     duesAmount = db.session.query(ControlVariables.Current_Dues_Amount).filter(ControlVariables.Shop_Number==1).scalar()
     memberInitiationFee = db.session.query(ControlVariables.Current_Initiation_Fee).filter(ControlVariables.Shop_Number==1).scalar()
     
-    # for testing show all data being sent from page
-    data = request.form
-    for key, value in data.items():
-        print("received", key, "with value", value)
-
     memberID = request.form.get('memberID')
     member = Member.query.filter_by(Member_ID=memberID).first()
     if member != None:
@@ -1316,309 +1302,247 @@ def getShopNumber():
             shopNumber = 1
     return shopNumber
 
-@app.route("/waitList",defaults={'villageID':None})
-@app.route("/waitList/<villageID>")
-def waitList(villageID):
-    # GATHER DATA FOR NEW WAIT LIST APPLICATION FORM
-    todays_date = date.today()
-    todaySTR = todays_date.strftime('%m-%d-%Y')
-    # PREPARE LIST OF MEMBER NAMES AND VILLAGE IDs
-    # BUILD ARRAY OF NAMES FOR DROPDOWN LIST OF MEMBERS
-    applicantArray=[]
-    sqlSelect = "SELECT LastName, FirstName, MemberID FROM tblMembershipWaitingList "
-    sqlSelect += "ORDER BY LastName, FirstName "
-    try:
-        nameList = db.engine.execute(sqlSelect)
-    except Exception as e:
-        print('ERROR in retrieving member list.')
-        flash("Could not retrieve member list.","danger")
-        return 'ERROR in wait list function.'
-    position = 0
-    if nameList == None:
-        flash('There is no one on the waiting list.','info')
-        print('empty nameList')
-
-    # NEED TO PLACE NAME IN AN ARRAY BECAUSE OF NEED TO CONCATENATE 
-    for n in nameList:
-        position += 1
-        if n.FirstName == None:
-            lastFirst = n.LastName
-        else:
-            lastFirst = n.LastName + ', ' + n.FirstName + ' (' + n.MemberID + ')'
-        #print(lastFirst)
-        applicantArray.append(lastFirst)
-        
-    # IF A VILLAGE ID WAS NOT PASSED IN, DISPLAY THE waitList.HTML FORM WITHOUT DATA
-    if villageID == None:
-        return render_template("waitList.html",applicant="",applicantArray=applicantArray)
-    
-    # IF A VILLAGE ID WAS PASSED IN ...
-    # DISPLAY THE CORRESPONDING WAITLIST DATA FOR THAT VILLAGE ID
-    applicant = db.session.query(WaitList).filter(WaitList.MemberID == villageID).first()
-    
-    if (applicant == None):
-        print('No record for applicant with village ID ', villageID )
-        msg = "No record for applicant with village ID " + villageID
-        flash(msg,"info")
-        return render_template("waitList.html",applicant='',applicantArray=applicantArray,todaySTR=todaySTR)
-    else:
-        # DETERMINE APPLICANTS PLACE ON WAITING LIST
-        # RETURN COUNT OF # OF RECORDS BEFORE THEIR ID WHEN ORDERED BY ID AND FILTERED BY PlannedCertificationDate is null and NoLongerInterested isnull 
-        placeOnList = 0 
-        placeOnList = db.session.query(func.count(WaitList.MemberID)).filter(WaitList.PlannedCertificationDate == None) \
-            .filter(WaitList.NoLongerInterested == None) \
-            .filter(WaitList.id < applicant.id) \
-            .scalar() 
-
-
-        return render_template("waitList.html",applicant=applicant,applicantArray=applicantArray,todaySTR=todaySTR,placeOnList=placeOnList)
-    
-
-@app.route("/updateWaitList", methods=('GET','POST'))
-def updateWaitList():
-    # POST REQUEST; PROCESS WAIT LIST APPLICATION, ADD TO MEMBER_DATA, INSERT TRANSACTION ('ADD')
-    memberID = request.form.get('memberID')
-    print('memberID - ',memberID)
-    if request.form.get('waitList') == 'CANCEL':
-        return redirect(url_for('waitList',villageID=memberID))
-
-    # ====================================================
-    # for testing show all data being sent from page
-    data = request.form
-    for key, value in data.items():
-        print("received", key, "with value", value)
-    # ====================================================
-    
-    expireDate = request.form.get('expireDate')
-    firstName = request.form.get('firstName')
-    lastName = request.form.get('lastName')
-    street = request.form.get('street')
-    city = request.form.get('city')
-    state = request.form.get('state')
-    zip = request.form.get('zip')
-    cellPhone = request.form.get('cellPhone')
-    homePhone = request.form.get('homePhone')
-    eMail = request.form.get('eMail')
-    if request.form.get('jan') == 'True':
-        jan = True
-    else:
-        jan = False
-
-    if request.form.get('feb') == 'True':
-        feb = True
-    else:
-        feb = False
-
-    if request.form.get('mar') == 'True':
-        mar = True
-    else:
-        mar = False
-
-    if request.form.get('apr') == 'True':
-        apr = True
-    else:
-        apr = False
-
-    if request.form.get('may') == 'True':
-        may = True
-    else:
-        may = False
-
-    if request.form.get('jun') == 'True':
-        jun = True
-    else:
-        jun = False
-    
-    if request.form.get('jul') == 'True':
-        jul = True
-    else:
-        jul = False
-
-    if request.form.get('aug') == 'True':
-        aug = True
-    else:
-        aug = False
-
-    if request.form.get('sep') == 'True':
-        sep = True
-    else:
-        sep = False
-
-    if request.form.get('oct') == 'True':
-        oct = True
-    else:
-        oct = False
-
-    if request.form.get('nov') == 'True':
-        nov = True
-    else:
-        nov = False
-
-    if request.form.get('dec') == 'True':
-        dec = True
-    else:
-        dec = False
-    
-    notes = request.form.get('notes')
-    approvedToJoin = request.form.get('approvedToJoin')
-    notified = request.form.get('notified')
-    applicantAccepts = request.form.get('applicantAccepts')
-    applicantDeclines = request.form.get('applicantDeclines')
-    noLongerInterested = request.form.get('noLongerInterested')
-    plannedCertificationDate = request.form.get('plannedCertificationDate')
-    staffID = request.form.get('staffID')
-
-    # GET ID OF STAFF MEMBER 
-    staffID = '123456'
-    # GET CURRENT DATE AND TIME
-    todays_date = datetime.today()
-    todaySTR = todays_date.strftime('%m-%d-%Y')
-    print ('1. process new applicant')
-
-    # IS THIS PERSON ALREADY ON THE WAITLIST?
-    waitListRecord = db.session.query(WaitList).filter(WaitList.MemberID == memberID).first()
-    if (waitListRecord == None):
-        # ADD NEW RECORD TO tblMembershipWaitingList
-        print ('2. process new applicant')
-        try:
-            newWaitListRecord = WaitList( 
-                MemberID = memberID,
-                VillageIDexpirationDate = expireDate,
-                FirstName = firstName,
-                LastName = lastName, 
-                StreetAddress = street,
-                City = city,
-                State = state,
-                Zipcode = zip,
-                CellPhone = cellPhone,
-                HomePhone = homePhone,
-                Email = eMail,
-                Notes = notes,
-                PlannedCertificationDate = plannedCertificationDate,
-                AddedByStaffMemberID = staffID,
-                Jan = jan,
-                Feb = feb,
-                Mar = mar,
-                Apr = apr,
-                May = may,
-                Jun = jun,
-                Jul = jul,
-                Aug = aug,
-                Sep = sep,
-                Oct = oct,
-                Nov = nov,
-                Dec = dec,
-                DateTimeEntered = todaySTR
-            ) 
-            print ('3. process new applicant')
-            db.session.add(newWaitListRecord)
-            db.session.commit()
-
-        except SQLAlchemyError as e:
-            print ('4. process new applicant')
-            error = str(e.__dict__['orig'])
-            flash('ERROR - Record not added.'+error,'danger')
-            print('error - ',error)
-            db.session.rollback()
-        
-        return redirect(url_for('waitList'))
-    
-    # PROCESS UPDATE OF EXISTING WAIT LIST RECORD
-    flash ('processing update of wait list record','SUCCESS')
-    print('update existing record')
-    if waitListRecord.FirstName != firstName :
-        waitListRecord.FirstName = firstName
-    if waitListRecord.LastName != lastName :
-        waitListRecord.LastName = lastName
-    if waitListRecord.HomePhone != homePhone :
-        waitListRecord.HomePhone = homePhone
-    if waitListRecord.CellPhone != cellPhone :
-        waitListRecord.CellPhone = cellPhone
-       
-    if waitListRecord.StreetAddress != street :
-        waitListRecord.StreetAddress = street
-    
-    if waitListRecord.City != city :
-        waitListRecord.City = city
-    if waitListRecord.State != state :
-        waitListRecord.State = state
-    if waitListRecord.Zipcode != zip :
-        waitListRecord.Zipcode = zip
-    if waitListRecord.Email != eMail :
-        waitListRecord.Email = eMail
-    if waitListRecord.Notes != notes :
-        waitListRecord.Notes = notes
-    if waitListRecord.ApprovedToJoin != approvedToJoin :
-        waitListRecord.ApprovedToJoin = approvedToJoin
-    if waitListRecord.Notified != notified :
-        waitListRecord.Notified = notified
-    
-    
-
-
-    if waitListRecord.Jan != jan:
-        waitListRecord.Jan = jan
-    if waitListRecord.Feb != feb :
-        waitListRecord.Feb = feb
-    if waitListRecord.Mar != mar:
-        waitListRecord.Mar = mar
-    if waitListRecord.Apr != apr:
-        waitListRecord.Apr = apr
-    if waitListRecord.May != may:
-        waitListRecord.May = may
-    if waitListRecord.Jun != jun:
-        waitListRecord.Jun = jun
-    if waitListRecord.Jul != jul:
-        waitListRecord.Jul = jul
-    if waitListRecord.Aug != aug:
-        waitListRecord.Aug = aug
-    if waitListRecord.Sep != sep:
-        waitListRecord.Sep = sep
-    if waitListRecord.Oct != oct:
-        waitListRecord.Oct = oct
-    if waitListRecord.Nov != nov:
-        waitListRecord.Nov = nov
-    if waitListRecord.Dec != dec:
-        waitListRecord.Dec = dec
-    
-    if waitListRecord.ApplicantAccepts != applicantAccepts :
-        waitListRecord.ApplicantAccepts = applicantAccepts
-    if waitListRecord.ApplicantDeclines != applicantDeclines :
-        waitListRecord.ApplicantDeclines = applicantDeclines
-    if waitListRecord.NoLongerInterested != noLongerInterested :
-        waitListRecord.NoLongerInterested = noLongerInterested
-    if waitListRecord.PlannedCertificationDate != plannedCertificationDate :
-        waitListRecord.PlannedCertificationDate = plannedCertificationDate
-    
-    try:
-        db.session.commit()
-        print ("Changes to wait list successful")
-        flash("Changes to wait list successful","success")
-    except Exception as e:
-        print ("Changes to wait list NOT successful\n",e)
-        flash("Could not update Wait List data.","danger")
-        db.session.rollback()
-
-    
-    return redirect(url_for('waitList',villageID=memberID,todaysDate=todaySTR))
-
-@app.route("/printConfirmation/<memberID>")
-def printConfirmation(memberID):
-    if (memberID == ''):
-        flash("You must select a member first.","info")
-        return redirect(url_for('waitList'))
-    print('Member ID - ',memberID)
-    return redirect(url_for('waitList'))
 
 @app.route('/roles/', defaults={'memberID':None})   
 @app.route("/roles/<memberID>")
 def roles(memberID):
     if (memberID == ''):
         flash("You must select a member first.","info")
-    print('Member ID for roles - ',memberID)
+    
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     if (member == None):
         flash ("No member match for roles.",'danger')
         return render_template("roles.html",member='')
         #return redirect(url_for('index'))
     return render_template("roles.html",member=member)
+
+
+@app.route('/saveRoles', methods=['POST'])
+def saveRoles():
+    staffID = '123456'
+    
+    #  DID USER CANCEL?
+    memberID = request.form['memberID']
+    # if request.form['emergAction'] == 'CANCEL':
+    #     return redirect(url_for('index',villageID=memberID))
+
+    # GET DATA FROM FORM
+    if request.form.get('askMe') == 'True':
+        askMe = True
+    else:
+        askMe = False
+
+    if request.form.get('mentor') == 'True':
+        mentor = True
+    else:
+        mentor = False
+
+    if request.form.get('bod') == 'True':
+        bod = True
+    else:
+        bod = False
+    
+    if request.form.get('mdse') == 'True':
+        mdse = True
+    else:
+        mdse = False
+
+    if request.form.get('certification') == 'True':
+        certification = True
+    else:
+        certification = False
+
+    if request.form.get('staff') == 'True':
+        staff = True
+    else:
+        staff = False
+
+    if request.form.get('DBA') == 'True':
+        DBA = True
+    else:
+        DBA = False
+
+    if request.form.get('monitorCoordinator') == 'True':
+        monitorCoordinator = True
+    else:
+        monitorCoordinator = False
+    
+    if request.form.get('instructor') == 'True':
+        instructor = True
+    else:
+        instructor = False
+
+    if request.form.get('president') == 'True':
+        president = True
+    else:
+        president = False
+
+    if request.form.get('lumber') == 'True':
+        lumber = True
+    else:
+        lumber = False
+
+    if request.form.get('safety') == 'True':
+        safety = True
+    else:
+        safety = False
+
+    if request.form.get('maintenance') == 'True':
+        maintenance = True
+    else:
+        maintenance = False
+
+    if request.form.get('specProj') == 'True':
+        specProj = True
+    else:
+        specProj = False
+
+    if request.form.get('mgr') == 'True':
+        mgr = True
+    else:
+        mgr = False
+
+    if request.form.get('vp') == 'True':
+        vp = True
+    else:
+        vp = False
+    
+    # RETRIEVE MEMBER RECORD
+    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+    
+    # HAVE ANY FIELDS CHANGED?
+    fieldsChanged = 0
+    if member.isAskMe != askMe:
+        member.isAskMe = askMe
+        logChange(staffID,'isAskMe',memberID,askMe,member.isAskMe)
+        fieldsChanged += 1 
+
+    if member.Mentor != mentor:
+        member.Mentor = mentor
+        logChange(staffID,'Mentor',memberID,mentor,member.Mentor)
+        fieldsChanged += 1 
+
+    if member.isBODmember != bod:
+        member.isBODmember = bod
+        logChange(staffID,'isBODmember',memberID,bod,member.isBODmember)
+        fieldsChanged += 1 
+
+    if member.canSellMdse != mdse:
+        member.canSellMdse = mdse
+        logChange(staffID,'canSellMdse',memberID,mdse,member.canSellMdse)
+        fieldsChanged += 1 
+
+    if member.Certification_Staff != certification:
+        member.Certification_Staff = certification
+        logChange(staffID,'Certification_Staff',memberID,certification,member.Certification_Staff)
+        fieldsChanged += 1 
+
+    if member.Office_Staff != staff:
+        member.Office_Staff = staff
+        logChange(staffID,'Office_Staff',memberID,staff,member.Office_Staff)
+        fieldsChanged += 1 
+
+    if member.DBA != DBA:
+        member.DBA = DBA
+        logChange(staffID,'DBA',memberID,DBA,member.DBA)
+        fieldsChanged += 1 
+
+    if member.Monitor_Coordinator != monitorCoordinator:
+        member.Monitor_Coordinator = monitorCoordinator
+        logChange(staffID,'Monitor_Coordinator',memberID,monitorCoordinator,member.Monitor_Coordinator)
+        fieldsChanged += 1 
+
+    if member.Instructor != instructor:
+        member.Instructor = instructor
+        logChange(staffID,'Instructor',memberID,instructor,member.Instructor)
+        fieldsChanged += 1 
+
+    if member.isPresident != president:
+        member.isPresident = president
+        logChange(staffID,'isPresident',memberID,president,member.isPresident)
+        fieldsChanged += 1 
+
+    if member.canSellLumber != lumber:
+        member.canSellLumber = lumber
+        logChange(staffID,'canSellLumber',memberID,lumber,member.canSellLumber)
+        fieldsChanged += 1 
+
+    if member.isSafetyCommittee != safety:
+        member.isSafetyCommittee = safety
+        logChange(staffID,'isSafetyCommittee',memberID,safety,member.isSafetyCommittee)
+        fieldsChanged += 1 
+
+    if member.Maintenance != maintenance:
+        member.Maintenance = maintenance
+        logChange(staffID,'Maintenance',memberID,maintenance,member.Maintenance)
+        fieldsChanged += 1 
+
+    if member.isSpecialProjects != specProj:
+        member.isSpecialProjects = specProj
+        logChange(staffID,'isSpecialProjects',memberID,specProj,member.isSpecialProjects)
+        fieldsChanged += 1 
+
+    if member.Manager != mgr:
+        member.Manager = mgr
+        logChange(staffID,'Manager',memberID,mgr,member.Manager)
+        fieldsChanged += 1 
+
+    if member.isVP != vp:
+        member.isVP = vp
+        logChange(staffID,'isVP',memberID,vp,member.isVP)
+        fieldsChanged += 1 
+
+
+    # IF ANY FIELDS CHANGED, SAVE CHANGES
+    if fieldsChanged > 0:
+        try:
+            db.session.commit()
+            print('Changes successful')
+            flash("Changes successful","success")
+        except Exception as e:
+            print('Could not update member role data',e)
+            flash("Could not update member role data.","danger")
+            db.session.rollback()
+
+    return redirect(url_for('index',villageID=memberID))
+
+
+# PRINT MEMBER MONITOR DUTY SCHEDULE
+@app.route("/printMemberSchedule/<string:memberID>/", methods=['GET','POST'])
+def printMemberSchedule(memberID):
+    
+    # GET MEMBER NAME
+    member = db.session.query(Member).filter(Member.Member_ID== memberID).first()
+    displayName = member.First_Name + ' ' + member.Last_Name
+    lastTraining = member.Last_Monitor_Training
+
+    # RETRIEVE LAST_ACCEPTABLE_TRAINING_DATE FROM tblControl_Variables
+    lastAcceptableTrainingDate = db.session.query(ControlVariables.Last_Acceptable_Monitor_Training_Date).filter(ControlVariables.Shop_Number == '1').scalar()
+    if (lastTraining < lastAcceptableTrainingDate):
+        needsTraining = 'TRAINING IS NEEDED'
+    else:
+        needsTraining = ''
+
+    # RETRIEVE MEMBER SCHEDULE FOR CURRENT YEAR AND FORWARD
+    todays_date = date.today()
+    currentYear = todays_date.year
+    beginDateDAT = datetime(todays_date.year,1,1)
+    todays_dateSTR = todays_date.strftime('%m-%d-%Y')
+    beginDateSTR = beginDateDAT.strftime('%m-%d-%Y')
+    
+    # BUILD SELECT STATEMENT TO RETRIEVE MEMBERS SCHEDULE FOR CURRENT YEAR FORWARD
+    sqlSelect = "SELECT tblMember_Data.Member_ID as memberID, "
+    sqlSelect += "First_Name + ' ' + Last_Name as displayName, tblShop_Names.Shop_Name, "
+    sqlSelect += "Last_Monitor_Training as trainingDate, tblMonitor_Schedule.Member_ID, "
+    sqlSelect += " format(Date_Scheduled,'M/d/yyyy') as DateScheduled, AM_PM, Duty, No_Show, tblMonitor_Schedule.Shop_Number "
+    sqlSelect += "FROM tblMember_Data "
+    sqlSelect += "LEFT JOIN tblMonitor_Schedule ON tblMonitor_Schedule.Member_ID = tblMember_Data.Member_ID "
+    sqlSelect += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
+    sqlSelect += "WHERE tblMember_Data.Member_ID = '" + memberID + "' and Date_Scheduled >= '"
+    sqlSelect += beginDateSTR + "' ORDER BY Date_Scheduled, AM_PM, Duty"
+
+    schedule = db.engine.execute(sqlSelect)
+    
+    return render_template("rptMemberSchedule.html",displayName=displayName,needsTraining=needsTraining,schedule=schedule,todays_date=todays_dateSTR)
+
+

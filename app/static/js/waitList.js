@@ -9,7 +9,8 @@ waitListForm = document.getElementById('waitListFormID')
 // SET INTIAL VALUES 
 if (memberIDelement.value.length > 0) {
   memberIDelement.readonly = true
-  document.getElementById('printConfirmationBtn').setAttribute('disabled',false)
+  print('removing disabled')
+  document.getElementById('printConfirmationBtnID').removeAttribute('disabled')
 }
 else {
   memberIDelement.readonly = false
@@ -97,13 +98,13 @@ function newApplicant() {
 
 }
 
-function printConfirmation() {
-  alert('print confirmation')
-  // SET UP LINK TO waitList FORM 
-  var linkToWaitListBtn = document.getElementById('linkToWaitList');
-  link='/printConfirmation/' + document.getElementById('memberID').value 
-  alert('link - '+ link)
-  linkToWaitListBtn.setAttribute('href', link)
-  linkToWaitListBtn.click()
+// function printConfirmation() {
+//   alert('print confirmation')
+//   // SET UP LINK TO waitList FORM 
+//   var linkToPrintConfirmationBtn = document.getElementById('linkToPrintConfirmation');
+//   link='/printConfirmation/' + document.getElementById('memberID').value 
+//   alert('link - '+ link)
+//   linkToPrintConfirmationBtn.setAttribute('href', link)
+//   linkToPrintConfirmationBtn.click()
 
-}
+// }

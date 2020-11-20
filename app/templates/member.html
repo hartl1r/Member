@@ -32,15 +32,18 @@
             <div class="dropdown">
                 <button onclick="showMenu()" class="dropbtn">MEMBER MENU</button>
                 <div id="myDropdown" class="dropdown-content"style=text-align:left>
-                    <a id='clearScreenBtnID' class='dropdown-item' onclick='clearScreen()'>Clear Screen</a>
-                    <a id='noteBtnID' class='dropdown-item disabled'  onclick='noteRoutine()'>Note to Member</a>
-                    <a id='newMemberBtnID' class='dropdown-item' href="{{ url_for('newMemberApplication')}}">New Member Application</a>
-                    <a id='classSignUpBtnID' class='dropdown-item disabled' href="#classes">Class Signup</a>
-                    <a id='rolesBtnID' class='dropdown-item disabled' href="/roles/{{member.Member_ID}}">Roles</a>
-                    <a id='monitorSchedulingBtnID' class='dropdown-item'href="#monitorDuty">Schedule Monitor Duty</a>
-                    <a id='waitListBtnID' class='dropdown-item'href="{{ url_for('waitList')}}">Wait List ({{ waitListCnt }})</a>
+                    <button id='clearScreenBtnID' class='dropdown-item' disabled onclick='clearScreen()'>Clear Screen</button>
+                    <hr>
+                    <button id='mntrSchedBtnID' class='dropdown-item' disabled onclick="window.location.href='/printMemberSchedule/{{member.Member_ID}}'">Print Schedule</button>
+                    <button id='noteBtnID' class='dropdown-item' disabled onclick='noteRoutine()'>Note to Member</button>                   
+                    <button id='classSignUpBtnID' class='dropdown-item' disabled onclick='classSignUp()'>Class Signup</button>
+                    <button id='rolesBtnID' class='dropdown-item' disabled onclick="window.location.href='/roles/{{member.Member_ID}}'">Roles</button>
+                    <button id='monitorSchedulingBtnID' class='dropdown-item' onclick='linkToMonitorSchedule()'>Schedule Monitor Duty</button>
+                    <hr>
+                    <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication'">New Member Application</button>
+                    <!-- <button id='waitListBtnID' class='dropdown-item' onclick="window.location.href='/waitList'">Wait List ({{ waitListCnt }})</button> -->
                 </div>
-                <button id='showPhotoBtn' onclick='showHidePhoto(this)' style=margin-left:50px>SHOW PHOTO</button>
+                <button id='showPhotoBtn' disabled onclick='showHidePhoto(this)' style=margin-left:50px>SHOW PHOTO</button>
             </div>
             
         </div> 

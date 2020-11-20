@@ -10,15 +10,12 @@
 
 <div class="container">
     <div class="roleHeader">
-            <h4 >Roles for {{member.fullName}}</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-            <input type="hidden" name='memberID' value = {{member.Member_ID}}>
+        <h4 >Roles for {{member.fullName}}</h4>
     </div>
     
     <form method='POST' action="/saveRoles">   
     <div id='roleBodyID' class="roleBody">
+        <input type="hidden" name='memberID' value = {{member.Member_ID}}>
         <div class="row">&nbsp</div>
         <div class='row form-group'>
             <div class="col-5" style=margin-top:20px>
@@ -45,7 +42,7 @@
 
         <div class="row form-group">
             <div class="col-5">
-                <input id='certification' type="checkbox" class="form-check-input" name="certification"   {% if member.Certification %} checked {% endif %}value="{{member.Certification}}">
+                <input id='certification' type="checkbox" class="form-check-input" name="certification"   {% if member.Certification_Staff %} checked {% endif %}value="{{member.Certification_Staff}}">
                 <label for="certification" class="form-check-label"> Certification</label>    
             </div>
             <div class="col-5">
@@ -82,7 +79,7 @@
                 <label for="lumber" class="form-check-label"> Lumber</label>    
             </div>
             <div class='col-5'>
-                <input id='safety' type="checkbox" class="form-check-input" name="safety"   {% if member.isSafety_Committee %} checked {% endif %}value="{{member.isSafety_Committee}}">
+                <input id='safety' type="checkbox" class="form-check-input" name="safety"   {% if member.isSafetyCommittee %} checked {% endif %}value="{{member.isSafetyCommittee}}">
                 <label for="safety" class="form-check-label"> Safety Committee</label>    
             </div>
         </div> 
@@ -93,7 +90,7 @@
                 <label for="maintenance" class="form-check-label"> Maintenance</label>    
             </div> 
             <div class='col-5'>
-                <input id='specproj' type="checkbox" class="form-check-input" name="specproj"   {% if member.isSpecial_Projects %} checked {% endif %}value="{{member.isSpecial_Projects}}">
+                <input id='specproj' type="checkbox" class="form-check-input" name="specProj"   {% if member.isSpecialProjects %} checked {% endif %}value="{{member.isSpecialProjects}}">
                 <label for="specproj" class="form-check-label"> Special Projects</label>    
             </div>
         </div> 
@@ -113,8 +110,9 @@
 
     <div class="roleFooter">
         <div class='footer-right-col'> 
-            <button id='roleCancelBtnID' type='button' class='btn btn-secondary'style=margin-top:10px;margin-bottom:10px>Cancel</button>
-            <button id='roleSaveBtnID' type="button" class="btn btn-primary"style=margin:10px;display:None>Save</button>
+            <!-- <button id='roleCancelBtnID' type='button' class='btn btn-secondary'style=margin-top:10px;margin-bottom:10px;  href="/index/{{member.Member_ID}}">Cancel</button> -->
+            <a id='cancelBtnID' class='btn btn-secondary' style=margin:10px href="/index/{{member.Member_ID}}">Cancel</a>
+            <button id='roleSaveBtnID' type="submit" class="btn btn-primary"style=margin:10px;display:None>Save</button>
         </div>
     </div> <!-- END OF FOOTER -->
     </form>
