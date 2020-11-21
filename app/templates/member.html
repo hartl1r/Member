@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
-
+{% block title %}MEMBER{% endblock title %}
 {% block styles %}
     {{super()}}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/member.css') }}">
 {% endblock %}
-
-{% include 'hamburger.html' %}
 
 {% block app_content %}
 <div class="parent">
