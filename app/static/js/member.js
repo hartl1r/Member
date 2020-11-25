@@ -23,21 +23,45 @@ const colors = {
     fg_PastDate:"#FFFFFF"   // White (#FFFFFF)
 };
 
-// Declare global variables)
+// IF THE staffID WAS NOT PASSED IN FROM THE Login SCRIPT, PROMPT FOR AN ID
+//alert('member.js - ' + window.location.href)
+const queryString = window.location.href;
+const urlParams = new URLSearchParams(queryString);
+const staffIDfromURL = urlParams.get('staffID')
 
-// THE COOKIES FOR clientLocation AND staffID will be set as cookies within login routine
+var staffID = ''
+if (staffIDfromURL == null) {
+    staffID = checkStaffCookie()
+    //staffID = prompt("Did not get staff ID from login.\n\nPlease enter your Village ID number?",'xxxxxx')
+}
+else {
+    staffID = staffIDfromURL
+    setCookie("staffID", staffID, 365);
+}
+//alert('staffID to be used - '+staffID)
 
-// IF clientLocation COOKIE IS NOT FOUND, PROMPT FOR LOCATION
-checkLocationCookie()
-var clientLocation = ''
-clientLocation= getCookie('clientLocation')
+// SET STAFF ID IN EACH PANEL
+var staffIDelements = document.getElementsByClassName('staffID')
+for (var i = 0; i > staffIDelements.length; i++) {
+    console.log(staffIDelements[i].name)
+    staffIDelements[i].setAttribute("value", staffID);
+}
 
+// IF THE shopID WAS NOT PASSED IN FROM THE Login SCRIPT, CHECK FOR COOKIE
+// const shopIDfromURL = urlParams.get('shopID')
+// alert('shopIDfromnURL - '+shopIDfromURL)
+// if (shopIDfromURL == null) {
+//     var shopID = ''
+//     shopID = getLocationCookie()
+// }
+// alert('1. shopID - ',shopID)
+// setShopFilter(shopIDtoUse)
+
+// DECLARE GLOBAL VARIABLES
 var todaysDate = new Date();
 var todaysDateSTR =  (todaysDate.getFullYear() + "-" + ("0"+(todaysDate.getMonth()+1)).slice(-2) + "-" + ("0" + todaysDate.getDate()).slice(-2))
 
-var shopNames = ['Rolling Acres', 'Brownwood']
 var currentMemberID = ''
-var curShopNumber = ''
 
 //==================================================================
 // PAGE START-UP STATEMENTS 
@@ -52,6 +76,10 @@ if (todaysDateSTR  < acceptDuesDate) {
 }
 
 // SET OPTIONS IN SELECT ELEMENTS BASED ON TEXT VALUES
+//villageText = document.getElementById('villageTextID').value
+//alert('villageText - |'+ villageText + '|')
+//document.getElementById('villageSelecterID').value = villageText
+
 typeOfWorkText = document.getElementById('typeOfWorkTextID').value
 typeOfWorkSelect = document.getElementById('typeOfWorkSelecterID')
 typeOfWorkSelect.value = typeOfWorkText
@@ -69,25 +97,6 @@ membershipInfo = document.getElementById('membershipID')
 certificationInfo = document.getElementById('certificationID')
 monitorDutyInfo = document.getElementById('monitorDutyID')
 
-// RETRIEVE LOCAL STORAGE VALUES (no longer needed?)
-
-
-
-// IF NO staffID COOKIE, PROMPT FOR AN ID
-checkStaffCookie()
-var staffID = getCookie('staffID')
-
-// SET STAFF ID IN EACH PANEL
-var staffIDelements = document.getElementsByClassName('staffID')
-for (var i = 0; i > staffIDelements.length; i++) {
-    console.log(staffIDelements[i].name)
-    staffIDelements[i].setAttribute("value", staffID);
-}
-
-// IF clientLocation IS NOT FOUND, PROMPT FOR LOCATION
-var clientLocation = getCookie('clientLocation')
-setShopFilter(clientLocation)
-
 // DEFINE EVENT LISTENERS
 localContactInfo.addEventListener('change',localDataChanged);
 altContactInfo.addEventListener('change',altDataChanged);
@@ -95,6 +104,7 @@ emergencyInfo.addEventListener('change',emergencyDataChanged);
 membershipInfo.addEventListener('change',membershipDataChanged);
 certificationInfo.addEventListener('change',certificationDataChanged);
 monitorDutyInfo.addEventListener('change',monitorDutyDataChanged);
+//document.getElementById('villageSelecterID').addEventListener('change',villageRtn);
 
 // MODAL EVENT LISTENERS
 document.getElementById("cancelNoteID").addEventListener("click",cancelNote)
@@ -297,24 +307,21 @@ document.getElementById('BWwillSub').onclick = function(ev) {
 // ------------------------------------------------------------------------------------------------------
 // FUNCTIONS    
 // ------------------------------------------------------------------------------------------------------
-function setShopFilter(shopLocation) {
-    switch(shopLocation){
-        case 'RA':
-            localStorage.setItem('shopFilter','RA')
-            shopFilter = 'RA'
-            curShopNumber = '1'
-            break;
-        case 'BW':
-            localStorage.setItem('shopFilter','BW')
-            shopFilter = 'BW'
-            curShopNumber = '2'
-            break;
-        default:
-            localStorage.setItem('shopFilter','RA')
-            shopFilter = 'RA'
-            curShopNumber = '1'
-    }   
-}
+// function setShopFilter(shopLocation) {
+//     switch(shopLocation){
+//         case 'RA':
+//             localStorage.setItem('shopFilter','RA')
+//             shopFilter = 'RA'
+//             break;
+//         case 'BW':
+//             localStorage.setItem('shopFilter','BW')
+//             shopFilter = 'BW'
+//             break;
+//         default:
+//             localStorage.setItem('shopFilter','RA')
+//             shopFilter = 'RA'
+//     }   
+// }
 
 function memberSelectedRtn() {
     selectedMember = this.value
@@ -328,7 +335,8 @@ function memberSelectedRtn() {
 
     // SET UP LINK TO MEMBER FORM 
     var linkToMemberBtn = document.getElementById('linkToMember');
-    link='/index/' + currentMemberID 
+    link='/index/' + currentMemberID +'/' + staffID
+    //alert('link - '+ link)
     linkToMemberBtn.setAttribute('href', link)
     linkToMemberBtn.click()
 }
@@ -497,14 +505,11 @@ function cancelNote() {
 }
 
 function processNote() {
-    //console.log('processNote')
     memberID = document.getElementById('memberID').value
     show = document.getElementById('showAtCheckIn')
     send = document.getElementById('sendEmail')
     msg = document.getElementById('msgID').value
     eMailAddr = document.getElementById('eMailID').value
-    //console.log('memberID - '+memberID + '\nshow - '+show.checked+'\nsend - '
-    //+send.checked+'\nmsg - '+msg+'\neMailAddr - '+eMailAddr)
     
     if (show.checked) {
         showAtCheckIn='true'
@@ -513,11 +518,7 @@ function processNote() {
         showAtCheckIn='false'
     }
     if (send.checked) {
-        //console.log('send routine ...')
         sendEmail = 'true'
-        
-        //console.log ('eMailAddr - ' + eMailAddr)
-        //alert ('emailAddress - '+eMailAddr)
     }
     else {
         sendEmail = 'false' 
@@ -549,8 +550,9 @@ function processNote() {
 //     $('#msgID').focus();
 // }) 
 
+
+
 function rolesRoutine() {
-    alert('rolesRoutine')
     // CHECK FOR EXISTING role
     // IF FOUND, DISPLAY IN MSG
     memberID = document.getElementById('memberID').value
@@ -570,8 +572,7 @@ function rolesRoutine() {
         error: function(result){
             alert("Error ..."+result)
         }
-    })
-    alert('show role modal')    
+    })  
     $('#roleModalID').modal('show')
 }
 function cancelRole() {
@@ -596,9 +597,28 @@ function showHidePhoto(objBtn) {
     }
 }
 
+function villageRtn() {
+    village = this.value
+    villageText = document.getElementById('villageTextID')
+    villageText.setAttribute('value',this.value)
+
+    //alert('The value from the select element is - '+village)
+    // alert('this - '+this.value)
+    // alert('this innerhtml - '+this.innerHTML)
+    //village2 = village.split(" ").join("&nbsp");
+    //village2 = village.split(" ").join("\nbsp");
+    //village2 = village.replace(/\s/g, '')
+    //alert('village2 - '+village2)
+    //document.getElementById('villageTextID').value=village2
+    //document.getElementById('villageTextID').value=this.value
+    //alert('villageRtn - '+ document.getElementById('villageTextID').value)
+}
+
 function typeOfWorkRtn() {
     typeOfWork = this.value
     document.getElementById('typeOfWorkTextID').value=this.value
+    document.getElementById('typeOfWorkTextID').value="Special Project"
+
 }
 
 function skillLevelRtn() {
@@ -619,7 +639,7 @@ function setCookie(cname, cvalue, exdays) {
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
   }
   
-  function getCookie(cname) {
+function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
     for(var i = 0; i < ca.length; i++) {
@@ -632,8 +652,9 @@ function setCookie(cname, cvalue, exdays) {
       }
     }
     return "";
-  }
-  function checkStaffCookie() {
+}
+
+function checkStaffCookie() {
     var staffID = getCookie("staffID");
     if (staffID != "") {
     } else {
@@ -642,17 +663,26 @@ function setCookie(cname, cvalue, exdays) {
         setCookie("staffID", staffID, 365);
       }
     }
-  }
-  function checkLocationCookie() {
-    var clientLocation = getCookie("clientLocation");
-    if (clientLocation != "") {
-    } else {
-      clientLocation = prompt("Please enter your location (RA/BW):", "");
-      if (clientLocation != "" && clientLocation != null) {
-        setCookie("clientLocation", clientLocation, 365);
-      }
-    }
-  }
+    return staffID
+}
+
+// function getLocationCookie() {
+//     var storedShopID = getCookie("shopID");
+//     alert('2. storedShopID - '+storedShopID)
+//     if (storedShopID == "") {
+//         inputShopID = prompt("Please enter your location (RA/BW):", "");
+//         if (inputShopID != 'RA' && inputShopID != 'BW') {
+//             alert('RA is assumed.')
+//             inputShopID = 'RA'
+//         }
+//         if (inputShopID != "" && inputShopID != null) {
+//             setCookie("shopID", inputShopID, 365);
+//             return inputShopID
+//         }
+//     }
+// alert('3. storedShopID - '+storedShopID)
+// return storedShopID
+// }
 
 
 function acceptDues() {
@@ -682,3 +712,59 @@ function classSignUp() {
 function linkToMonitorSchedule() {
     alert('link not ready')
 }
+
+$('input[type="tel"]')
+	.keydown(function (e) {
+		var key = e.which || e.charCode || e.keyCode || 0;
+		$phone = $(this);
+
+    // Don't let them remove the starting '('
+    if ($phone.val().length === 1 && (key === 8 || key === 46)) {
+			$phone.val('('); 
+      return false;
+		} 
+    // Reset if they highlight and type over first char.
+    else if ($phone.val().charAt(0) !== '(') {
+			$phone.val('('+String.fromCharCode(e.keyCode)+''); 
+		}
+
+		// Auto-format- do not expose the mask as the user begins to type
+		if (key !== 8 && key !== 9) {
+			if ($phone.val().length === 4) {
+				$phone.val($phone.val() + ')');
+			}
+			if ($phone.val().length === 5) {
+				$phone.val($phone.val() + ' ');
+			}			
+			if ($phone.val().length === 9) {
+				$phone.val($phone.val() + '-');
+			}
+		}
+
+		// Allow numeric (and tab, backspace, delete) keys only
+		return (key == 8 || 
+				key == 9 ||
+				key == 46 ||
+				(key >= 48 && key <= 57) ||
+				(key >= 96 && key <= 105));	
+	})
+	
+	.bind('focus click', function () {
+		$phone = $(this);
+		
+		if ($phone.val().length === 0) {
+			$phone.val('(');
+		}
+		else {
+			var val = $phone.val();
+			$phone.val('').val(val); // Ensure cursor remains at the end
+		}
+	})
+	
+	.blur(function () {
+		$phone = $(this);
+		
+		if ($phone.val() === '(') {
+			$phone.val('');
+		}
+  });

@@ -240,12 +240,12 @@ input {
 .certLabels {
     grid-area:labelArea
 }
-.certifiedRA {
+/* .certifiedRA {
     grid-area:RAcertArea;
 }
 .certifiedBW {
     grid-area:BWcertArea;
-}
+} */
 .willSub {
     grid-area:willSubArea
 }
@@ -258,23 +258,33 @@ input {
 .certificationInfo label{
     text-align:right;
 } 
-#RAcertifiedID {
+/* #RAcertifiedID {
     margin-right:0px;
 }
 #BWcertifiedID {
     margin-right:0px;
-}
+} */
 
 #RAtrainingNeeded {
     color:red;
-    justify-items: center;
-    margin-left:35px;
+    border:1px solid white;
 }
 #BWtrainingNeeded {
     color: red;
-    margin-left:35px;
+    border:1px solid red;
 }
-
+.RAcolumn {
+    display:grid;
+    text-align:center;
+    background-color: beige;
+    justify-items: center;
+}
+.BWcolumn {
+    display:grid;
+    text-align:center;
+    justify-items:center;
+    background-color: lime;
+}
 /* MONITOR DUTY PANEL */
 
 /* .monthInputs li {
@@ -290,7 +300,11 @@ input {
     border:var(--main-panel-border);
     border-radius: 10px;
 }
-
+.monthsInTheVillages {
+    display:grid;
+    justify-items:center;
+    border:1px solid blue;
+}
 .monthNames li {
     display:inline;
     text-decoration: none;
@@ -428,12 +442,12 @@ table th {
     margin-right:20px;
   }
   input:read-only {
-      background-color: yellow;
+      color: green;
   }
-  input:disabled {
+  /* input:disabled {
       color:green;
       background-color: yellow;
-  }
+  } */
   .acceptDuesBtn {
       display:flex;
       align-items:center;

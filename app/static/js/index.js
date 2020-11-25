@@ -1,6 +1,6 @@
 document.getElementById("selectpicker").addEventListener("change",memberSelectedRtn)
 document.getElementById("selectpicker").addEventListener("click",memberSelectedRtn)
-
+alert('index.js - ' + window.location.href)
 function memberSelectedRtn() {
     selectedMember = this.value
     lastEight = selectedMember.slice(-8)

@@ -12,7 +12,8 @@
     <div class="hdg">
         <div id='hdgTitleID' class="hdgTitle">
             <h2>{{ hdgName }}</h2>
-            <!-- <h2 style=float:right>Village ID - </h2>{{member.Member_ID}} -->
+            <!-- <input id="staffID" type="hidden"> -->
+            <!-- <input id='clientLocation' type="hidden"> -->
         </div>
             
         <div class="hdgSearch">
@@ -53,68 +54,67 @@
         <h5>LOCAL INFORMATION</h5>
         <form method='POST' action="/saveAddress">
             <div class="row">
-                <label class="control-label col-md-3 col-form-label-md" for="memberID">ID</label>
-                <div class="col-md-9">
-                    <input id='memberID' type="text" class="form-control-md" style="width:75px" name="memberID" value="{{member.Member_ID}}">
+                <label class="col-3" for="memberID">ID</label>
+                <div class="col-9">
+                    <input id='memberID' type="text" maxlength=6 size=6 style="width:70px" readonly color=green name="memberID" value="{{member.Member_ID}}">
                     {% if expireMsg == 'ID EXPIRED!' or expireMsg == '< 30 days' %}
-                        <label class="control-label col-form-label-md" style="color:red;font-size:12px;margin-left:20px" >{{ expireMsg }}</label>
+                        <label style="color:red;font-size:12px;margin-left:20px" >{{ expireMsg }}</label>
                     {%else%}
-                        <label class="control-label col-form-label-md" style="font-size:12px;margin-left:20px" >Temp ID</label>
+                        <label style="font-size:12px;margin-left:20px" >Temp ID</label>
                     {%endif%}
                     <input id='expireDt' type="date" class="datepick" name="expireDt" style=height:30px;width:125px value="{{member.Temporary_ID_Expiration_Date}}">
                 </div>
             </div>
             
             <div class="row">
-                <label class="control-label col-sm-3 col-form-label-md" for="street">Street</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control-sm" style="width:250px" name="street" value="{{member.Address}}">
+                <label class="col-3" for="street">Street</label>
+                <div class="col-9">
+                    <input type="text" style="width:250px" name="street" value="{{member.Address}}">
                 </div>
             </div>
 
             <div class="row">
-                <label class="control-label col-md-3 col-form-label-md" for="cityStateZip">City/St/Zip</label>   
-                <div class="col-md-4">
-                    <input type="text" class="form-control-md" name="city" value='{{member.City}}'>
+                <label class="col-3" for="cityStateZip">City/St/Zip</label>   
+                <div class="col-4">
+                    <input type="text" name="city" value='{{member.City}}'>
                 </div>
-                <div class="col-md-1">
-                    <input type="text" class="form-control-md" style=width:30px id="state" name="state" value='{{member.State}}'>
+                <div class="col-1">
+                    <input type="text" style=width:30px id="state" name="state" value='{{member.State}}'>
                 </div>
-                <div class="col-md-1">
-                    <input type="text" class="form-control-md" style=width:100px id="zip" name="zip" value='{{member.Zip}}'>
-                    <!-- <select class="form-control-md" name="zip" id="zip" >
-                        <option value='32159'{{ "selected='selected'" if member.zip == '32159' else "" }}>32159</option>
-                        <option value='32160'{{ "selected='selected'" if member.zip == '32160' else "" }}>32160</option>
-                        <option value='32161'{{ "selected='selected'" if member.zip == '32161' else "" }}>32161</option>
-                        <option value='32162'{{ "selected='selected'" if member.zip == '32162' else "" }}>32162</option>
-                        <option value='32163'{{ "selected='selected'" if member.zip == '32163' else "" }}>32163</option>
+                <div class="col-1">
+                    <input type="text" style=width:100px id="zip" name="zip" value='{{member.Zip}}'>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="col-3" for="village">Village</label>
+                <div class="col-4">
+                    <input type="text" name="village" value='{{member.Village}}'>
+                    <!-- <input id=villageTextID type="text" name="village" value={{member.Village}}> -->
+                    <!-- <select id="villageSelecterID" name="villageSelecterName">
+                        {% for village in villages %}
+                            <option  class="optVillage" value = "{{village.Village_Name}}">{{village.Village_Name}}</option>
+                        {% endfor %}
                     </select> -->
-                </div>
-            </div>
-
-            <div class="row">
-                <label class="control-label col-md-3 col-form-label-md" for="village">Village</label>
-                <div class="col-md-4">
-                    <input type="text" class="form-control-md" name="village"value="{{ member.Village }}">
                 </div>
             </div>
         
             <div class="row">
-                <label class="control-label col-md-3 col-form-label-md" for="homePhone">Home</label>
-                <div class="col-md-2">
-                    <input type="text" class="form-control-md" style=width:130px id="homePhone" name="homePhone"value="{{ member.Home_Phone }}">
+                <label class="col-3" for="homePhone">Home</label>
+                <div class="col-2">
+                    <input type="tel" style=width:130px id="homePhone" name="homePhone"value="{{ member.Home_Phone }}">
                 </div>
             </div>
             <div class="row">
-                <label class="control-label col-md-3 col-form-label-md" for="cellPhone">Cell</label>
-                <div class="col-md-2">
-                    <input type="text" class="form-control-md" style=width:130px id="cellPhone" name="cellPhone"value="{{ member.Cell_Phone }}">
+                <label class="col-3" for="cellPhone">Cell</label>
+                <div class="col-2">
+                    <input type="tel" style=width:130px id="cellPhone" name="cellPhone"value="{{ member.Cell_Phone }}">
                 </div>
             </div>
             <div class="row">
-                <label class="control-label col-md-3 col-form-label-md" for="eMail">E-Mail</label>
-                <div class="col-md-9">
-                    <input type="text" class="form-control-md" style=width:250px id="eMailID" name="eMail"value="{{ member.eMail }}">
+                <label class="col-3" for="eMail">E-Mail</label>
+                <div class="col-9">
+                    <input type="email" style=width:250px id="eMailID" name="eMail"value="{{ member.eMail }}">
                 </div>
             </div>
             
@@ -124,14 +124,14 @@
                     <label for='villagesWaiverID' class="form-check-label" >Villages Waiver</label>    
                 </div>
                 <div class="form-control-md" style=margin-top:10px>
-                    <input id="villagesWaiverDateSigned" class="form-control form-control-md datepick" type="date" name="villagesWaiverDateSigned" value={{member.Villages_Waiver_Date_Signed}}>
+                    <input id="villagesWaiverDateSigned" class="datepick" type="date" name="villagesWaiverDateSigned" value={{member.Villages_Waiver_Date_Signed}}>
                 </div>
                 
             </div>
 
             <div class="cancelSave" style=padding-left:100px>
                 <input type="hidden" class='staffID' name='staffID'>
-                <!-- <input id='localSaveMemberID' type="hidden" class="memberID" name="memberID" value={{member.Member_ID}}> -->
+                <input type="hidden" class='clientLocation' name='clientLocation'>
                 <button id="localCancelBtn" type="submit" name="localAction" class="btn btn-secondary" style=display:none value="CANCEL">CANCEL</button>
                 <button id="localSaveBtn" type="submit" name="localAction" class="btn btn-primary" style=display:none value="SAVE">SAVE</button>
                 <br>
@@ -179,12 +179,13 @@
             <div class="row">
                 <label class="control-label col-md-3 col-form-label-md" >Phone</label>
                 <div class="col-md-3">
-                    <input type="text" class="form-control-md" style=width:130px  name="altPhone"value="{{ member.Alt_Phone }}">
+                    <input type="tel" class="form-control-md" style=width:130px  name="altPhone"value="{{ member.Alt_Phone }}">
                 </div>
             </div>
             
             <div class="cancelSave" style=padding-left:100px>
                 <input type="hidden" class='staffID' name='staffID'>
+                <input type="hidden" class='clientLocation' name='clientLocation'>
                 <input type="hidden" class="memberID" name="memberID" value={{member.Member_ID}}>
                 <button id="altCancelBtn" type="text" name="altAction" class="btn-default" style=display:none value="CANCEL">CANCEL</button>
                 <button id="altSaveBtn" type="submit" name="altAction" class="btn-primary" style=display:none value="SAVE">SAVE</button>       
@@ -200,7 +201,7 @@
             <div class="row">
                 <label class="col-2 col-form-label"style=margin-top:0px>Contact</label>
                 <input type="text" class="form-control col-4" style=height:30px name="emergContact" placeholder='Name' value="{{member.Emerg_Name}}">
-                <input type="text" class="form-control form-control-md col-md-4" style="height:30px" name="emergPhone" placeholder="Phone" value="{{member.Emerg_Phone}}">
+                <input type="tel" class="form-control form-control-md col-md-3" style="height:30px;width:130px" name="emergPhone" placeholder="Phone" value="{{member.Emerg_Phone}}">
             </div>
  
             <div class='medConditions'>
@@ -258,6 +259,7 @@
             
             <div class="cancelSave" style=padding-left:100px>
                 <input type="hidden" class='staffID' name='staffID'>
+                <input type="hidden" class='clientLocation' name='clientLocation'>
                 <input type="hidden" class="memberID" name="memberID" value={{member.Member_ID}}>
                 <button id="emergCancelBtn" type="submit" name="emergAction" class="btn-default" style=display:none value="CANCEL">CANCEL</button>
                 <button id="emergSaveBtn" type="submit" name="emergAction" class="btn-primary" style=display:none value="SAVE">SAVE</button>  
@@ -270,7 +272,6 @@
     <div id="membershipID" class="membershipInfo panel">
         <h5>MEMBERSHIP STATUS</h5> 
         <form method='POST'  action="/saveMemberStatus" style="padding-left:20px">
-        <input id=shopNumberID type="hidden" value={{shopNumber}}>
         <input id=acceptDuesDateID type="hidden" value={{acceptDuesDate}}>
         <input id=lastYearPaidID type="hidden" value={{lastYearPaid}}>
         <input id=currentDuesYearID type="hidden" value={{currentDuesYear}}>
@@ -317,6 +318,7 @@
 
         <div class="cancelSave" style=padding-left:100px;padding-top:20px>
             <input type="hidden" class='staffID' name='staffID'>
+            <input type="hidden" class='clientLocation' name='clientLocation'>
             <input type="hidden" class="memberID" name="memberID" value={{member.Member_ID}}>
             <button id="memberCancelBtn" type="submit" name="memberAction" class="btn-default" style=display:none value="CANCEL">CANCEL</button>
             <button id="memberSaveBtn" type="submit" name="memberAction" class="btn-primary" style=display:none value="SAVE">SAVE</button>   
@@ -333,57 +335,57 @@
             <div class='certTopPanel'>
                 <div class='row'>
                     <div class='col-4'></div>
-                    <div class='col-4 RAcolumn' style=text-align:center>ROLLING ACRES</div>
-                    <div class='col-4 BWcolumn' style=text-align:center>BROWNWOOD</div>        
+                    <div class='col-4 RAcolumn' >ROLLING ACRES</div>
+                    <div class='col-4 BWcolumn' >BROWNWOOD</div>        
                 </div>
 
                 <div class='row'>
                     <div class='col-4'></div>
-                    <div class='col-md-4 RAcolumn'>
-                        <input id='RAcertifiedID' type="checkbox" class="form-control form-control-md" style="margin-left:0px;" name="certifiedRA" {% if member.Certified %} checked {% endif %} value="{{member.Certified}}">
+                    <div class='col-4 RAcolumn'>
+                        <input type="checkbox" class="form-control" {% if member.Certified %} checked {% endif %} value="{{member.Certified}}">
                     </div>
-                    <div class='col-md-4 BWcolumn'>
-                        <input id='BWcertifiedID' type="checkbox" class="form-control form-control-md" style="margin-left:0px" name="certifiedBW" {% if member.Certified_2 %} checked {% endif %} value="{{member.Certified_2}}">
+                    <div class='col-4 BWcolumn'>
+                        <input type="checkbox" class="form-control"  {% if member.Certified_2 %} checked {% endif %} value="{{member.Certified_2}}">
                     </div> 
                 </div>  
 
-
                 <div class='row'>
-                    <div class='col-3'>Certified:</div>
-                    <div class='col-4 RAcolumn' style='margin-left:0px'>
-                        <input type="date" class="form-control form-control-sm datepick"  style="width:140px;margin-left:35px" name="certifiedRAdate" value="{{member.Certification_Training_Date}}">
+                    <div class='col-4'>Certified:</div>
+                    <div class='col-4 RAcolumn'>
+                        <input type="date" class="form-control datepick"  style="width:9em" name="certifiedRAdate" value="{{member.Certification_Training_Date}}">
                     </div>
                     <div class='col-4 BWcolumn'>
-                        <input type="date" class="form-control form-control-sm datepick"  style="width:140px;margin-left:35px" name="certifiedBWdate" value="{{member.Certification_Training_Date_2}}">
+                        <input type="date" class="form-control datepick"  style="widows: 9em;" name="certifiedBWdate" value="{{member.Certification_Training_Date_2}}">
                     </div>
                 </div>
 
                 <div class='row'>
                     <div class='col-4'>Will Sub:</div>
-                    <div class='col-md-4 RAcolumn'>
-                        <input id='RAwillSub' type="checkbox" class="form-control form-control-md" style=margin-left:0px name="willSubRA" {% if member.Monitor_Sub %} checked {% endif %} readonly value="{{member.Monitor_Sub}}">   
+                    <div class='col-4 RAcolumn'>
+                        <input id='RAwillSub' type="checkbox" class="form-control" style=margin-left:0px name="willSubRA" {% if member.Monitor_Sub %} checked {% endif %} readonly value="{{member.Monitor_Sub}}">   
                     </div>
-                    <div class='col-md-4 BWcolumn'>                
-                        <input id='BWwillSub' type="checkbox" class="form-control form-control-md" style=margin-left:0px name="willSubBW" {% if member.Monitor_Sub_2 %} checked {% endif %} readonly value="{{member.Monitor_Sub_2}}">                
+                    <div class='col-4 BWcolumn'>                
+                        <input id='BWwillSub' type="checkbox" class="form-control" style=margin-left:0px name="willSubBW" {% if member.Monitor_Sub_2 %} checked {% endif %} readonly value="{{member.Monitor_Sub_2}}">                
                     </div>
                 </div>
                 
                 <div class='row'>
                     <div class='col-4'>Lst Mntr Trng</div>
                     <div class='col-4 RAcolumn'>
-                        <input id='raLastMonitorTraining' type="date" class='form-control form-control-sm datepick' style="width:140px;margin-left:0px" name='RAmonitorTrainingDate' value={{member.Last_Monitor_Training}}>
+                        <input id='raLastMonitorTraining' type="date" class='form-control datepick' style="width:140px" name='RAmonitorTrainingDate' value={{member.Last_Monitor_Training}}>
                     </div>
                     <div class='col-4 BWcolumn'>
-                        <input id='bwLastMonitorTraining' type="date" class='form-control form-control-sm datepick'  style="width:140px;margin-left:0px" name='BWmonitorTrainingDate'value={{member.Last_Monitor_Training_Shop_2}}>
+                        <input id='bwLastMonitorTraining' type="date" class='form-control datepick'  style="width:140px" name='BWmonitorTrainingDate'value={{member.Last_Monitor_Training_Shop_2}}>
                     </div>
                 </div>
 
                 <div class = 'row'>
-                    <div class='col-5 RAcolumn'>
-                        <div id='RAtrainingNeeded' style=width:150px;margin-left:160px>{{RAtrainingNeeded}}</div>
+                    <div class="col-4"></div>
+                    <div class='col-4 RAcolumn'>
+                        <div id='RAtrainingNeeded' style=width:9em>{{RAtrainingNeeded}}</div>
                     </div>
-                    <div class='col-5 BWcolumn'> 
-                        <div id='BWtrainingNeeded' style=width:140px;margin-left:120px></span>{{BWtrainingNeeded}}</div>    
+                    <div class='col-4 BWcolumn'> 
+                        <div id='BWtrainingNeeded' style=width:9em>{{BWtrainingNeeded}}</div>    
                     </div>
                 </div> 
             </div>
@@ -393,15 +395,15 @@
                     <div class='col-12'>
                         <label class="control-label col-form-label-sm">Type of work</label>
                         <input id=typeOfWorkTextID type="hidden" class="form-control-sm" name="typeOfWorkHidden" value={{member.Default_Type_Of_Work}}>
-                        <select id="typeOfWorkSelecterID" class="form-control-md selectTypeOfWork" style=margin-left:10px name="typeOfWorkSelecterName" >
+                        <select id="typeOfWorkSelecterID" class="form-control-md selectTypeOfWork" style=margin-left:10px name="typeOfWorkSelecterName">
                             <option value='General'>General</option>
                             <option value='Administrative'>Administration</option>
                             <option value='Carver'>Carver</option>
                             <option value='Education'>Education</option>
                             <option value='Repair'>Repair</option>
                             <option value='Special Project'>Special Project</option>
-                            <option value='Stained Glass'>Stained Glass</option>
-                            <option value='Toy Building'>Toy Building</option>
+                            <option value="Stained\nbspGlass">Stained Glass</option>
+                            <option value='Toy\nbspBuilding'>Toy Building</option>
                             <option value='Turner'>Turner</option>
                             <option value='Painting'>Painting</option>
                         </select>
@@ -429,6 +431,7 @@
                 
                 <div class="cancelSave" style=padding-left:100px>
                     <input type="hidden" class='staffID' name='staffID'>
+                    <input type="hidden" class='clientLocation' name='clientLocation'>
                     <input type="hidden" class="memberID" name="memberID" value={{member.Member_ID}}>
                     <button id="certificationCancelBtn" type="submit" name="certificationAction" class="btn-default" style=display:none value="CANCEL">CANCEL</button>  
                     <button id="certificationSaveBtn" type="submit" name="certificationAction" class="btn-primary" style=display:none value="SAVE">SAVE</button>
@@ -441,76 +444,77 @@
     <div id="monitorDutyID" class="monitorDutyInfo panel">
         <h5>MONITOR DUTY</h5>
         <form method='POST'  action="/saveMonitorDuty" style="padding-left:0px;padding-top:10px">
-            <div class="monthNames" style="margin:0; padding:0;">
-                <ul>
-                    <li>Jan</li>
-                    <li>Feb</li>
-                    <li>Mar</li>
-                    <li>Apr</li>
-                    <li>May</li>
-                    <li>Jun</li>
-                    <li>Jul</li>
-                    <li>Aug</li>
-                    <li>Sep</li>
-                    <li>Oct</li>
-                    <li>Nov</li>
-                    <li>Dec</li>
-                </ul>
+            <div class='monthsInTheVillages'>
+                <div class="monthNames" style="margin:0; padding:0;">
+                    <ul>
+                        <li>Jan</li>
+                        <li>Feb</li>
+                        <li>Mar</li>
+                        <li>Apr</li>
+                        <li>May</li>
+                        <li>Jun</li>
+                        <li>Jul</li>
+                        <li>Aug</li>
+                        <li>Sep</li>
+                        <li>Oct</li>
+                        <li>Nov</li>
+                        <li>Dec</li>
+                    </ul>
+                </div>
+                
+                <div id = "monthCheckboxesID" class="monthCheckboxes">
+                    <ul>
+                        <li>
+                            <input type="checkbox" id='jan' style=margin-left:5px name='janResident' {% if member.Jan_resident %} checked {% endif %} value='janResidentValue'>
+                            <input type="hidden" id='janResidentValue' name='jan' value="{{ member.Jan_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='feb' name='febResident' {% if member.Feb_resident %} checked {% endif %} value='febResidentValue'>
+                            <input type="hidden" id='febResidentValue' name='feb' value="{{ member.Feb_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='mar' name='marResident' {% if member.Mar_resident %} checked {% endif %} value='marResidentValue'>
+                            <input type="hidden" id='marResidentValue' name='mar' value="{{ member.Mar_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='apr' name='aprResident' {% if member.Apr_resident %} checked {% endif %} value='aprResidentValue'>
+                            <input type="hidden" id='aprResidentValue' name='apr' value="{{ member.Apr_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='may' name='mayResident' {% if member.May_resident %} checked {% endif %} value='mayResidentValue'>
+                            <input type="hidden" id='mayResidentValue' name='may' value="{{ member.May_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='jun' style=margin-left:4px name='junResident' {% if member.Jun_resident %} checked {% endif %} value='junResidentValue'>
+                            <input type="hidden" id='junResidentValue' name='jun' value="{{ member.Jun_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='jul' name='julResident' {% if member.Jul_resident %} checked {% endif %} value='julResidentValue'>
+                            <input type="hidden" id='julResidentValue' name='jul' value="{{ member.Jul_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='aug' name='augResident' {% if member.Aug_resident %} checked {% endif %} value='augResidentValue'>
+                            <input type="hidden" id='augResidentValue' name='aug' value="{{ member.Aug_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='sep' name='sepResident' {% if member.Sep_resident %} checked {% endif %} value='sepResidentValue'>
+                            <input type="hidden" id='sepResidentValue' name='sep' value="{{ member.Sep_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='oct' name='octResident' {% if member.Oct_resident %} checked {% endif %} value='octResidentValue'>
+                            <input type="hidden" id='octResidentValue' name='oct' value="{{ member.Oct_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='nov' name='novResident' {% if member.Nov_resident %} checked {% endif %} value='novResidentValue'>
+                            <input type="hidden" id='novResidentValue' name='nov' value="{{ member.Nov_resident }}">
+                        </li>
+                        <li>
+                            <input type="checkbox" id='dec' name='decResident' {% if member.Dec_resident %} checked {% endif %} value='decResidentValue'>
+                            <input type="hidden" id='decResidentValue' name='dec' value="{{ member.Dec_resident }}">
+                        </li>
+                    </ul>
+                </div>
             </div>
-            
-            <div id = "monthCheckboxesID" class="monthCheckboxes">
-                <ul>
-                    <li>
-                        <input type="checkbox" id='jan' style=margin-left:5px name='janResident' {% if member.Jan_resident %} checked {% endif %} value='janResidentValue'>
-                        <input type="hidden" id='janResidentValue' name='jan' value="{{ member.Jan_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='feb' name='febResident' {% if member.Feb_resident %} checked {% endif %} value='febResidentValue'>
-                        <input type="hidden" id='febResidentValue' name='feb' value="{{ member.Feb_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='mar' name='marResident' {% if member.Mar_resident %} checked {% endif %} value='marResidentValue'>
-                        <input type="hidden" id='marResidentValue' name='mar' value="{{ member.Mar_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='apr' name='aprResident' {% if member.Apr_resident %} checked {% endif %} value='aprResidentValue'>
-                        <input type="hidden" id='aprResidentValue' name='apr' value="{{ member.Apr_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='may' name='mayResident' {% if member.May_resident %} checked {% endif %} value='mayResidentValue'>
-                        <input type="hidden" id='mayResidentValue' name='may' value="{{ member.May_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='jun' style=margin-left:4px name='junResident' {% if member.Jun_resident %} checked {% endif %} value='junResidentValue'>
-                        <input type="hidden" id='junResidentValue' name='jun' value="{{ member.Jun_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='jul' name='julResident' {% if member.Jul_resident %} checked {% endif %} value='julResidentValue'>
-                        <input type="hidden" id='julResidentValue' name='jul' value="{{ member.Jul_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='aug' name='augResident' {% if member.Aug_resident %} checked {% endif %} value='augResidentValue'>
-                        <input type="hidden" id='augResidentValue' name='aug' value="{{ member.Aug_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='sep' name='sepResident' {% if member.Sep_resident %} checked {% endif %} value='sepResidentValue'>
-                        <input type="hidden" id='sepResidentValue' name='sep' value="{{ member.Sep_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='oct' name='octResident' {% if member.Oct_resident %} checked {% endif %} value='octResidentValue'>
-                        <input type="hidden" id='octResidentValue' name='oct' value="{{ member.Oct_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='nov' name='novResident' {% if member.Nov_resident %} checked {% endif %} value='novResidentValue'>
-                        <input type="hidden" id='novResidentValue' name='nov' value="{{ member.Nov_resident }}">
-                    </li>
-                    <li>
-                        <input type="checkbox" id='dec' name='decResident' {% if member.Dec_resident %} checked {% endif %} value='decResidentValue'>
-                        <input type="hidden" id='decResidentValue' name='dec' value="{{ member.Dec_resident }}">
-                    </li>
-                </ul>
-            </div>
-
             <!-- FUTURE MONITOR DUTY -->
             <div class='monitorDuty'>
                 <table class="table table-sm">
@@ -557,6 +561,7 @@
 
             <div class="cancelSave" style=padding-left:100px>
                 <input type="hidden" class='staffID' name='staffID'>
+                <input type="hidden" class='clientLocation' name='clientLocation'>
                 <input type="hidden" class="memberID" name="memberID" value={{member.Member_ID}}>
                 <button id="monitorDutyCancelBtn" type="submit" name="monitorAction" class="btn-default" style=display:none value="CANCEL">CANCEL</button>
                 <button id="monitorDutySaveBtn" type="submit" name="monitorAction" class="btn-primary" style=display:none value="SAVE">SAVE</button>

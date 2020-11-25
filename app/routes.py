@@ -23,21 +23,21 @@ from datetime import date, datetime, timedelta
 from flask_mail import Mail, Message
 mail=Mail(app)
 
-@app.route('/', defaults={'villageID':None})
-@app.route('/index/', defaults={'villageID':None})
-@app.route('/index/<villageID>/')
-def index(villageID):
-    # GET SHOP NUMBER
-    shopLocation = request.cookies.get('clientLocation')
-    if shopLocation == 'RA':
-        shopNumber = 1
-    else:
-        if shopLocation == 'BW':
-            shopNumber = 2
-        else:
-            flash ('Missing shop location, RA assumed.','info')
-            shopNumber = 1
 
+@app.route('/', defaults={'villageID':None,'staffID':None})
+@app.route('/index/', defaults={'villageID':None,'staffID':None})
+@app.route('/index/<villageID>/<staffID>')
+@app.route('/index/<staffID>', defaults={'villageID':None})
+@app.route('/index/<villageID>', defaults={'staffID':None})
+def index(villageID,staffID):
+    # VALUES FROM URL NEEDED IN member.js ONLY; villageID and staffID WILL COME FROM FORM REQUEST
+    #print('village - ',villageID)
+    #print('staffID - ',staffID)
+    #rule = request.url_rule
+    #print('rule - ',rule)
+    
+
+    
     # PREPARE LIST OF MEMBER NAMES AND VILLAGE IDs
     # BUILD ARRAY OF NAMES FOR DROPDOWN LIST OF MEMBERS
     nameArray=[]
@@ -46,7 +46,7 @@ def index(villageID):
     try:
         nameList = db.engine.execute(sqlSelect)
     except Exception as e:
-        print('ERROR in retrieving member list.')
+       #print('ERROR in retrieving member list.')
         flash("Could not retrieve member list.","danger")
         return 'ERROR in index function.'
     position = 0
@@ -62,6 +62,29 @@ def index(villageID):
             lastFirst = n.Last_Name + ', ' + n.First_Name + ' (' + n.Member_ID + ')'
         nameArray.append(lastFirst)
 
+    # PREPARE LIST OF VILLAGES
+    #villageArray=[]
+    sqlSelect = "SELECT Village_Name FROM tblValid_Village_Names "
+    sqlSelect += "ORDER BY Village_Name"
+    try:
+        villages = db.engine.execute(sqlSelect)
+    except Exception as e:
+        print('ERROR in retrieving village name list.')
+        flash("Could not retrieve village name list.","danger")
+        return 'ERROR in index village function.'
+    
+    if villages == None:
+        flash('No villages to list.','info')
+    
+    # BUILD ARRAY OF VILLAGES WITH &nbsp IN PLACE OF SPACES
+    # position = 0
+    # for v in villages:
+    #     position += 1
+    #     villageName = v.Village_Name.replace(' ','&nbsp')
+    #     print(villageName)
+    #     villageArray.append(villageName)
+
+
     # COMPUTE NUMBER ON WAIT LIST
     waitListCnt = db.session.query(func.count(WaitList.MemberID))\
     .filter(WaitList.NoLongerInterested == None)\
@@ -73,28 +96,27 @@ def index(villageID):
     #     WaitList.ApplicantDeclines != None,
     #     WaitList.NoLongerInterested != None).scalar()
     
-    #waitListCnt = '13'
     # GET CURRENT DUES YEAR
-    currentDuesYear = db.session.query(ControlVariables.Current_Dues_Year).filter(ControlVariables.Shop_Number == shopNumber).scalar()
+    currentDuesYear = db.session.query(ControlVariables.Current_Dues_Year).filter(ControlVariables.Shop_Number == 1).scalar()
     
     # GET DATE TO ACCEPT DUES
-    acceptDuesDate = db.session.query(ControlVariables.Date_To_Begin_New_Dues_Collection).filter(ControlVariables.Shop_Number == shopNumber).scalar()
-    
+    acceptDuesDate = db.session.query(ControlVariables.Date_To_Begin_New_Dues_Collection).filter(ControlVariables.Shop_Number == 1).scalar()
         
-    # IF A VILLAGE ID WAS NOT PASSED IN, DISPLAY THE INDEX.HTML FORM TO PROMPT FOR AN ID
-    if villageID == None:
+    # IF A VILLAGE ID WAS NOT PASSED IN, DISPLAY THE BLANK INDEX.HTML FORM AND HAVE USER SELECT A NAME OR ID
+    if (villageID == 'None'):
         return render_template("member.html",member="",nameArray=nameArray,waitListCnt=waitListCnt,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate)
-        # return render_template("index.html",nameArray=nameArray)
 
 
-    # IF A VILLAGE ID WAS PASSED IN ...
-    # GET REQUEST TO POPULATE LOCAL ADDRESS PHONE EMAIL
+    # ---------------------------------------------------------------------------------------------------------    
+    # VILLAGE ID WAS PASSED IN ...
+    # ---------------------------------------------------------------------------------------------------------
+    
+    # RUN QUERY TO POPULATE LOCAL ADDRESS PHONE EMAIL
     member = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (member == None):
-        print('No record for village ID ', villageID )
+        #flash('A valid member number must be specified','info')
         return render_template("member.html",member='',nameArray=nameArray)
          
-
     hdgName = member.First_Name
     if member.Middle_Name is not None:
         if len(member.Middle_Name) > 0 :
@@ -199,8 +221,8 @@ def index(villageID):
 
     return render_template("member.html",member=member,hdgName=hdgName,nameArray=nameArray,expireMsg=expireMsg,
     futureDuty=futureDuty,pastDuty=pastDuty,RAtrainingNeeded=RAtrainingNeeded,BWtrainingNeeded=BWtrainingNeeded,
-    shopNumber=shopNumber,lastYearPaid=lastYearPaid,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,
-    waitListCnt=waitListCnt,hasKeys=hasKeys)
+    lastYearPaid=lastYearPaid,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,
+    waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffID=staffID)
     
 @app.route('/saveAddress', methods=['POST'])
 def saveAddress():
@@ -213,14 +235,17 @@ def saveAddress():
     city = request.form['city']
     state = request.form['state']
     zipcode = request.form['zip']
-    village = request.form['village']
+
+    village = request.form.get('village')
+    #print('village selected - ',village)
+
     homePhone = request.form['homePhone']
     cellPhone = request.form['cellPhone']
     eMail = request.form['eMail']
 
     #print ('temp dt - ',request.form.get('expireDt'))
-    if tempIDexpirationDate == '':
-        print('is equal empty')
+    #if tempIDexpirationDate == '':
+       #print('is equal empty')
     if request.form.get('villagesWaiverSigned') == 'True':
         villagesWaiverSigned = True
     else:
@@ -252,8 +277,9 @@ def saveAddress():
         member.Zip = zipcode
         fieldsChanged += 1
 
+    print('orig village - ',member.Village,' new village - ',village)
     if member.Village != village:
-        logChange(staffID,'Zipcode',memberID,village,member.Village)
+        logChange(staffID,'Village',memberID,village,member.Village)
         member.Village = village
         fieldsChanged += 1
         
@@ -328,7 +354,7 @@ def saveAltAddress():
     try: 
         member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     except Exception as e:
-        print('ERROR - could not read record for member # ',memberID + '/n'+e)
+       #print('ERROR - could not read record for member # ',memberID + '/n'+e)
         errorMsg = 'ERROR - could not read record for member # ',memberID + '\n'+e
         flash(errorMsg,'danger')
     if member.Alt_Adddress != street :
@@ -439,8 +465,8 @@ def saveEmergency():
         member.Emerg_Phone = phone
         fieldsChanged += 1    
 
-    print('defibrillatorStatus - ',defibrillatorStatus, type(defibrillatorStatus))
-    print('member.Defibrillator_Trained - ',member.Defibrillator_Trained,type(member.Defibrillator_Trained))
+   #print('defibrillatorStatus - ',defibrillatorStatus, type(defibrillatorStatus))
+   #print('member.Defibrillator_Trained - ',member.Defibrillator_Trained,type(member.Defibrillator_Trained))
 
     if defibrillatorStatus != member.Defibrillator_Trained:
         logChange(staffID,'Defibrillator Trained',memberID,defibrillatorStatus,member.Defibrillator_Trained)
@@ -472,8 +498,8 @@ def saveEmergency():
         member.Emerg_MI = MI
         fieldsChanged += 1
 
-    print('diabetes1 - ',diabetes1,type(diabetes1))
-    print('member.Emerg_Diabetes_Type_1 - ',member.Emerg_Diabetes_Type_1,type(member.Emerg_Diabetes_Type_1))
+   #print('diabetes1 - ',diabetes1,type(diabetes1))
+   #print('member.Emerg_Diabetes_Type_1 - ',member.Emerg_Diabetes_Type_1,type(member.Emerg_Diabetes_Type_1))
 
     if diabetes1 != member.Emerg_Diabetes_Type_1: 
         logChange(staffID,'diabetes1',memberID,diabetes1,member.Emerg_Diabetes_Type_1)
@@ -504,10 +530,10 @@ def saveEmergency():
     if fieldsChanged > 0:
         try:
             db.session.commit()
-            print('Changes successful')
+           #print('Changes successful')
             flash("Changes successful","success")
         except Exception as e:
-            print('Could not update emergency data',e)
+           #print('Could not update emergency data',e)
             flash("Could not update member emergency data.","danger")
             db.session.rollback()
 
@@ -614,10 +640,8 @@ def saveMemberStatus():
     if fieldsChanged > 0:
         try:
             db.session.commit()
-            print ("Changes successful")
             flash("Changes successful","success")
         except Exception as e:
-            print ("Changes NOT successful\n",e)
             flash("Could not update member data.","danger")
             db.session.rollback()
 
@@ -629,6 +653,7 @@ def saveCertification():
     # GET DATA FROM FORM
     memberID = request.form['memberID']
     staffID = request.form['staffID']
+    
     if request.form['certificationAction'] == 'CANCEL':
         return redirect(url_for('index',villageID=memberID))
 
@@ -771,7 +796,7 @@ def saveMonitorDuty():
     # GET DATA FROM FORM
     memberID = request.form['memberID']
     staffID = request.form['staffID']
-
+    
     # DID USER CANCEL?
     if request.form['monitorAction'] == 'CANCEL':
         return redirect(url_for('index',villageID=memberID))
@@ -1067,8 +1092,8 @@ def newMemberApplication():
             if RAenrolled < RA.classLimit:
                 print('RA match - ',RA.trainingDate)
                 RAclassArray.append(RA.trainingDate.strftime('%m-%d-%Y'))
-        print('array - ',RAclassArray)
-        print('RA length -',len(RAclassArray))
+        #print('array - ',RAclassArray)
+        #print('RA length -',len(RAclassArray))
         RAavailableDates = len(RAclassArray)
 
         # PREPARE LIST OF AVAILABLE CERTIFICATION DATES FOR BROWNWOOD
@@ -1078,14 +1103,14 @@ def newMemberApplication():
         BWclasses = db.engine.execute(sqlSelect)
         BWclassArray = []
         for BW in BWclasses:
-            print ('BW - ',BW.trainingDate,BW.classLimit)
+            #print ('BW - ',BW.trainingDate,BW.classLimit)
             BWenrolled = db.session.query(func.count(Member.Member_ID)).filter(Member.Certification_Training_Date_2 == BW.trainingDate).scalar()
-            print('BWenrolled',BWenrolled)
+            #print('BWenrolled',BWenrolled)
             if BWenrolled < BW.classLimit:
-                print('BW match - ',BW.trainingDate)
+               #print('BW match - ',BW.trainingDate)
                 BWclassArray.append(BW.trainingDate.strftime('%m-%d-%Y'))
-        print('array - ',BWclassArray)
-        print('BA length -',len(BWclassArray))
+        #print('array - ',BWclassArray)
+        #print('BA length -',len(BWclassArray))
         BWavailableDates = len(BWclassArray)
 
 
@@ -1096,9 +1121,9 @@ def newMemberApplication():
         familyInitiationFee = singleInitiationFee / 2
         familyInitiationFeeCUR = "${:,.2f}".format(familyInitiationFee)
         currentDuesYear = db.session.query(ControlVariables.Current_Dues_Year).filter(ControlVariables.Shop_Number == 1).scalar()
-        print('singleInitiationFee - ',singleInitiationFee,singleInitiationFeeCUR)
-        print('familyInitiationFee - ',familyInitiationFee,familyInitiationFeeCUR)
-        print('annualFee - ',annualFee,annualFeeCUR)
+        #print('singleInitiationFee - ',singleInitiationFee,singleInitiationFeeCUR)
+        #print('familyInitiationFee - ',familyInitiationFee,familyInitiationFeeCUR)
+        #print('annualFee - ',annualFee,annualFeeCUR)
         singleTotalFee = singleInitiationFee + annualFee
         singleTotalFeeCUR = "${:,.2f}".format(singleTotalFee)
         familyTotalFee = familyInitiationFee + annualFee
@@ -1134,9 +1159,9 @@ def newMemberApplication():
     city = request.form.get('city')
     state = request.form.get('state')
     zip = request.form.get('zip')
-    print('zip - ',zip)
+    #print('zip - ',zip)
     cellPhone = request.form.get('cellPhone')
-    print('cellPhone - ',cellPhone, ' type - ',type(zip))
+    #print('cellPhone - ',cellPhone, ' type - ',type(zip))
     homePhone = request.form.get('homePhone')
     eMail = request.form.get('eMail')
     dateJoined = request.form.get('dateJoined')
@@ -1150,15 +1175,15 @@ def newMemberApplication():
 
     currentDuesYear = db.session.query(ControlVariables.Current_Dues_Year).filter(ControlVariables.Shop_Number == 1).scalar()
     #currentDuesYear = request.form.get('currentDuesYear')
-    print('currentDuesYear - ',currentDuesYear)
+   #print('currentDuesYear - ',currentDuesYear)
 
     tempIDexpirationDate = request.form.get('expireDate')
     if tempIDexpirationDate != None and tempIDexpirationDate != '':
         hasTempID = True
     else:
         hasTempID = False
-    print ('expire date - ',tempIDexpirationDate)
-    print ('hasTempID - ',hasTempID)
+   #print ('expire date - ',tempIDexpirationDate)
+   #print ('hasTempID - ',hasTempID)
 
     # VALIDATE DATA
     #    if temp id then set Temporary_Village_ID to true
@@ -1236,12 +1261,10 @@ def newMemberApplication():
     
 @app.route("/acceptDues")
 def acceptDues():
-    shopNumber = getShopNumber()
-    #print('shopNumber - ',shopNumber)
-    
-    initiationFee = db.session.query(ControlVariables.Current_Initiation_Fee).filter(ControlVariables.Shop_Number == shopNumber).scalar()
+   
+    initiationFee = db.session.query(ControlVariables.Current_Initiation_Fee).filter(ControlVariables.Shop_Number == 1).scalar()
     #print('initiation fee - ',initiationFee)
-    initiationFeeAcct = db.session.query(ControlVariables.Initiation_Fee_Account).filter(ControlVariables.Shop_Number == shopNumber).scalar()
+    initiationFeeAcct = db.session.query(ControlVariables.Initiation_Fee_Account).filter(ControlVariables.Shop_Number == 1).scalar()
     #print('initiation fee acct - ',initiationFeeAcct)
 
     duesAmount = db.session.query(ControlVariables.Current_Dues_Amount).filter(ControlVariables.Shop_Number==1).scalar()
@@ -1249,10 +1272,10 @@ def acceptDues():
     memberID=request.args.get('memberID')
     #print('memberID - ',memberID)
     
-    duesAccount = db.session.query(ControlVariables.Dues_Account).filter(ControlVariables.Shop_Number==shopNumber).scalar()
+    duesAccount = db.session.query(ControlVariables.Dues_Account).filter(ControlVariables.Shop_Number==1).scalar()
     #print('duesAccount - ',duesAccount)
     
-    currentDuesYear = db.session.query(ControlVariables.Current_Dues_Year).filter(ControlVariables.Shop_Number == shopNumber).scalar()
+    currentDuesYear = db.session.query(ControlVariables.Current_Dues_Year).filter(ControlVariables.Shop_Number == 1).scalar()
     #print('currentDuesYear - ',currentDuesYear)
     todays_date = datetime.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
@@ -1289,18 +1312,6 @@ def acceptDues():
     #return redirect(url_for('index',villageID=memberID))
     flash ("SUCCESS - Payment processed","success")
     return make_response(f"SUCCESS - Payment processed")
- 
-def getShopNumber():
-    shopLocation = request.cookies.get('clientLocation')
-    if shopLocation == 'RA':
-        shopNumber = 1
-    else:
-        if shopLocation == 'BW':
-            shopNumber = 2
-        else:
-            flash ('Missing shop location, RA assumed.','info')
-            shopNumber = 1
-    return shopNumber
 
 
 @app.route('/roles/', defaults={'memberID':None})   
@@ -1497,10 +1508,10 @@ def saveRoles():
     if fieldsChanged > 0:
         try:
             db.session.commit()
-            print('Changes successful')
+           #print('Changes successful')
             flash("Changes successful","success")
         except Exception as e:
-            print('Could not update member role data',e)
+           #print('Could not update member role data',e)
             flash("Could not update member role data.","danger")
             db.session.rollback()
 
