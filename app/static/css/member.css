@@ -17,44 +17,64 @@
 .hdg {
     grid-area: hdgArea; 
     display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    grid-template-areas: " searchArea hdgTitle  menuArea";
-    height:50px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    margin-bottom: 0px;
-    align-items:center;
-    justify-content:center; 
-    text-align: center;
+    grid-template-rows: 1fr;
+    grid-template-columns:.75fr .75fr 150px 300px auto;
+    grid-template-areas: " searchArea memberNameArea  versionArea staffNameArea menuArea";
+    height:4rem;
     background-color: var(--main-hdg-bg-color); 
     color:var(--main-hdg-txt-color);
     
 }
 
-.hdgTitle {
-    grid-area:hdgTitle;
-    text-align:center; 
-    background-color: white;
-    color:navy; 
-    height:40px;
-}
 .hdgSearch {
     grid-area:searchArea;
-    padding-top:5px;
-    padding-bottom: 5px;
-    align-items: left;
+    align-items: center;
+    margin-top:.75em;
+    padding-top:0rem;
+    padding-bottom:.5em;
+    padding-left:2rem;
+    height:4rem;
 }
-.dropdown-item {
-    color:black;
+
+.memberName {
+    grid-area:memberNameArea;
+    margin-top:.75em;
+    padding-top:.25em;
+    padding-bottom:0em;
+    text-align:center; 
+    height:2.5rem;
+    background-color: white;
+    color:navy; 
+    border-radius:10px;
+    
+}
+
+.hdgVersion {
+    grid-area:versionArea;
+    align-items:center;
+    text-align: right;
+    padding-top:1.5rem;
+    height:4rem;
+}
+.staffName {
+    grid-area:staffNameArea;
+    align-items:center;
+    text-align:center;
+    padding-top:1.5rem;
+    height:4rem;
 }
 
 .memberMenu {
     grid-area:menuArea;
-    /* color:blue; */
+    align-items:center;
+    padding:.75rem;
 }
-.memberMenu  a:hover {
-    background-color: #0099cc;
-  }
+
+.dropdown-item {
+    color:black;
+}
+
+
 .panel {
     display:inline;
 }
@@ -267,24 +287,23 @@ input {
 
 #RAtrainingNeeded {
     color:red;
-    border:1px solid white;
 }
 #BWtrainingNeeded {
     color: red;
-    border:1px solid red;
 }
 .RAcolumn {
     display:grid;
     text-align:center;
-    background-color: beige;
     justify-items: center;
 }
 .BWcolumn {
     display:grid;
     text-align:center;
     justify-items:center;
-    background-color: lime;
 }
+hr.class-1 { 
+    border-top: 5px solid #8c8b8b; 
+} 
 /* MONITOR DUTY PANEL */
 
 /* .monthInputs li {
@@ -341,12 +360,12 @@ table th {
     color:red;
 }
 
-.center {
+/* .center {
     display: block;
     margin-left: auto;
     margin-right: auto;
     width: 100%;
-  }
+  } */
 
 
 
@@ -384,7 +403,7 @@ table th {
   
   .dropdown-content a {
     /* color: black; */
-    padding: 12px 16px;
+    padding: 1em 1em;
     text-decoration: none;
     display: block-inline;
   }

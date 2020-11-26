@@ -10,10 +10,8 @@
     <!-- <a id="refreshPageBtn" style="display:none" href=""></a> -->
     <!-- MEMBER NAME -->
     <div class="hdg">
-        <div id='hdgTitleID' class="hdgTitle">
-            <h2>{{ hdgName }}</h2>
-            <!-- <input id="staffID" type="hidden"> -->
-            <!-- <input id='clientLocation' type="hidden"> -->
+        <div class="memberName">
+            <h3>{{ hdgName }}</h3>
         </div>
             
         <div class="hdgSearch">
@@ -40,13 +38,20 @@
                     <button id='monitorSchedulingBtnID' class='dropdown-item' onclick='linkToMonitorSchedule()'>Schedule Monitor Duty</button>
                     <hr>
                     <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication'">New Member Application</button>
+                    <button id='shiftChangeBtnID' class='dropdown-item' onclick='shiftChange()'>Shift Change</button>
                     <!-- <button id='waitListBtnID' class='dropdown-item' onclick="window.location.href='/waitList'">Wait List ({{ waitListCnt }})</button> -->
                 </div>
                 <button id='showPhotoBtn' disabled onclick='showHidePhoto(this)' style=margin-left:50px>SHOW PHOTO</button>
-            </div>
-            
+            </div>     
         </div> 
-        
+
+        <div class="hdgVersion">
+            <h6>ver. 11/25/2020</h6>
+        </div>
+
+        <div class="staffName">
+            <h6>Staff member - {{staffName}}</h6>
+        </div>
     </div>
     
     <!-- PRIMARY CONTACT INFORMATION -->
@@ -388,6 +393,7 @@
                         <div id='BWtrainingNeeded' style=width:9em>{{BWtrainingNeeded}}</div>    
                     </div>
                 </div> 
+                <hr class="class-1" />
             </div>
 
             <div class='certBottomPanel'>

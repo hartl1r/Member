@@ -35,9 +35,30 @@ def index(villageID,staffID):
     #print('staffID - ',staffID)
     #rule = request.url_rule
     #print('rule - ',rule)
-    
+    if staffID == None:
+        print('Missing staffID')
+        staffID = '604875'
 
-    
+    # GET STAFF MEMBER NAME AND PRIVELEDGES
+    staffName = 'Unknown'
+    isManager= 'False'
+    isDBA = 'False'
+    staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
+    if staffMember != None:
+        if staffMember.Nickname != None:
+            staffName = staffMember.Nickname + ' ' + staffMember.Last_Name
+        else:
+            staffName = staffMember.First_Name + ' ' + staffMember.Last_Name 
+
+        if (staffMember.Manager):
+            isManager = 'True'
+        else:
+            isManager = 'False'
+        if (staffMember.DBA):
+            isDBA = 'True'
+        else:
+            isDBA = 'False'
+
     # PREPARE LIST OF MEMBER NAMES AND VILLAGE IDs
     # BUILD ARRAY OF NAMES FOR DROPDOWN LIST OF MEMBERS
     nameArray=[]
@@ -63,7 +84,6 @@ def index(villageID,staffID):
         nameArray.append(lastFirst)
 
     # PREPARE LIST OF VILLAGES
-    #villageArray=[]
     sqlSelect = "SELECT Village_Name FROM tblValid_Village_Names "
     sqlSelect += "ORDER BY Village_Name"
     try:
@@ -103,8 +123,9 @@ def index(villageID,staffID):
     acceptDuesDate = db.session.query(ControlVariables.Date_To_Begin_New_Dues_Collection).filter(ControlVariables.Shop_Number == 1).scalar()
         
     # IF A VILLAGE ID WAS NOT PASSED IN, DISPLAY THE BLANK INDEX.HTML FORM AND HAVE USER SELECT A NAME OR ID
-    if (villageID == 'None'):
-        return render_template("member.html",member="",nameArray=nameArray,waitListCnt=waitListCnt,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate)
+    if (villageID == None):
+        return render_template("member.html",member="",nameArray=nameArray,waitListCnt=waitListCnt,
+        currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,staffID=staffID,staffName=staffName,isManager=isManager,isDBA=isDBA)
 
 
     # ---------------------------------------------------------------------------------------------------------    
@@ -115,7 +136,7 @@ def index(villageID,staffID):
     member = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (member == None):
         #flash('A valid member number must be specified','info')
-        return render_template("member.html",member='',nameArray=nameArray)
+        return render_template("member.html",member='',nameArray=nameArray,staffID=staffID,staffName=staffName)
          
     hdgName = member.First_Name
     if member.Middle_Name is not None:
@@ -222,7 +243,7 @@ def index(villageID,staffID):
     return render_template("member.html",member=member,hdgName=hdgName,nameArray=nameArray,expireMsg=expireMsg,
     futureDuty=futureDuty,pastDuty=pastDuty,RAtrainingNeeded=RAtrainingNeeded,BWtrainingNeeded=BWtrainingNeeded,
     lastYearPaid=lastYearPaid,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,
-    waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffID=staffID)
+    waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffID=staffID,staffName=staffName,isManager=isManager,isDBA=isDBA)
     
 @app.route('/saveAddress', methods=['POST'])
 def saveAddress():

@@ -768,3 +768,20 @@ $('input[type="tel"]')
 			$phone.val('');
 		}
   });
+
+  function shiftChange() {
+    //   PROMPT FOR STAFF ID
+    staffID = prompt("Staff ID - ","xxxxxx")
+
+    //  SAVE COOKIE
+    setCookie("staffID", staffID, 365);
+
+    // RESTART PAGE
+    window.location.href='/index/'
+
+    // SET UP LINK TO MEMBER FORM 
+    // var linkToMemberBtn = document.getElementById('linkToMember');
+    // link='/index/?staffID=' + staffID
+    // linkToMemberBtn.setAttribute('href', link)
+    // linkToMemberBtn.click()
+  }
