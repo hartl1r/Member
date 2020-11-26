@@ -347,10 +347,10 @@
                 <div class='row'>
                     <div class='col-4'></div>
                     <div class='col-4 RAcolumn'>
-                        <input type="checkbox" class="form-control" {% if member.Certified %} checked {% endif %} value="{{member.Certified}}">
+                        <input id='RAcertified' type="checkbox" class="form-control" {% if member.Certified %} checked {% endif %} value="{{member.Certified}}">
                     </div>
                     <div class='col-4 BWcolumn'>
-                        <input type="checkbox" class="form-control"  {% if member.Certified_2 %} checked {% endif %} value="{{member.Certified_2}}">
+                        <input id='BWcertified' type="checkbox" class="form-control"  {% if member.Certified_2 %} checked {% endif %} value="{{member.Certified_2}}">
                     </div> 
                 </div>  
 

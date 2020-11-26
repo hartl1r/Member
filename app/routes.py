@@ -36,7 +36,6 @@ def index(villageID,staffID):
     #rule = request.url_rule
     #print('rule - ',rule)
     if staffID == None:
-        print('Missing staffID')
         staffID = '604875'
 
     # GET STAFF MEMBER NAME AND PRIVELEDGES
@@ -89,7 +88,6 @@ def index(villageID,staffID):
     try:
         villages = db.engine.execute(sqlSelect)
     except Exception as e:
-        print('ERROR in retrieving village name list.')
         flash("Could not retrieve village name list.","danger")
         return 'ERROR in index village function.'
     
@@ -1009,19 +1007,17 @@ def saveMonitorDuty():
 
 @app.route("/getNoteToMember")
 def getNoteToMember():
-    print('/getNoteToMember')
     memberID = request.args.get('memberID')
-    currentNote = db.session.query(NotesToMembers).filter(NotesToMembers.memberID == memberID).first()
+    currentNote = db.session.query(NotesToMembers.noteToMember).filter(NotesToMembers.memberID == memberID).scalar()
     todays_date = datetime.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
     if (currentNote):
-        msg = currentNote.noteToMember
+        msg = currentNote
         msg += '\n' + todaySTR + '\n'
     else:
         msg = todaySTR + '\n'
-        print('return msg')
-        return jsonify(msg=msg)
-    return make_response('Nothing')
+    
+    return jsonify(msg=msg)
 
 @app.route("/processNoteToMember")
 def processNoteToMember():
