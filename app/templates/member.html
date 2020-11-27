@@ -7,13 +7,9 @@
 
 {% block app_content %}
 <div class="parent">
-    <!-- <a id="refreshPageBtn" style="display:none" href=""></a> -->
-    <!-- MEMBER NAME -->
+    <!-- HEADING BAND -->
     <div class="hdg">
-        <div class="memberName">
-            <h3>{{ hdgName }}</h3>
-        </div>
-            
+        <!-- ------------------------------------------------------ -->    
         <div class="hdgSearch">
             <div id="memberList">
                 <select id="selectpicker" class='selectpicker' title='Find a  member ...' data-live-search=true data-live-search-style="contains" data-width='auto'>
@@ -25,9 +21,25 @@
             </div>
         </div>
        
+        <!-- ------------------------------------------------------ -->
+        <div class="memberName">
+            <h3>{{ hdgName }}</h3>
+        </div>
+
+        <!-- ------------------------------------------------------ -->
+        <div class="hdgVersion">
+            <h6>ver. 11/25/2020</h6>
+        </div>
+
+        <!-- ------------------------------------------------------ -->
+        <div class="staffName">
+            <h6>Staff - {{staffName}}</h6>
+        </div>
+
+        <!-- ------------------------------------------------------ -->
         <div class="memberMenu">
             <div class="dropdown">
-                <button onclick="showMenu()" class="dropbtn">MEMBER MENU</button>
+                <button onclick="showMenu()" class="btn btn-secondary">MEMBER MENU</button>
                 <div id="myDropdown" class="dropdown-content"style=text-align:left>
                     <button id='clearScreenBtnID' class='dropdown-item' disabled onclick='clearScreen()'>Clear Screen</button>
                     <hr>
@@ -41,17 +53,10 @@
                     <button id='shiftChangeBtnID' class='dropdown-item' onclick='shiftChange()'>Shift Change</button>
                     <!-- <button id='waitListBtnID' class='dropdown-item' onclick="window.location.href='/waitList'">Wait List ({{ waitListCnt }})</button> -->
                 </div>
-                <button id='showPhotoBtn' disabled onclick='showHidePhoto(this)' style=margin-left:50px>SHOW PHOTO</button>
+                <button id='showPhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='showHidePhoto(this)''>SHOW PHOTO</button>
             </div>     
         </div> 
 
-        <div class="hdgVersion">
-            <h6>ver. 11/25/2020</h6>
-        </div>
-
-        <div class="staffName">
-            <h6>Staff member - {{staffName}}</h6>
-        </div>
     </div>
     
     <!-- PRIMARY CONTACT INFORMATION -->

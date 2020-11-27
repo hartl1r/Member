@@ -14,26 +14,48 @@
      
   }  
 
+  /* MOBILE DEVICE SETTINGS */
+  .body {
+      font-size:.5em;
+  }
+  .parent {
+    display: grid;
+    grid-template-columns:1fr;
+    /* grid-template-rows:50px 1fr 1fr; */
+    grid-template-areas: "hdgArea"
+                         "localInfo"
+                         "altInfo"
+                         "emergInfo"
+                         "memberStatus"
+                         "certInfo"
+                         "monitorDuty";
+    gap:0px;
+    background-color:var(--main-body-bg-color);
+    padding-left:0px;
+    padding-right:Opx;
+    margin:0px; 
+}
+
 .hdg {
     grid-area: hdgArea; 
     display:grid;
-    grid-template-rows: 1fr;
-    grid-template-columns:.75fr .75fr 150px 300px auto;
-    grid-template-areas: " searchArea memberNameArea  versionArea staffNameArea menuArea";
-    height:4rem;
+    grid-template-rows: 50px 50px 50px 50px;
+    grid-template-columns:1.25fr .75fr;
+    grid-template-areas:    "searchArea     searchArea"
+                            "memberNameArea memberNameArea"
+                            "staffNameArea  versionArea "
+                            "menuArea       menuArea"
+                            ;
     background-color: var(--main-hdg-bg-color); 
     color:var(--main-hdg-txt-color);
     
-}
+} 
 
 .hdgSearch {
     grid-area:searchArea;
-    align-items: center;
     margin-top:.75em;
-    padding-top:0rem;
-    padding-bottom:.5em;
-    padding-left:2rem;
-    height:4rem;
+    margin-left:auto;
+    margin-right:auto;
 }
 
 .memberName {
@@ -41,33 +63,37 @@
     margin-top:.75em;
     padding-top:.25em;
     padding-bottom:0em;
+    margin-left:1em;
+    margin-right:1em;
     text-align:center; 
     height:2.5rem;
     background-color: white;
     color:navy; 
-    border-radius:10px;
+    border-radius:5px;
     
+}
+
+.staffName {
+    grid-area:staffNameArea;
+    align-items:center;
+    text-align:left;
+    padding-top:1.5rem;
+    margin-left:.5em;
 }
 
 .hdgVersion {
     grid-area:versionArea;
-    align-items:center;
+    align-items:right;
     text-align: right;
     padding-top:1.5rem;
-    height:4rem;
+    margin-right:.5em;
 }
-.staffName {
-    grid-area:staffNameArea;
-    align-items:center;
-    text-align:center;
-    padding-top:1.5rem;
-    height:4rem;
-}
+
 
 .memberMenu {
     grid-area:menuArea;
-    align-items:center;
-    padding:.75rem;
+    margin-left:auto;
+    margin-right:auto;
 }
 
 .dropdown-item {
@@ -516,6 +542,20 @@ table th {
         padding-right:5px;
         margin:0px; 
     }
+    .hdg {
+        grid-area: hdgArea; 
+        display:grid;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+        grid-template-columns:1fr 1fr;
+        grid-template-areas: " searchArea searchArea",
+                                "memberNameArea memberNameArea",
+                                "versionArea staffNameArea",
+                                ".  menuArea";
+        height:4rem;
+        background-color: var(--main-hdg-bg-color); 
+        color:var(--main-hdg-txt-color);
+        
+    }
     body {font-size:.75rem}
     .localContactInfo {
         font-size:.75rem;
@@ -528,9 +568,9 @@ table th {
         grid-template-columns:1fr 1fr 1fr;
         /* grid-template-rows:50px 1fr 1fr; */
         grid-template-rows: repeat(3, minmax(50px, auto));
-        grid-template-areas: "hdgArea           hdgArea             hdgArea"
-                             "localInfo         altInfo             emergInfo"
-                             "memberStatus      certInfo            monitorDuty"
+        grid-template-areas:    "hdgArea           hdgArea             hdgArea"
+                                "localInfo         altInfo             emergInfo"
+                                "memberStatus      certInfo            monitorDuty"
                              ;
         gap:0px;
         background-color:var(--main-body-bg-color);
@@ -542,12 +582,55 @@ table th {
     .localContactInfo {
         font-size:.75rem;
     }
+
+    .hdg {
+        grid-area: hdgArea; 
+        display:grid;
+        width:100%;
+        height:60px;
+        
+        grid-template-areas:    "searchArea memberNameArea versionArea   menuArea"
+                                "searchArea memberNameArea staffNameArea menuArea";
+        grid-template-rows: 25px 25px;
+        grid-template-columns:1fr 2fr 1.5fr 1.5fr;
+        gap:1em;
+        background-color: var(--main-hdg-bg-color); 
+        color:var(--main-hdg-txt-color);
+        
+    }
+
+    .hdgVersion {
+        grid-area:versionArea;
+        align-items: left;
+        text-align:left;
+        padding-top:0rem;
+        margin-right:0;
+        margin-left:200px;
+
+    }
+    
+    .staffName {
+        grid-area:staffNameArea;
+        width:200px;
+        align-items:left;
+        text-align:left;
+        padding-top:0rem;
+        margin-left:200px;
+        
+    }
+    
+    .memberMenu {
+        grid-area:menuArea;
+        margin-left:auto;
+        margin-right:auto;
+        padding-top:10px;
+    }
 }
 
 
-@media (min-width: 1200px) {
+/* @media (min-width: 1200px) {
     body {font-size:1rem}
     .localContactInfo {
         font-size:1rem;
     }
-}
+} */
