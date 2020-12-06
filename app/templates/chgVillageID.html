@@ -1,0 +1,86 @@
+<!-- chgVillageID.html -->
+{% extends 'base.html' %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chgVillageID.css') }}">
+{% endblock %}
+
+{% block app_content %}
+
+<div class="container">
+    <div class="nameHeader">
+        <h4 >{{member.fullName}}</h4>
+    </div>
+    
+    <form method='POST' action="/saveVillageID">   
+    <div id='villageIDBodyID' class="villageIDBody">
+        <input type="hidden" name='memberID' value = {{member.Member_ID}}>
+        <input type="hidden" name='staffID' value={{staffID}}>
+
+        <div class="row form-group">
+            <div class='col-4' style=margin-top:20px;>
+                <label for="typeOfID">Type of ID:</label>
+            </div>
+            <div class='col-5' style=margin-top:20px;>
+                <select id="typeOfID" class="form-control" required name="typeOfID"  >
+                    <option value="0">Select type:</option>
+                    <option value='Temporary'>Temporary</option>
+                    <option value='Permanent'>Permanent</option>
+                </select>
+            </div>
+        </div>
+        <div id="dataItems">
+            <div class='row form-group'>
+                <div class="col-4">
+                    <label for="curID" >Current Village ID:</label> 
+                </div>
+                <div class="col-2">   
+                    <input id='curID' class='villageID' type="text" readonly name="curID" maxlength=6 value="{{member.Member_ID}}">   
+                </div>
+            </div>
+
+            <div class='row form-group'>
+                <div class="col-4">
+                    <label for="newVillageID" >New Village ID:</label>
+                </div>
+                <div class="col-4">   
+                    <input id='newVillageID' class='villageID' type="text" placeholder="xxxxxx" maxlength=6 name="newVillageID" value=''>   
+                </div>
+            </div>
+
+            <div class='row form-group'>
+                <div class="col-4">
+                    <label for="reTypedID" >Re-type ID:</label> 
+                </div> 
+                <div class="col-4">
+                    <input id='reTypedID' class='villageID' type="text" placeholder='xxxxxx' maxlength=6 name="reTypedID" value=''>   
+                </div>
+            </div>
+
+            <div id='expirationData' class="row form-group">
+                <div class="col-4">
+                    <label for="expirationDateID" >Expiration date:</label>
+                </div>
+                <div class="col-4">
+                    <input id='expirationDate' type="date" class="datepick" name="expirationDate" style=height:30px;width:130px value="{{member.Temporary_ID_Expiration_Date}}">    
+                </div>
+            </div>   
+        </div>  
+        <br>
+    </div> <!-- END OF BODY -->   
+
+    <div class="villageIDFooter">
+        <div class='footer-right-col'> 
+            <a id='cancelBtnID' class='btn btn-secondary' style=margin:10px href="/index/{{member.Member_ID}}/{{staffID}}">Cancel</a>
+            <button id='chgVillageIDSaveBtnID' type="submit" class="btn btn-primary"style=margin:10px;display:None>Save</button>
+        </div>
+    </div> <!-- END OF FOOTER -->
+    </form>
+</div>
+
+{% endblock %}
+{% block scripts %}
+    {{super()}}
+    <script src="{{ url_for('static', filename='js/chgVillageID.js') }}"> </script>
+{% endblock %}

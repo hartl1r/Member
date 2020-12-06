@@ -1,0 +1,24 @@
+.container {
+    width:75%;
+    background-color:white;
+    margin-top:120px;
+}
+.nameHeader {
+    text-align: center;
+    background-color: navy;
+    color:white;
+    height:50px;
+    padding-top: .75rem;
+}
+.nameBody {
+    background-color:lightgray;
+    padding-left: 150px
+}
+.nameFooter {
+    background-color:gray;
+    text-align:right;
+}
+form {
+    padding-top:0px;
+    padding-left:0px;
+}

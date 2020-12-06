@@ -1,0 +1,57 @@
+<!-- roles.html -->
+{% extends 'base.html' %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/editName.css') }}">
+{% endblock %}
+
+{% block app_content %}
+
+<div class="container">
+    <div class="nameHeader">
+        <h4 >{{member.fullName}}</h4>
+    </div>
+    
+    <form method='POST' action="/saveName">   
+    <div id='nameBodyID' class="nameBody">
+        <input type="hidden" name='memberID' value = {{member.Member_ID}}>
+        <input type="hidden" name='staffID' value={{staffID}}>
+        <div class='row form-group'>
+            <div class="col-3" style=margin-top:20px>
+                <label for="firstName" >First name:</label>    
+                <input id='firstName' type="text"  name="firstName"  value="{{member.First_Name}}">   
+            </div>
+            <div class="col-3" style=margin-top:20px;margin-left:10px;>
+                <label for="middleName" >Middle name:</label>    
+                <input id='middleName' type="text"  name="middleName" {% if member.Middle_Name != None %} value="{{member.Middle_Name}}"{% endif %}>   
+            </div>
+            <div class="col-3" style=margin-top:20px;margin-left:10px;>
+                <label for="lastName" >Last name:</label>    
+                <input id='lastName' type="text"  name="lastName"  value="{{member.Last_Name}}">   
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5" style=margin-top:20px>
+                <label for="nickName" >Nickname:</label>    
+                <input id='nickName' type="text"  name="nickName"  {% if member.Nickname != None %} value="{{member.Nickname}}"{% endif %}>   
+            </div>
+        </div>
+        
+        <br>
+    </div> <!-- END OF BODY -->   
+
+    <div class="nameFooter">
+        <div class='footer-right-col'> 
+            <a id='cancelBtnID' class='btn btn-secondary' style=margin:10px href="/index/{{member.Member_ID}}/{{staffID}}">Cancel</a>
+            <button id='nameSaveBtnID' type="submit" class="btn btn-primary"style=margin:10px;display:None>Save</button>
+        </div>
+    </div> <!-- END OF FOOTER -->
+    </form>
+</div>
+
+{% endblock %}
+{% block scripts %}
+    {{super()}}
+    <script src="{{ url_for('static', filename='js/editName.js') }}"> </script>
+{% endblock %}

@@ -1,5 +1,4 @@
 // member.js
-
 // DEFINE VARIABLES
 // Color constants
 const colors = {
@@ -24,42 +23,44 @@ const colors = {
 };
 
 // IF THE staffID WAS NOT PASSED IN FROM THE Login SCRIPT, PROMPT FOR AN ID
-//alert('member.js - ' + window.location.href)
 const queryString = window.location.href;
 const urlParams = new URLSearchParams(queryString);
 const staffIDfromURL = urlParams.get('staffID')
 
-var staffID = ''
+//var staffID = ''
 if (staffIDfromURL == null) {
-    staffID = checkStaffCookie()
-    //staffID = prompt("Did not get staff ID from login.\n\nPlease enter your Village ID number?",'xxxxxx')
+    staffID = localStorage.getItem('staffID')
+    if (!staffID) {
+        staffID = prompt("Staff ID - ")
+        localStorage.setItem('staffID',staffID)
+        clearScreen()
+        
+    }
+    
 }
 else {
     staffID = staffIDfromURL
-    setCookie("staffID", staffID, 365);
+    localStorage.setItem('staffID',staffID)
 }
 //alert('staffID to be used - '+staffID)
 
 // SET STAFF ID IN EACH PANEL
 var staffIDelements = document.getElementsByClassName('staffID')
 for (var i = 0; i > staffIDelements.length; i++) {
-    console.log(staffIDelements[i].name)
     staffIDelements[i].setAttribute("value", staffID);
 }
 
-// IF THE shopID WAS NOT PASSED IN FROM THE Login SCRIPT, CHECK FOR COOKIE
-// const shopIDfromURL = urlParams.get('shopID')
-// alert('shopIDfromnURL - '+shopIDfromURL)
-// if (shopIDfromURL == null) {
-//     var shopID = ''
-//     shopID = getLocationCookie()
-// }
-// alert('1. shopID - ',shopID)
-// setShopFilter(shopIDtoUse)
 
 // DECLARE GLOBAL VARIABLES
 var todaysDate = new Date();
 var todaysDateSTR =  (todaysDate.getFullYear() + "-" + ("0"+(todaysDate.getMonth()+1)).slice(-2) + "-" + ("0" + todaysDate.getDate()).slice(-2))
+
+var isDBA = document.getElementById('isDBA').value
+var isManager = document.getElementById('isManager').value
+if (isDBA == 'True' | isManager == 'True') {
+    setManagerPermissions()
+}
+
 
 var currentMemberID = ''
 
@@ -72,13 +73,7 @@ acceptDuesDate = document.getElementById('acceptDuesDateID').value
 acceptDuesBtn = document.getElementById('acceptDuesID')
 if (todaysDateSTR  < acceptDuesDate) {
     acceptDuesBtn.style.display='none'
-    //acceptDuesBtn.setAttribute('disabled','disabled')
 }
-
-// SET OPTIONS IN SELECT ELEMENTS BASED ON TEXT VALUES
-//villageText = document.getElementById('villageTextID').value
-//alert('villageText - |'+ villageText + '|')
-//document.getElementById('villageSelecterID').value = villageText
 
 typeOfWorkText = document.getElementById('typeOfWorkTextID').value
 typeOfWorkSelect = document.getElementById('typeOfWorkSelecterID')
@@ -140,6 +135,8 @@ else
     document.getElementById('noteBtnID').removeAttribute('disabled')
     document.getElementById('classSignUpBtnID').removeAttribute('disabled')
     document.getElementById('rolesBtnID').removeAttribute('disabled')
+    document.getElementById('editNameBtnID').removeAttribute('disabled')
+    document.getElementById('chgVillageID').removeAttribute('disabled')
     document.getElementById('mntrSchedBtnID').removeAttribute('disabled')
     document.getElementById('showPhotoBtn').removeAttribute('disabled')
 }   
@@ -457,22 +454,31 @@ function findAllVariables() {
 /* When the user clicks on the button, 
 toggle between hiding and showing the dropdown content */
 function showMenu() {
+    menu=document.getElementById('menuID')
+    if (menu.innerHTML== 'SHOW MENU'){
+        menu.innerHTML= 'HIDE MENU'
+    }
+    else {
+        menu.innerHTML = 'SHOW MENU'
+    }
     document.getElementById("myDropdown").classList.toggle("show");
+    //alert('show')
   }
   
 // Close the dropdown if the user clicks outside of it
-window.onclick = function(event) {
-if (!event.target.matches('.dropbtn')) {
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-    var openDropdown = dropdowns[i];
-    if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
-    }
-    }
-}
-}
+// window.onclick = function(event) {
+//     alert('window.onclick')
+// if (!event.target.matches('.dropbtn')) {
+//     var dropdowns = document.getElementsByClassName("dropdown-content");
+//     var i;
+//     for (i = 0; i < dropdowns.length; i++) {
+//     var openDropdown = dropdowns[i];
+//     if (openDropdown.classList.contains('show')) {
+//         openDropdown.classList.remove('show');
+//     }
+//     }
+// }
+// }
 
 function noteRoutine() {
     // CHECK FOR EXISTING NOTE
@@ -628,6 +634,7 @@ function skillLevelRtn() {
 function clearScreen() {
     var linkToMemberBtn = document.getElementById('linkToMember');
     link='/index/' 
+    //link = '/index/ /'+  staffID
     linkToMemberBtn.setAttribute('href', link)
     linkToMemberBtn.click()
 }
@@ -772,16 +779,41 @@ $('input[type="tel"]')
   function shiftChange() {
     //   PROMPT FOR STAFF ID
     staffID = prompt("Staff ID - ","xxxxxx")
-
-    //  SAVE COOKIE
-    setCookie("staffID", staffID, 365);
-
-    // RESTART PAGE
-    window.location.href='/index/'
-
-    // SET UP LINK TO MEMBER FORM 
-    // var linkToMemberBtn = document.getElementById('linkToMember');
-    // link='/index/?staffID=' + staffID
-    // linkToMemberBtn.setAttribute('href', link)
-    // linkToMemberBtn.click()
+    $.ajax({
+        url: "/shiftChange",
+        type: "GET",
+        data: {
+            staffID:staffID
+        },
+        success: function(data, textStatus, jqXHR)
+        {
+            if (data.msg == 'Not Authorized') {
+                alert('This person is not authorized to use this application.')
+                // RELOAD INDEX PAGE WITHOUT CHANGING STAFF
+                location.reload()
+                return
+            }
+            //  SAVE COOKIE
+            localStorage.setItem('staffID',staffID)
+            // RESTART PAGE
+            window.location.href='/index/ /'+  staffID
+            // LAUNCH INDEX PAGE
+            //clearScreen()
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+            alert("shiftChange Error ..."+errorThrown+'\n'+textStatus)
+        }
+    })
   }
+
+function setManagerPermissions() {
+    //alert('setManagerPermissions')
+    // REMOVE READONLY FROM SPECIFIC ELEMENTS
+    document.getElementById('RAcertifiedID').disabled=false
+    document.getElementById('BWcertifiedID').disabled=false
+    document.getElementById('RAdateCertifiedID').removeAttribute('readonly')
+    document.getElementById('BWdateCertifiedID').removeAttribute('readonly')
+    // REMOVE DISABLED FROM SPECIFIC BUTTONS
+
+}
+  

@@ -1,0 +1,31 @@
+.container {
+    width:60%;
+    background-color:white;
+    margin-top:150px;
+}
+form {
+    padding-top:0px;
+    border:1px solid navy;
+}
+.villageID {
+    width:70px;
+    size:6;
+}
+input:read-only {
+    color:green;
+}
+.nameHeader {
+    text-align: center;
+    background-color: navy;
+    color:white;
+    height:50px;
+    padding-top: .75rem;
+}
+.villageIDBody {
+    background-color:lightgray;
+    padding-left: 150px
+}
+.villageIDFooter {
+    background-color:gray;
+    text-align:right;
+}

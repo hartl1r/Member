@@ -33,13 +33,9 @@ def index(villageID,staffID):
     # VALUES FROM URL NEEDED IN member.js ONLY; villageID and staffID WILL COME FROM FORM REQUEST
     #print('village - ',villageID)
     #print('staffID - ',staffID)
-    #rule = request.url_rule
-    #print('rule - ',rule)
-    if staffID == None:
-        staffID = '604875'
 
     # GET STAFF MEMBER NAME AND PRIVELEDGES
-    staffName = 'Unknown'
+    staffName = ''
     isManager= 'False'
     isDBA = 'False'
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
@@ -48,15 +44,23 @@ def index(villageID,staffID):
             staffName = staffMember.Nickname + ' ' + staffMember.Last_Name
         else:
             staffName = staffMember.First_Name + ' ' + staffMember.Last_Name 
-
-        if (staffMember.Manager):
-            isManager = 'True'
-        else:
-            isManager = 'False'
+        #  ADD POSITION TO NAME DISPLAY
         if (staffMember.DBA):
             isDBA = 'True'
+            staffName += ' (DBA)'
         else:
             isDBA = 'False'
+            if (staffMember.Manager):
+                isManager = 'True'
+                staffName += ' (Manager)'
+            else:
+                isManager = 'False'
+                if (staffMember.Office_Staff):
+                    isStaff = 'True'
+                    staffName += ' (Staff)'
+                else:
+                    staffName = 'NOT AUTHORIZED'
+                    
 
     # PREPARE LIST OF MEMBER NAMES AND VILLAGE IDs
     # BUILD ARRAY OF NAMES FOR DROPDOWN LIST OF MEMBERS
@@ -150,19 +154,15 @@ def index(villageID,staffID):
     #todays_date = datetime.today()
     todays_date = date.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
-    
+     
     if member.Temporary_Village_ID is not None:
-        if member.Temporary_ID_Expiration_Date is not None:
-
+        if member.Temporary_ID_Expiration_Date != None:
             minus30 = member.Temporary_ID_Expiration_Date - timedelta(days=30)
             if minus30 < todays_date:
                 expireMsg = '< 30 days'
             if member.Temporary_ID_Expiration_Date < todays_date:
                 expireMsg = 'ID EXPIRED!'
     
-    #print('expireMsg - ',expireMsg)
-    #print('has temp id - ',member.Temporary_Village_ID)
-
     # SET BEGIN DATE TO 12 MONTHS PRIOR TO CURRENT DATE
     beginDateDAT = todays_date - timedelta(days=365)
     beginDateSTR = beginDateDAT.strftime('%m-%d-%Y')
@@ -172,14 +172,8 @@ def index(villageID,staffID):
     sqlFutureDuty += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
     sqlFutureDuty += "WHERE Member_ID = '" + villageID + "' and Date_Scheduled >='" + todaySTR + "' "
     sqlFutureDuty += "ORDER BY Date_Scheduled DESC"
-
-    #print('sqlFutureDuty-',sqlFutureDuty)
-
     futureDuty = db.engine.execute(sqlFutureDuty)
-    # print('FUTURE DUTY')
-    # for f in futureDuty:
-    #     print(f.DateScheduled,f.AM_PM,f.Duty,f.Shop_Abbr)
-
+    
     # PAST MONITOR DUTY
     sqlPastDuty = "SELECT format(Date_Scheduled,'ddd M/d/y') as DateScheduled, AM_PM, Duty, Shop_Abbr, Shop_Name, iif(No_Show = 1,'NS','') as NoShow "
     sqlPastDuty += " FROM tblMonitor_Schedule "
@@ -262,9 +256,6 @@ def saveAddress():
     cellPhone = request.form['cellPhone']
     eMail = request.form['eMail']
 
-    #print ('temp dt - ',request.form.get('expireDt'))
-    #if tempIDexpirationDate == '':
-       #print('is equal empty')
     if request.form.get('villagesWaiverSigned') == 'True':
         villagesWaiverSigned = True
     else:
@@ -296,7 +287,7 @@ def saveAddress():
         member.Zip = zipcode
         fieldsChanged += 1
 
-    print('orig village - ',member.Village,' new village - ',village)
+    #print('orig village - ',member.Village,' new village - ',village)
     if member.Village != village:
         logChange(staffID,'Village',memberID,village,member.Village)
         member.Village = village
@@ -339,6 +330,12 @@ def saveAddress():
             member.Temporary_Village_ID = False
         else:
             member.Temporary_Village_ID = True
+        fieldsChanged += 1
+
+    if tempIDexpirationDate == '':
+        logChange(staffID,'Temp Expire Dt',memberID,'Null',member.Temporary_ID_Expiration_Date)
+        member.Temporary_ID_Expiration_Date = None
+        member.Temporary_Village_ID = False
         fieldsChanged += 1
    
     if fieldsChanged > 0:
@@ -1076,18 +1073,23 @@ def logChange(staffID,colName,memberID,newData,origData):
 
     # Write data changes to tblMember_Data_Transactions
     #print('log - ',staffID,"|",colName,"|",memberID,"|New- ",newData,"|Orig-",origData),"|"
-    newTransaction = MemberTransactions(
-        Transaction_Date = datetime.now(),
-        Member_ID = memberID,
-        Staff_ID = staffID,
-        Original_Data = origData,
-        Current_Data = newData,
-        Data_Item = colName,
-        Action = 'UPDATE'
-    )
-    db.session.add(newTransaction)
-    return
-    db.session.commit()
+    try:
+        newTransaction = MemberTransactions(
+            Transaction_Date = datetime.now(),
+            Member_ID = memberID,
+            Staff_ID = staffID,
+            Original_Data = origData,
+            Current_Data = newData,
+            Data_Item = colName,
+            Action = 'UPDATE'
+        )
+        db.session.add(newTransaction)
+        return
+        db.session.commit()
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        flash('Transaction could not be logged.\n'+error,'danger')
+        db.session.rollback()
 
 @app.route("/newMemberApplication",methods=('GET', 'POST'))
 def newMemberApplication():
@@ -1150,7 +1152,7 @@ def newMemberApplication():
         RAavailableDates=RAavailableDates,BWavailableDates=BWavailableDates,\
         singleInitiationFeeCUR=singleInitiationFeeCUR,familyInitiationFeeCUR=familyInitiationFeeCUR,\
         annualFeeCUR=annualFeeCUR,currentDuesYear=currentDuesYear,dateJoined=todaySTR,\
-        singleTotalFeeCUR=singleTotalFeeCUR,familyTotalFeeCUR=familyTotalFeeCUR)
+        singleTotalFeeCUR=singleTotalFeeCUR,familyTotalFeeCUR=familyTotalFeeCUR,staffID=staffID)
 
     # POST REQUEST; PROCESS FORM DATA; IF OK SEND PAYMENT DATA, ADD TO MEMBER_DATA, INSERT TRANSACTION ('ADD'), DISPLAY MEMBER FORM
     if request.form['newMember'] == 'CANCEL':
@@ -1332,17 +1334,18 @@ def acceptDues():
 
 
 @app.route('/roles/', defaults={'memberID':None})   
-@app.route("/roles/<memberID>")
-def roles(memberID):
+@app.route("/roles/<memberID>/<staffID>")
+def roles(memberID,staffID):
     if (memberID == ''):
         flash("You must select a member first.","info")
-    
+        return
+    print('staffID - ',staffID)
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     if (member == None):
         flash ("No member match for roles.",'danger')
         return render_template("roles.html",member='')
         #return redirect(url_for('index'))
-    return render_template("roles.html",member=member)
+    return render_template("roles.html",member=member,staffID=staffID)
 
 
 @app.route('/saveRoles', methods=['POST'])
@@ -1573,4 +1576,247 @@ def printMemberSchedule(memberID):
     
     return render_template("rptMemberSchedule.html",displayName=displayName,needsTraining=needsTraining,schedule=schedule,todays_date=todays_dateSTR)
 
+@app.route("/shiftChange")
+def shiftChange():
+    staffID = request.args.get('staffID')
+    staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
+    if staffMember.Office_Staff or staffMember.DBA or staffMember.Manager :
+        msg = "Authorized"
+    else:
+        msg = "Not Authorized"
 
+    return jsonify(msg=msg)
+
+
+@app.route('/editName/', defaults={'memberID':None,'staffID':None})  
+@app.route("/editName/<memberID>/<staffID>")
+def editName(memberID,staffID):
+    if (memberID == ''):
+        flash("You must select a member first.","info")
+    
+    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+    if (member == None):
+        flash ("No member match for name change.",'danger')
+        return redirect(url_for('index'))
+    return render_template("editName.html",member=member,staffID=staffID)
+
+@app.route('/saveName', methods=['POST'])
+def saveName():
+    staffID = request.form['staffID']
+    
+    #  GET MEMBER ID
+    memberID = request.form['memberID']
+    
+    # RETRIEVE MEMBER RECORD
+    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+    if member == None:
+        flash('Member for name edit was not found.','danger')
+        return redirect(url_for('index'))
+
+    # GET DATA FROM FORM
+    firstName = request.form.get('firstName')
+    middleName = request.form.get('middleName')
+    lastName = request.form.get('lastName')
+    nickName = request.form.get('nickName')
+  
+    # HAVE ANY FIELDS CHANGED?
+    fieldsChanged = 0
+    if member.First_Name != firstName:
+        member.First_Name = firstName
+        logChange(staffID,'First name',memberID,firstName,member.First_Name)
+        fieldsChanged += 1 
+
+    if member.Middle_Name != middleName:
+        member.Middle_Name = middleName
+        logChange(staffID,'Middle name',memberID,middleName,member.Middle_Name)
+        fieldsChanged += 1 
+
+    if member.Last_Name != lastName:
+        member.Last_Name = lastName
+        logChange(staffID,'Last name',memberID,lastName,member.Last_Name)
+        fieldsChanged += 1 
+
+    if member.Nickname != nickName:
+        member.Nickname = nickName
+        logChange(staffID,'Nick name',memberID,nickName,member.Nickname)
+        fieldsChanged += 1 
+    
+    # IF ANY FIELDS CHANGED, SAVE CHANGES
+    if fieldsChanged > 0:
+        try:
+            db.session.commit()
+            flash("Changes successful","success")
+        except Exception as e:
+            flash("Could not update member name data.","danger")
+            db.session.rollback()
+
+    return redirect(url_for('index',villageID=memberID))
+
+
+@app.route('/changeVillageID/', defaults={'memberID':None,'staffID':None})  
+@app.route("/changeVillageID/<memberID>/<staffID>")
+def changeVillageID(memberID,staffID):
+    if (memberID == ''):
+        flash("You must select a member first.","info")
+    
+    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+    if (member == None):
+        flash ("No member match for Village ID change.",'danger')
+        return redirect(url_for('index'))
+    return render_template("chgVillageID.html",member=member,staffID=staffID)
+
+@app.route('/saveVillageID', methods=['POST'])
+def saveVillageID():
+    
+    #  GET DATA FROM FORM
+    memberID = request.form['memberID']
+    staffID = request.form['staffID']
+    typeOfID = request.form['typeOfID']
+    newVillageID = request.form['newVillageID']
+    reTypedID = request.form['reTypedID']
+    expirationDate = request.form['expirationDate']
+
+    # CHECK FOR BAD NEW VILLAGE ID
+    if (newVillageID != None):
+        if (newVillageID != reTypedID):
+            flash ('The new and re-typed IDs do not match','info')
+            return redirect(url_for('changeVillageID',memberID=memberID,staffID=staffID))
+
+    # IS THIS A CHANGE TO A PERMANENT ID?
+    if (typeOfID == 'Permanent'):
+        if newVillageID == '':
+           flash("A new ID was not provided.",'info')
+           return redirect(url_for('changeVillageID',memberID=memberID,staffID=staffID))
+        # HAS THIS ID BEEN USED?
+        member = db.session.query(Member).filter(Member.Member_ID == newVillageID).first()
+        if member != None:
+            db.session.close()
+            flash('The ID# '+newVillageID +' is already assigned to another member.','info')
+            return redirect(url_for('changeVillageID',memberID=memberID,staffID=staffID))
+
+        # CONTINUE WITH UPDATE OF VILLAGE ID
+        updateToPermanentID(memberID,newVillageID,staffID)
+        return redirect(url_for('index',villageID=newVillageID,staffID=staffID))
+
+    # THE FOLLOWING IS FOR A CHANGE TO TEMPORARY ID INFORMATION
+
+    # IS THIS JUST AN EXPIRATION DATE CHANGE?
+    if (newVillageID == None):
+        member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+        if member == None:
+            flash('Member ' + memberID + ' for Village ID change was not found.','danger')
+            return redirect(url_for('index',villageID=memberID,staffID=staffID))
+        
+        if member.Temporary_ID_Expiration_Date != expirationDate:
+            try:
+                # UPDATE TEMPORARY ID EXPIRATION DATE
+                member.Temporary_ID_Expiration_Date = expirationDate
+                db.session.commit()
+                flash("Temp status/date change successful","success")
+            except Exception as e:
+                flash("Could not update member expiration date.","danger")
+                db.session.rollback()
+                return redirect(url_for('index',villageID=memberID,staffID=staffID))
+
+        return redirect(url_for('index',villageID=memberID,staffID=staffID))
+        
+    # CHANGE VILLAGE ID NUMBER
+    print('temp rtn - ',memberID,newVillageID,staffID)
+    changeVillageID(memberID,newVillageID,staffID)
+    return redirect(url_for('index',villageID=newVillageID,staffID=staffID))
+
+def updateToPermanentID(memberID,newVillageID,staffID):
+    # REMOVE TEMPORARY FLAG, CLEAR EXPIRATION DATE
+    print('updateToPermanentID')
+    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+    if member == None:
+        flash('Member ' + memberID + ' for Village ID change was not found.','danger')
+        return redirect(url_for('index',villageID=memberID,staffID=staffID))
+    try:
+        print('clear date')
+        member.Temporary_ID_Expiration_Date = None
+        print('clear temp ID flag')
+        member.Temporary_Village_ID = False
+        db.session.commit()
+        logChange(staffID,'Temporary ID status',memberID,'True','False')    
+        logChange(staffID,'Temporary ID expiration date',newVillageID,'',member.Temporary_ID_Expiration_Date)    
+    except Exception as e:
+        print('error - ',e)
+        flash("Could not clear member expiration date.","danger")
+        db.session.rollback()
+        return redirect(url_for('index',villageID=memberID,staffID=staffID))
+
+    changeVillageID(memberID, newVillageID,staffID)
+    flash("Village ID changed.","success")
+    return redirect(url_for('index',villageID=newVillageID,staffID=staffID))
+
+
+def changeVillageID(memberID,newVillageID,staffID): 
+    # RETRIEVE MEMBER RECORD
+    print('changeVillageID ...')
+    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+    if member == None:
+        flash('Member for Village ID change was not found.','danger')
+        return redirect(url_for('index'))
+
+    # IS THE CHANGE JUST TO THE EXPIRATION DATE?
+    # if (newVillageID == None):
+    #     if member.Temporary_ID_Expiration_Date != expirationDate:
+    #         try:
+    #             member.Temporary_ID_Expiration_Date = expirationDate
+    #             db.session.commit()
+    #             flash("Expiration date changed.","success")
+    #         except Exception as e:
+    #             flash("Could not change expiration date.","danger")
+    #             db.session.rollback()
+    # return redirect(url_for('index',villageID=memberID,staffID=staffID))
+
+
+    # CHANGE VILLAGE ID IN tblMember_Data; SQL SERVER WILL CASCADE CHANGE OF MEMBER_ID
+    print('test for new ID')
+    if (memberID != newVillageID):
+        try:
+            # member = db.session.query(Member).filter(Member.Member_ID == memberID).first()    
+            # if member == None:
+            #     flash('Member for Village ID change was not found.','danger')
+            #    return redirect(url_for('index'))
+
+
+            # CHANGE VILLAGE ID TO A NEW NUMBER IN tblMember_Data
+            print('replacing ID ...')
+            member.Member_ID = newVillageID
+            db.session.commit()
+            logChange(staffID,'Village ID changed',memberID,memberID,newVillageID)
+            return redirect(url_for('index',villageID=newVillageID,staffID=staffID))
+        except SQLAlchemyError as e:
+            error = str(e.__dict__['orig'])
+            flash("Could not change from member ID " + memberID + " to "+newVillageID + ".\n" + error,"danger")
+            db.session.rollback()
+            return redirect(url_for('index',villageID=memberID,staffID=staffID))
+
+        #
+        #  THIS APPROACH RELIES UPON SQL SERVER CASCADE UPDATES OF RELATED TABLES !!!
+        #
+
+    # GET MEMBER RECORD WITH NEW VILLAGE ID
+    # try:
+    #     member = db.session.query(Member).filter(Member.Member_ID == newVillageID).first()    
+    #     if member == None:
+    #         flash('Member record with new Village ID was not found.','danger')
+    #         return redirect(url_for('index'))
+
+    #     # IF VILLAGE ID NUMBER CHANGE IS TO A PERMANENT NUMBER -
+    #     if (typeOfID == 'Permanent'):
+    #         member.Temporary_ID_Expiration_Date = None
+    #         member.Temporary_Village_ID = False
+    #         logChange(staffID,'Temporary ID status',newVillageID,True,False)
+    #     else:
+    #         if member.Temporary_ID_Expiration_Date != expirationDate:
+    #             # UPDATE TEMPORARY ID EXPIRATION DATE
+    #             member.Temporary_ID_Expiration_Date = expirationDate
+    #             db.session.commit()
+    #             flash("Temp status/date change successful","success")
+    # except Exception as e:
+    #     flash("Could not update member status/expiration date.","danger")
+    #     db.session.rollback()
+    # return redirect(url_for('index'))
