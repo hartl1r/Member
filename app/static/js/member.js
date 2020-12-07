@@ -42,13 +42,12 @@ else {
     staffID = staffIDfromURL
     localStorage.setItem('staffID',staffID)
 }
-//alert('staffID to be used - '+staffID)
 
 // SET STAFF ID IN EACH PANEL
-var staffIDelements = document.getElementsByClassName('staffID')
-for (var i = 0; i > staffIDelements.length; i++) {
-    staffIDelements[i].setAttribute("value", staffID);
-}
+// var staffIDelements = document.getElementsByClassName('staffID')
+// for (var i = 0; i > staffIDelements.length; i++) {
+//     staffIDelements[i].setAttribute("value", staffID);
+// }
 
 
 // DECLARE GLOBAL VARIABLES
@@ -304,21 +303,7 @@ document.getElementById('BWwillSub').onclick = function(ev) {
 // ------------------------------------------------------------------------------------------------------
 // FUNCTIONS    
 // ------------------------------------------------------------------------------------------------------
-// function setShopFilter(shopLocation) {
-//     switch(shopLocation){
-//         case 'RA':
-//             localStorage.setItem('shopFilter','RA')
-//             shopFilter = 'RA'
-//             break;
-//         case 'BW':
-//             localStorage.setItem('shopFilter','BW')
-//             shopFilter = 'BW'
-//             break;
-//         default:
-//             localStorage.setItem('shopFilter','RA')
-//             shopFilter = 'RA'
-//     }   
-// }
+
 
 function memberSelectedRtn() {
     selectedMember = this.value
@@ -333,7 +318,6 @@ function memberSelectedRtn() {
     // SET UP LINK TO MEMBER FORM 
     var linkToMemberBtn = document.getElementById('linkToMember');
     link='/index/' + currentMemberID +'/' + staffID
-    //alert('link - '+ link)
     linkToMemberBtn.setAttribute('href', link)
     linkToMemberBtn.click()
 }
@@ -428,17 +412,6 @@ function monitorDutyDataChanged() {
     certificationInfo.style.backgroundColor="rgba(0,0,0,0.6)"
     certificationInfo.style.color="rgba(0,0,0,0.6)"
 }
-
-
-
-// function monthCheckboxRtn() {
-//     if (this.checked) {
-//         this.value = True
-//     }
-//     else {
-//         this.value = False
-//     }
-// }
 
 function findAllVariables() { 
     msg=''
@@ -552,11 +525,6 @@ function processNote() {
     $('#noteModalID').modal('hide')
     showMenu()
 }
-// $('#noteModalID').on('shown.bs.modal', function () {
-//     $('#msgID').focus();
-// }) 
-
-
 
 function rolesRoutine() {
     // CHECK FOR EXISTING role
@@ -634,7 +602,6 @@ function skillLevelRtn() {
 function clearScreen() {
     var linkToMemberBtn = document.getElementById('linkToMember');
     link='/index/' 
-    //link = '/index/ /'+  staffID
     linkToMemberBtn.setAttribute('href', link)
     linkToMemberBtn.click()
 }
@@ -672,24 +639,6 @@ function checkStaffCookie() {
     }
     return staffID
 }
-
-// function getLocationCookie() {
-//     var storedShopID = getCookie("shopID");
-//     alert('2. storedShopID - '+storedShopID)
-//     if (storedShopID == "") {
-//         inputShopID = prompt("Please enter your location (RA/BW):", "");
-//         if (inputShopID != 'RA' && inputShopID != 'BW') {
-//             alert('RA is assumed.')
-//             inputShopID = 'RA'
-//         }
-//         if (inputShopID != "" && inputShopID != null) {
-//             setCookie("shopID", inputShopID, 365);
-//             return inputShopID
-//         }
-//     }
-// alert('3. storedShopID - '+storedShopID)
-// return storedShopID
-// }
 
 
 function acceptDues() {
@@ -807,7 +756,6 @@ $('input[type="tel"]')
   }
 
 function setManagerPermissions() {
-    //alert('setManagerPermissions')
     // REMOVE READONLY FROM SPECIFIC ELEMENTS
     document.getElementById('RAcertifiedID').disabled=false
     document.getElementById('BWcertifiedID').disabled=false
