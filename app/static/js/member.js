@@ -22,33 +22,39 @@ const colors = {
     fg_PastDate:"#FFFFFF"   // White (#FFFFFF)
 };
 
-// IF THE staffID WAS NOT PASSED IN FROM THE Login SCRIPT, PROMPT FOR AN ID
-const queryString = window.location.href;
-const urlParams = new URLSearchParams(queryString);
-const staffIDfromURL = urlParams.get('staffID')
+// GET staffID FROM URL IF AVAILABLE
+const params = new URLSearchParams(window.location.search)
+var pathArray = window.location.pathname.split('/');
+if (pathArray.length = 4) {
+    if (pathArray[3] != null & pathArray[3] != '') {
+        staffID = pathArray[3]
+        localStorage.setItem('staffID',staffID)
+    }
+    else {
+        staffID = ''
+    }
+}
+else {
+    staffID = ''
+}
 
-//var staffID = ''
-if (staffIDfromURL == null) {
+// IF THE staffID WAS NOT PASSED IN FROM THE Login SCRIPT THE staffName WILL CONTAIN 'Staff ID missing'
+if (staffID == '') {
+    // TRY TO GET STAFF ID FROM LOCALSTORAGE
     staffID = localStorage.getItem('staffID')
     if (!staffID) {
         staffID = prompt("Staff ID - ")
         localStorage.setItem('staffID',staffID)
-        clearScreen()
-        
-    }
-    
+    // RELOAD THE PAGE TO SHOW STAFF NAME
+    link='/index/ /' + staffID 
+    window.location.href=link
+    }    
 }
-else {
-    staffID = staffIDfromURL
-    localStorage.setItem('staffID',staffID)
-}
-
 // SET STAFF ID IN EACH PANEL
-// var staffIDelements = document.getElementsByClassName('staffID')
-// for (var i = 0; i > staffIDelements.length; i++) {
-//     staffIDelements[i].setAttribute("value", staffID);
-// }
-
+var staffIDelements = document.getElementsByClassName('staffID')
+for (var i = 0; i > staffIDelements.length; i++) {
+    staffIDelements[i].setAttribute("value", staffID);
+}
 
 // DECLARE GLOBAL VARIABLES
 var todaysDate = new Date();
@@ -78,11 +84,6 @@ typeOfWorkText = document.getElementById('typeOfWorkTextID').value
 typeOfWorkSelect = document.getElementById('typeOfWorkSelecterID')
 typeOfWorkSelect.value = typeOfWorkText
 
-skillLevelText = document.getElementById('skillLevelTextID').value
-skillLevelSelect = document.getElementById('skillLevelSelecterID')
-if (skillLevelSelect != null) {
-    skillLevelSelect.value = skillLevelText
-}
 // ASSIGN PANELS TO VARIABLES
 localContactInfo = document.getElementById('localContactID')
 altContactInfo = document.getElementById('altContactID')
@@ -108,7 +109,6 @@ document.getElementById("selectpicker").addEventListener("change",memberSelected
 document.getElementById("selectpicker").addEventListener("click",memberSelectedRtn)
 
 document.getElementById("typeOfWorkSelecterID").addEventListener("change",typeOfWorkRtn)
-document.getElementById("skillLevelSelecterID").addEventListener("change",skillLevelRtn)
 
 document.querySelector('#monthCheckboxesID').onclick = function(ev) {
     inputID = ev.target.id + 'ResidentValue'
@@ -138,6 +138,8 @@ else
     document.getElementById('chgVillageID').removeAttribute('disabled')
     document.getElementById('mntrSchedBtnID').removeAttribute('disabled')
     document.getElementById('showPhotoBtn').removeAttribute('disabled')
+    document.getElementById('showCheckInsID').removeAttribute('disabled')
+
 }   
            
 
@@ -595,13 +597,16 @@ function typeOfWorkRtn() {
 
 }
 
-function skillLevelRtn() {
-    skillLevel = this.value
-    document.getElementById('skillLevelTextID').value=this.value
-}
+// function skillLevelRtn() {
+//     skillLevel = this.value
+//     document.getElementById('skillLevelTextID').value=this.value
+// }
 function clearScreen() {
     var linkToMemberBtn = document.getElementById('linkToMember');
-    link='/index/' 
+    if (staffID == null | staffID == '') {
+        staffID=localStorage.get('staffID')
+    }
+    link='/index/ /'+staffID 
     linkToMemberBtn.setAttribute('href', link)
     linkToMemberBtn.click()
 }
@@ -669,6 +674,17 @@ function linkToMonitorSchedule() {
     alert('link not ready')
 }
 
+// cellPhone = document.getElementById('cellPhone')
+// cellPhone.addEventListener('focus', (event) => {
+//     alert('cellPhone - '+ cellPhone.value)
+//     if (event.target.val().length ===1) {
+//         event.target.value = ''
+//     }
+// })
+$('.phones').usPhoneFormat({
+    format: '(xxx) xxx-xxxx',
+});
+
 $('input[type="tel"]')
 	.keydown(function (e) {
 		var key = e.which || e.charCode || e.keyCode || 0;
@@ -705,7 +721,7 @@ $('input[type="tel"]')
 				(key >= 96 && key <= 105));	
 	})
 	
-	.bind('focus click', function () {
+	.bind('click focus', function () {
 		$phone = $(this);
 		
 		if ($phone.val().length === 0) {
@@ -714,12 +730,28 @@ $('input[type="tel"]')
 		else {
 			var val = $phone.val();
 			$phone.val('').val(val); // Ensure cursor remains at the end
-		}
+        }
+        console.log('click - ' + $phone.val() + $phone.val().length)
 	})
-	
+    
+    // .bind('focus', function () {
+	// 	$phone = $(this);
+		
+	// 	if ($phone.val().length === 0) {
+	// 		$phone.val('(');
+	// 	}
+	// 	else {
+	// 		var val = $phone.val();
+	// 		$phone.val('').val(val); // Ensure cursor remains at the end
+    //     }
+    //     var val = $phone.val();
+	// 	$phone.val('').val(val); // Ensure cursor remains at the end
+    //     console.log('focus - ' + $phone.val() + $phone.val().length)
+    // })
+    
 	.blur(function () {
 		$phone = $(this);
-		
+	
 		if ($phone.val() === '(') {
 			$phone.val('');
 		}
@@ -736,8 +768,9 @@ $('input[type="tel"]')
         },
         success: function(data, textStatus, jqXHR)
         {
-            if (data.msg == 'Not Authorized') {
-                alert('This person is not authorized to use this application.')
+            //alert('response - ' + data.msg)
+            if (data.msg != 'Authorized') {
+                alert(data.msg)
                 // RELOAD INDEX PAGE WITHOUT CHANGING STAFF
                 location.reload()
                 return
@@ -745,7 +778,10 @@ $('input[type="tel"]')
             //  SAVE COOKIE
             localStorage.setItem('staffID',staffID)
             // RESTART PAGE
-            window.location.href='/index/ /'+  staffID
+            //link='/index/' + '' +'/' + staffID
+            link='/index/ /' + staffID  
+            //alert('link - '+ link)
+            window.location.href=link
             // LAUNCH INDEX PAGE
             //clearScreen()
         },
@@ -761,6 +797,8 @@ function setManagerPermissions() {
     document.getElementById('BWcertifiedID').disabled=false
     document.getElementById('RAdateCertifiedID').removeAttribute('readonly')
     document.getElementById('BWdateCertifiedID').removeAttribute('readonly')
+    document.getElementById('showCheckInsID').style.display='block'
+
     // REMOVE DISABLED FROM SPECIFIC BUTTONS
 
 }

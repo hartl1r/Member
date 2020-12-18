@@ -343,6 +343,7 @@ hr.class-1 {
     color:var(--main-panel-txt-color);
     border:var(--main-panel-border);
     border-radius: 10px;
+    height:361px;
 }
 .monthsInTheVillages {
     display:grid;

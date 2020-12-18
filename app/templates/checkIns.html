@@ -1,0 +1,53 @@
+<!-- checkInss.html -->
+{% extends 'base.html' %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/checkIns.css') }}">
+{% endblock %}
+
+{% block app_content %}
+
+<div class="container">
+    <div class="checkInsHeader">
+        <h4 >Shop Activity</h4>
+    </div>
+    <div class=" colHeadings row">
+        <div class="col-3">Check In</div>
+        <div class="col-3">Check Out</div>
+        <div class="col-2">Type Of Work</div>
+        <div class="col-2">Location</div>
+    </div>
+   
+    <div class = "checkInsBody overflow-auto"> 
+        {% for a in activityDict %}
+        <div class="row">
+            <div class="col-3" style=text-align:left>
+                <scan>{{a.checkInDate}}&nbsp&nbsp{{a.checkInTime}}</scan>
+            </div>
+            
+            <div class="col-3" style=text-align:left>
+                <scan>{{a.checkOutDate}}&nbsp&nbsp{{a.checkOutTime}}</scan>
+            </div>
+            <div class="col-2">
+                {{a.typeOfWork}}
+            </div>
+            <div class="col-2">
+                {{a.shopName}}
+            </div>
+        </div>
+        {% endfor %}
+    </div> <!-- END OF BODY -->   
+
+    <div class="checkInsFooter">
+        <a id='cancelBtnID' class='btn btn-primary' style=margin:10px href="/index/{{memberID}}/{{staffID}}">Close</a>
+        <!-- <button class="close">Close</button> -->
+    </div> <!-- END OF FOOTER -->
+
+</div>
+
+{% endblock %}
+{% block scripts %}
+    {{super()}}
+    <script src="{{ url_for('static', filename='js/checkInss.js') }}"> </script>
+{% endblock %}

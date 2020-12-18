@@ -32,10 +32,10 @@ mail=Mail(app)
 @app.route('/index/<villageID>', defaults={'staffID':None})
 def index(villageID,staffID):
     # VALUES FROM URL NEEDED IN member.js ONLY; villageID and staffID WILL COME FROM FORM REQUEST
-    #print('village - ',villageID)
-    #print('staffID - ',staffID)
+    print('village - ',villageID)
+    print('staffID - ',staffID)
 
-    # GET STAFF MEMBER NAME AND PRIVELEDGES
+    # GET STAFF MEMBER NAME AND PRIVILEDGES
     staffName = ''
     isManager= 'False'
     isDBA = 'False'
@@ -61,7 +61,8 @@ def index(villageID,staffID):
                     staffName += ' (Staff)'
                 else:
                     staffName = 'NOT AUTHORIZED'
-                    
+    else:
+        staffName = 'Staff ID missing.'                
 
     # PREPARE LIST OF MEMBER NAMES AND VILLAGE IDs
     # BUILD ARRAY OF NAMES FOR DROPDOWN LIST OF MEMBERS
@@ -699,7 +700,7 @@ def saveCertification():
     
     typeOfWork = request.form.get('typeOfWorkSelecterName')
 
-    skillLevel = request.form.get('skillLevelSelecterName')
+    #skillLevel = request.form.get('skillLevelSelecterName')
     waiverExpirationDate = request.form.get('waiverExpirationDate')
     waiverReason = request.form.get('waiverReason')
 
@@ -765,11 +766,11 @@ def saveCertification():
             member.Default_Type_Of_Work = typeOfWork
             fieldsChanged += 1
 
-    if skillLevel != None:
-        if skillLevel != member.Skill_Level:
-            logChange(staffID,'Skill_Level',memberID,skillLevel,member.Skill_Level)
-            member.Skill_Level = skillLevel
-            fieldsChanged += 1
+    # if skillLevel != None:
+    #     if skillLevel != member.Skill_Level:
+    #         logChange(staffID,'Skill_Level',memberID,skillLevel,member.Skill_Level)
+    #         member.Skill_Level = skillLevel
+    #         fieldsChanged += 1
 
     if waiverExpirationDate != member.Monitor_Duty_Waiver_Expiration_Date:
         logChange(staffID,'Monitor Waiver Expiration',memberID,waiverExpirationDate,member.Monitor_Duty_Waiver_Expiration_Date)
@@ -1089,9 +1090,15 @@ def logChange(staffID,colName,memberID,newData,origData):
         flash('Transaction could not be logged.\n'+error,'danger')
         db.session.rollback()
 
-@app.route("/newMemberApplication",methods=('GET', 'POST'))
-def newMemberApplication():
+# @app.route('/roles/', defaults={'memberID':None})   
+# @app.route("/roles/<memberID>/<staffID>")
+# def roles(memberID,staffID):
 
+@app.route('/newMemberApplication/',defaults={'staffID':None},methods=('GET','POST'))
+@app.route('/newMemberApplication/<staffID>',methods=('GET','POST'))
+@app.route("/newMemberApplication",methods=('GET', 'POST'))
+def newMemberApplication(staffID):
+    print('staffID - ',staffID)
     # GATHER DATA FOR NEW MEMBER FORM
     if request.method != 'POST':
         todays_date = date.today()
@@ -1138,9 +1145,7 @@ def newMemberApplication():
         familyInitiationFee = singleInitiationFee / 2
         familyInitiationFeeCUR = "${:,.2f}".format(familyInitiationFee)
         currentDuesYear = db.session.query(ControlVariables.Current_Dues_Year).filter(ControlVariables.Shop_Number == 1).scalar()
-        #print('singleInitiationFee - ',singleInitiationFee,singleInitiationFeeCUR)
-        #print('familyInitiationFee - ',familyInitiationFee,familyInitiationFeeCUR)
-        #print('annualFee - ',annualFee,annualFeeCUR)
+        
         singleTotalFee = singleInitiationFee + annualFee
         singleTotalFeeCUR = "${:,.2f}".format(singleTotalFee)
         familyTotalFee = familyInitiationFee + annualFee
@@ -1155,7 +1160,7 @@ def newMemberApplication():
     # POST REQUEST; PROCESS FORM DATA; IF OK SEND PAYMENT DATA, ADD TO MEMBER_DATA, INSERT TRANSACTION ('ADD'), DISPLAY MEMBER FORM
     if request.form['newMember'] == 'CANCEL':
         return redirect(url_for('newMemberApplication'))
-
+    staffID = request.form['staffID']
     todays_date = datetime.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
     duesAmount = db.session.query(ControlVariables.Current_Dues_Amount).filter(ControlVariables.Shop_Number==1).scalar()
@@ -1191,17 +1196,7 @@ def newMemberApplication():
         initiationFee = memberInitiationFee / 2
 
     currentDuesYear = db.session.query(ControlVariables.Current_Dues_Year).filter(ControlVariables.Shop_Number == 1).scalar()
-    #currentDuesYear = request.form.get('currentDuesYear')
-   #print('currentDuesYear - ',currentDuesYear)
-
-    tempIDexpirationDate = request.form.get('expireDate')
-    if tempIDexpirationDate != None and tempIDexpirationDate != '':
-        hasTempID = True
-    else:
-        hasTempID = False
-   #print ('expire date - ',tempIDexpirationDate)
-   #print ('hasTempID - ',hasTempID)
-
+   
     # VALIDATE DATA
     #    if temp id then set Temporary_Village_ID to true
 
@@ -1350,6 +1345,67 @@ def roles(memberID,staffID):
         #return redirect(url_for('index'))
     return render_template("roles.html",member=member,staffID=staffID)
 
+
+@app.route('/checkIns/', defaults={'memberID':None})   
+@app.route("/checkIns/<memberID>/<staffID>")
+def checkIns(memberID,staffID):
+    if (memberID == ''):
+        flash("You must select a member first.","info")
+        return
+
+    print('staffID - ',staffID)
+    todaysDate = date.today()
+    todaySTR = todaysDate.strftime('%m-%d-%Y')
+    startDate = todaysDate - timedelta(days=730)
+    
+    activity = db.session.query(MemberActivity)\
+    .filter(MemberActivity.Member_ID == memberID)\
+    .order_by(MemberActivity.Check_In_Date_Time.desc())\
+    .all()
+    #.filter(MemberActivity.Check_In_Date_Time > startDate)\
+    
+    activityDict = []
+    activityItem = []
+    for a in activity:
+        shopName = db.session.query(ShopName.Shop_Name).filter(ShopName.Shop_Number == a.Shop_Number).scalar()
+        if shopName == None:
+            shopName = ''
+        if a.Check_In_Date_Time != None:
+            checkIn = a.Check_In_Date_Time.strftime("%m-%d-%Y %I:%M %p")
+            checkInDate = a.Check_In_Date_Time.strftime("%m-%d-%Y")
+            checkInTime = a.Check_In_Date_Time.strftime("%I:%M %p")
+        else:
+            checkIn = ''
+            checkInDate = ''
+            checkInTime = ''
+
+        if a.Check_Out_Date_Time != None:
+            checkOut = a.Check_Out_Date_Time.strftime("%m-%d-%Y  %I %M %p")
+            checkOutDate = a.Check_Out_Date_Time.strftime("%m-%d-%Y")
+            checkOutTime = a.Check_Out_Date_Time.strftime("%I %M %p")
+        else:
+            checkOut = ''
+            checkOutDate = ''
+            checkOutTime = ''
+
+        activityItem = {
+            'checkIn':checkIn, 
+            'checkInDate':checkInDate,
+            'checkInTime':checkInTime,
+            'checkOut':checkOut,
+            'checkOutDate':checkOutDate,
+            'checkOutTime':checkOutTime,
+            'typeOfWork':a.Type_Of_Work,
+            'shopName':shopName
+        }
+        activityDict.append(activityItem)
+    #.order_by(MemberActivity.Check_In_Date_Time.desc).all()
+
+    # if (activity == None):
+    #     flash ("No member match for check-ins.",'info')
+    #     return redirect(url_for('index',villageID=memberID,todaysDate=todaySTR))
+
+    return render_template("checkIns.html",activityDict=activityDict,memberID=memberID,staffID=staffID)
 
 @app.route('/saveRoles', methods=['POST'])
 def saveRoles():
@@ -1582,12 +1638,17 @@ def printMemberSchedule(memberID):
 @app.route("/shiftChange")
 def shiftChange():
     staffID = request.args.get('staffID')
+    print('staffID - ',staffID)
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
-    if staffMember.Office_Staff or staffMember.DBA or staffMember.Manager :
-        msg = "Authorized"
+    if staffMember == None:
+        msg = "Not a valid member ID."
     else:
-        msg = "Not Authorized"
-
+        memberName = staffMember.First_Name + '' + staffMember.Last_Name
+        if staffMember.Office_Staff or staffMember.DBA or staffMember.Manager :
+            msg = "Authorized"
+        else:
+            msg = memberName + " is not authorized to use this application."
+    print('msg - ',msg)
     return jsonify(msg=msg)
 
 

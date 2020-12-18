@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}MEMBER{% endblock title %}
+
 {% block styles %}
     {{super()}}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/member.css') }}">
@@ -27,12 +28,13 @@
        
         <!-- ------------------------------------------------------ -->
         <div class="memberName">
+            <input id='memberNameID' type="hidden" value="{{hdgName}}">
             <h3>{{ hdgName }}</h3>
         </div>
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. 12/7/2020</h6>
+            <h6>ver. Dec 15, 2020</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -54,10 +56,10 @@
                     <button id="editNameBtnID" class='dropdown-item' disabled onclick="window.location.href='/editName/{{member.Member_ID}}/{{staffID}}'">Edit name</button>
                     <button id="chgVillageID" class='dropdown-item' disabled onclick="window.location.href='/changeVillageID/{{member.Member_ID}}/{{staffID}}'">Edit Temp Village ID</button>
                     <button id='monitorSchedulingBtnID' class='dropdown-item' onclick='linkToMonitorSchedule()'>Schedule Monitor Duty</button>
+                    <button id='showCheckInsID' class="dropdown-item" disabled style=display:none onclick="window.location.href='/checkIns/{{member.Member_ID}}/{{staffID}}'">Show check-ins</button>
                     <hr>
-                    <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication'">New Member Application</button>
+                    <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication/{{staffID}}'">New Member Application</button>
                     <button id='shiftChangeBtnID' class='dropdown-item' onclick='shiftChange()'>Shift Change</button>
-                    <!-- <button id='waitListBtnID' class='dropdown-item' onclick="window.location.href='/waitList'">Wait List ({{ waitListCnt }})</button> -->
                 </div>
                 <button id='showPhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='showHidePhoto(this)''>SHOW PHOTO</button>
             </div>     
@@ -118,13 +120,19 @@
             <div class="row">
                 <label class="col-3" for="homePhone">Home</label>
                 <div class="col-2">
-                    <input type="tel" style=width:130px id="homePhone" name="homePhone"value="{{ member.Home_Phone }}">
+                    <input type="text" class="phones" style=width:130px id="homePhone" name="homePhone"value="{{ member.Home_Phone }}">
                 </div>
             </div>
             <div class="row">
                 <label class="col-3" for="cellPhone">Cell</label>
                 <div class="col-2">
-                    <input type="tel" style=width:130px id="cellPhone" name="cellPhone"value="{{ member.Cell_Phone }}">
+                    <input type="text"
+                    class="phones"
+                    maxlength="14" 
+                    style=width:130px 
+                    id="cellPhone" 
+                    name="cellPhone"
+                    value="{{ member.Cell_Phone }}">
                 </div>
             </div>
             <div class="row">
@@ -425,14 +433,14 @@
                             <option value='Painting'>Painting</option>
                         </select>
                     
-                        <label class="control-label col-form-label-sm" style=margin-left:20px>Skill level</label>
+                        <!-- <label class="control-label col-form-label-sm" style=margin-left:20px>Skill level</label>
                         <input id="skillLevelTextID" type="hidden" class="form-control-md" name="skillLevelHidden" value={{member.Skill_Level}}>
                         <select id="skillLevelSelecterID" class="form-control-sm" style=margin-left:10px name="skillLevelSelecterName"  >
                                 <option value='0'>None</option>
                                 <option value='1'>Basic</option>
                                 <option value='3'>Some</option>
                                 <option value='5'>Tradesman</option>
-                        </select>
+                        </select> -->
                     </div>
                 </div>
                 
@@ -458,7 +466,7 @@
     </div>
 
     <!-- MONITOR DUTY -->
-    <div id="monitorDutyID" class="monitorDutyInfo panel">
+    <div id="monitorDutyID" class="monitorDutyInfo overflow-auto panel">
         <h5>MONITOR DUTY</h5>
         <form method='POST'  action="/saveMonitorDuty" style="padding-left:0px;padding-top:10px">
             <div class='monthsInTheVillages'>
@@ -534,7 +542,7 @@
             </div>
             <!-- FUTURE MONITOR DUTY -->
             <div class='monitorDuty'>
-                <table class="table table-sm">
+                <table class="table table-sm overflow-auto">
                     <thead>
                         <tr>
                             <th></th>
