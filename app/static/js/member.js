@@ -88,11 +88,15 @@ selectVillage.value =  curVillage
 acceptDuesDate = document.getElementById('acceptDuesDateID').value
 acceptDuesBtn = document.getElementById('acceptDuesID')
 duesPaid = document.getElementById('duesPaidID').value
-
+volunteer = document.getElementById('volunteerID').value
 if (todaysDateSTR  < acceptDuesDate) {
     acceptDuesBtn.style.display='none'
 }
 if (duesPaid == 'True') {
+    acceptDuesBtn.style.display='none'
+}
+
+if (volunteer == 'True') {
     acceptDuesBtn.style.display='none'
 }
 
