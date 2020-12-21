@@ -1,23 +1,33 @@
 // chgVillageID.js
 
-document.getElementById('dataItems').style.display='none'
 // EVENT LISTENERS
-document.getElementById('villageIDBodyID').addEventListener('change',villageIDDataChanged);
-document.getElementById('typeOfID').addEventListener('change',typeOfIDchanged);
+document.getElementById('villageIDBodyID').addEventListener('click',villageIDDataClicked);
 document.getElementById('reTypedID').addEventListener('change',compareIDs);
-
-// FUNCTIONS
-function villageIDDataChanged() {
-    document.getElementById('chgVillageIDSaveBtnID').style.display='inline';
-}
-
-function typeOfIDchanged() {
-    // if permanent, set expiration date to null
-    if (document.getElementById('typeOfID').value=='Permanent') {
+document.getElementById('temporaryID').onclick = function(ev) {
+    if (ev.target.checked) {
+        document.getElementById('temporaryID').value = 'True'   
+    }
+    else {
+        document.getElementById('temporaryID').value='False'
         document.getElementById('expirationDate').value = null;
         document.getElementById('expirationData').style.display='none' 
     }
-    document.getElementById('dataItems').style.display='inline'
+}
+
+// FUNCT(IONS
+
+function villageIDDataClicked() {
+    document.getElementById('chgVillageIDSaveBtnID').style.display='inline';
+}
+function temporaryIDchanged() {
+    // if permanent, set expiration date to null; hide expiration date label and text
+    if (document.getElementById('temporaryID').value=='False') {
+        document.getElementById('expirationDate').value = null
+        document.getElementById('dataItems').style.display='none'
+    }
+    else {
+        document.getElementById('dataItems').style.display='inline'  
+    }
 }
 
 function compareIDs() {

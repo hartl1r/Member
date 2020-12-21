@@ -109,6 +109,7 @@ class Member(db.Model):
     Emerg_Medical_Alergies = db.Column(db.String(255))
     Emerg_No_Data_Provided = db.Column(db.Boolean)
     Defibrillator_Trained = db.Column(db.Boolean)
+    Password = db.Column(db.String(20))
     Monitor_Duty_Notes = db.Column(db.String(255))
     Requires_Tool_Crib_Duty = db.Column(db.Boolean)
     Member_Notes = db.Column(db.String(255))
@@ -296,3 +297,19 @@ class KeysTable(db.Model):
     DateAssigned = db.Column(db.Date)
     MemberID = db.Column(db.String(6))
     Reason = db.Column(db.String(45))
+
+class Village(db.Model):
+    __tablename__ = 'tblValid_Village_Names'
+    __table_args__ = {"schema": "dbo"}
+    ID = db.Column(db.Integer,primary_key=True,autoincrement=True)
+    Village_Name = db.Column(db.String(35))
+    District = db.Column(db.Integer)
+    County = db.Column(db.String(15))
+
+class ZipCode(db.Model):
+    __tablename__ = 'tblVillagesZipcodes'
+    __table_args__ = {"schema": "dbo"}
+    Zipcode = db.Column(db.String(5), primary_key=True)
+
+    
+

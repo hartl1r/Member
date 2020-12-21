@@ -438,37 +438,116 @@ table th {
     background-color: green;
     color:white !important;
 }
-  
-  .show {display: block;}
 
- 
+/* 
+#passwordModalID input {
+    font-size:1rem;
+    width:100px;
+    border:1px solid black;
+} */
+/* .pwCancelSaveBtns {
+    margin-top:5px;
+    margin-bottom:0px;
+}
+.pwModalHeader {
+    text-align: center;
+    background-color: navy;
+    color:white;
+    height:40px;
+}
+.pwModalBody {
+    padding-top:1em;
+    margin-left:3em;
+    margin-right:3em;
+}
+.pwModalFooter {
+    text-align: right;
+    background-color: lightgray;
+} */
+
+
+/* ---------------------------- MODALS --------------------------------------------------------------  */ 
+.show {display: block;}
+
+.modal-header {
+    text-align:center;
+    background-color: navy;
+    color:white;
+}
+/* .modal-header span {
+    color:white;
+} */
+.modal-body {
+    margin:auto;
+}
+
+.modal-dialog {
+    vertical-align:middle;
+}
+.modal-footer {
+    display:grid;
+    grid-template-rows: 50px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "footer-left  footer-right";
+    background-color:lightgrey;
+    height:50px;
+    margin-top:20px;
+    padding-top:0px;
+}
+.footer-left-col {
+    grid-area: footer-left;
+    text-align:left;
+    padding-top:2em;
+}
+.footer-right-col {
+      grid-area: footer-right;
+      text-align: right;
+  }
+
+/* .row {
+    height:50px;
+}  */
+
 #noteModalID { 
     height:800px;
 }
-  .modal-footer {
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-areas: "footer-left . footer-right";
-      background-color:lightgrey;
-      height:70px;
-  }
-  .footer-left-col {
-      grid-area: footer-left;
-      text-align:left;
-  }
-  .footer-right-col {
-      grid-area: footer-right;
-      text-align:right ;
-  }
 
-  .row {
-      height:30px;
-  } 
-  /* body {
-      line-height: .50 !important;
-  } */
+#passwordModalID {
+    height:400px;
+} 
+.passwordsBody {
+    padding-top:2em;
+    margin-top:2em;
+}
+.passwordsBody input {
+    border:1px solid blue;
+}
+/* ---------------------------- END OF MODALS --------------------------------------------------------------  */
   #memberImgID {
       border:1px solid black;
+  }
+
+  .cityStateZip{
+    display:block;
+  }
+
+  #zipcodeSelecterID {
+      width:75px;
+      height:30px;
+      font-family: Lato;
+      font-size:1rem;
+  }
+  .villageData {
+      display:block;
+      height:30px;
+  }
+  #villageTextID {
+      width:5em;
+  }
+  #villageSelecterID {
+    font-size:1rem;
+    width: 8em;
+    height:30px;
   }
   /* #imagemodal {
       border: 1px solid red;
@@ -484,6 +563,7 @@ table th {
   .cancelSave {
     float:right;
     margin-top:20px;
+    margin-bottom: 10px;
     margin-right:20px;
   }
   input:read-only {
@@ -528,9 +608,9 @@ table th {
 @media (min-width: 768px) {
     .parent {
         display: grid;
+        grid-template-rows: repeat(4, minmax(50px, auto));
         grid-template-columns:1fr 1fr;
         /* grid-template-rows:50px 1fr 1fr; */
-        grid-template-rows: repeat(3, minmax(50px, auto));
         grid-template-areas: "hdgArea           hdgArea"
                              "localInfo         altInfo"
                              "memberStatus      emergInfo

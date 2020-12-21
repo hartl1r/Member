@@ -73,6 +73,17 @@ var currentMemberID = ''
 // PAGE START-UP STATEMENTS 
 //==================================================================
 
+// SET INITIAL VALUES FOR SELECT STATEMENTS
+curZipcode = document.getElementById('zipcodeTextID').value
+selectZipcode = document.getElementById('zipcodeSelecterID')
+selectZipcode.value =  curZipcode
+//alert('curZipcode - '+curZipcode)
+//alert('selectZipcode - '+selectZipcode.value )
+
+curVillage = document.getElementById('villageTextID').value
+selectVillage = document.getElementById('villageSelecterID')
+selectVillage.value =  curVillage
+
 // SHOW 'ACCEPT DUES ...' BUTTON IF TIME TO COLLECT DUES
 acceptDuesDate = document.getElementById('acceptDuesDateID').value
 acceptDuesBtn = document.getElementById('acceptDuesID')
@@ -93,22 +104,27 @@ certificationInfo = document.getElementById('certificationID')
 monitorDutyInfo = document.getElementById('monitorDutyID')
 
 // DEFINE EVENT LISTENERS
-localContactInfo.addEventListener('change',localDataChanged);
-altContactInfo.addEventListener('change',altDataChanged);
-emergencyInfo.addEventListener('change',emergencyDataChanged);
-membershipInfo.addEventListener('change',membershipDataChanged);
-certificationInfo.addEventListener('change',certificationDataChanged);
-monitorDutyInfo.addEventListener('change',monitorDutyDataChanged);
-//document.getElementById('villageSelecterID').addEventListener('change',villageRtn);
+localContactInfo.addEventListener('click',localDataChanged);
+altContactInfo.addEventListener('click',altDataChanged);
+emergencyInfo.addEventListener('click',emergencyDataChanged);
+membershipInfo.addEventListener('click',membershipDataChanged);
+certificationInfo.addEventListener('click',certificationDataChanged);
+monitorDutyInfo.addEventListener('click',monitorDutyDataChanged);
+
 
 // MODAL EVENT LISTENERS
 document.getElementById("cancelNoteID").addEventListener("click",cancelNote)
 document.getElementById("processMsgID").addEventListener("click",processNote)
 
+document.getElementById("cancelPasswordID").addEventListener("click",cancelPassword)
+document.getElementById("updatePasswordID").addEventListener("click",updatePassword)
+
 document.getElementById("selectpicker").addEventListener("change",memberSelectedRtn)
 document.getElementById("selectpicker").addEventListener("click",memberSelectedRtn)
 
 document.getElementById("typeOfWorkSelecterID").addEventListener("change",typeOfWorkRtn)
+document.getElementById("zipcodeSelecterID").addEventListener("change",zipCodeChangeRtn)
+document.getElementById("villageSelecterID").addEventListener("change",villageChangeRtn)
 
 document.querySelector('#monthCheckboxesID').onclick = function(ev) {
     inputID = ev.target.id + 'ResidentValue'
@@ -132,6 +148,7 @@ else
     // SHOW member options buttons in member menu
     document.getElementById('clearScreenBtnID').removeAttribute('disabled')
     document.getElementById('noteBtnID').removeAttribute('disabled')
+    document.getElementById('passwordBtnID').removeAttribute('disabled')
     document.getElementById('classSignUpBtnID').removeAttribute('disabled')
     document.getElementById('rolesBtnID').removeAttribute('disabled')
     document.getElementById('editNameBtnID').removeAttribute('disabled')
@@ -139,12 +156,22 @@ else
     document.getElementById('mntrSchedBtnID').removeAttribute('disabled')
     document.getElementById('showPhotoBtn').removeAttribute('disabled')
     document.getElementById('showCheckInsID').removeAttribute('disabled')
-
+    document.getElementById('monitorSchedulingBtnID').removeAttribute('disabled')
+    
 }   
            
 
 // CHECK BOX LISTENERS; SET VALUE TO STRING OF 'True' WHEN CLICKED
 // CANNOT PASS BOOLEAN VALUES
+document.getElementById('hasTempVillageID').onclick = function(ev) {
+    if (ev.target.checked) {
+        document.getElementById('hasTempVillageID').value='True'
+    }
+    else {
+        document.getElementById('hasTempVillageID').value='False' 
+    }
+}
+
 document.getElementById('defibrillatorID').onclick = function(ev) {
     if (ev.target.checked) {
         document.getElementById('defibrillatorID').value='True'
@@ -528,6 +555,62 @@ function processNote() {
     showMenu()
 }
 
+function passwordRoutine() {
+    // GET CURRENT PASSWORD AND DISPLAY MODAL FORM
+    memberID = document.getElementById('memberID').value
+    $.ajax({
+        url : "/getPassword",
+        type: "GET",
+        data : {
+            memberID:memberID,
+            },
+ 
+        success: function(data, textStatus, jqXHR)
+        {
+            if (data.password) {
+                pw = data.password
+                pwElement = document.getElementById('curPasswordID')
+                pwElement.value = pw
+                document.getElementById('newPasswordID').value = ''
+            }
+        },
+        error: function(result){
+            alert("Error ..."+result)
+        }
+    })    
+    $('#passwordModalID').modal('show')
+}
+
+function cancelPassword() {
+    $('#passwordModalID').modal('hide')
+}
+
+function updatePassword() {
+    memberID = document.getElementById('memberID').value
+    curPassword = document.getElementById('curPasswordID').value
+    newPassword = document.getElementById('newPasswordID').value
+      
+    $.ajax({
+        url : "/updatePassword",
+        type: "GET",
+        data : {
+            memberID:memberID,
+            curPassword:curPassword,
+            newPassword:newPassword},
+
+        success: function(data, textStatus, jqXHR)
+        {
+            alert(data)
+        },
+        error: function(result){
+            alert("Error ..."+result)
+        }
+    }) 
+    
+    $('#passwordModalID').modal('hide')
+    showMenu()
+}
+
 function rolesRoutine() {
     // CHECK FOR EXISTING role
     // IF FOUND, DISPLAY IN MSG
@@ -591,12 +674,23 @@ function villageRtn() {
 }
 
 function typeOfWorkRtn() {
+    //alert('typeOfWorkRtn - '+ this.value)
     typeOfWork = this.value
     document.getElementById('typeOfWorkTextID').value=this.value
-    document.getElementById('typeOfWorkTextID').value="Special Project"
+    //document.getElementById('typeOfWorkTextID').value="Special Project"
 
 }
+function zipCodeChangeRtn() {
+    //alert("zip rtn - "+ this.value)
+    newZip = this.value
+    document.getElementById("zipcodeTextID").value = newZip
+}
 
+function villageChangeRtn() {
+    //alert("village rtn - "+ this.value)
+    newVillage = this.value
+    document.getElementById("villageTextID").value = newVillage
+}
 // function skillLevelRtn() {
 //     skillLevel = this.value
 //     document.getElementById('skillLevelTextID').value=this.value
@@ -798,7 +892,7 @@ function setManagerPermissions() {
     document.getElementById('RAdateCertifiedID').removeAttribute('readonly')
     document.getElementById('BWdateCertifiedID').removeAttribute('readonly')
     document.getElementById('showCheckInsID').style.display='block'
-
+    document.getElementById('passwordBtnID').style.display='block'
     // REMOVE DISABLED FROM SPECIFIC BUTTONS
 
 }

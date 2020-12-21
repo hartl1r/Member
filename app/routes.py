@@ -11,7 +11,7 @@ from flask_bootstrap import Bootstrap
 from werkzeug.urls import url_parse
 from app.models import ShopName, Member, MemberActivity, MonitorSchedule, MonitorScheduleTransaction,\
 MonitorWeekNote, CoordinatorsSchedule, ControlVariables, NotesToMembers, MemberTransactions,\
-DuesPaidYears, WaitList, KeysTable
+DuesPaidYears, WaitList, KeysTable, Village, ZipCode
 from app import app
 from app import db
 from sqlalchemy import func, case, desc, extract, select, update, text
@@ -72,12 +72,11 @@ def index(villageID,staffID):
     try:
         nameList = db.engine.execute(sqlSelect)
     except Exception as e:
-       #print('ERROR in retrieving member list.')
         flash("Could not retrieve member list.","danger")
         return 'ERROR in index function.'
     position = 0
     if nameList == None:
-        print('empty nameList')
+        flash('No names to list.','danger')
 
     # NEED TO PLACE NAME IN AN ARRAY BECAUSE OF NEED TO CONCATENATE 
     for n in nameList:
@@ -100,15 +99,9 @@ def index(villageID,staffID):
     if villages == None:
         flash('No villages to list.','info')
     
-    # BUILD ARRAY OF VILLAGES WITH &nbsp IN PLACE OF SPACES
-    # position = 0
-    # for v in villages:
-    #     position += 1
-    #     villageName = v.Village_Name.replace(' ','&nbsp')
-    #     print(villageName)
-    #     villageArray.append(villageName)
-
-
+    # GET ZIPCODES
+    zipCodes = db.session.query(ZipCode).order_by(ZipCode.Zipcode).all()
+   
     # COMPUTE NUMBER ON WAIT LIST
     waitListCnt = db.session.query(func.count(WaitList.MemberID))\
     .filter(WaitList.NoLongerInterested == None)\
@@ -129,7 +122,8 @@ def index(villageID,staffID):
     # IF A VILLAGE ID WAS NOT PASSED IN, DISPLAY THE BLANK INDEX.HTML FORM AND HAVE USER SELECT A NAME OR ID
     if (villageID == None):
         return render_template("member.html",member="",nameArray=nameArray,waitListCnt=waitListCnt,
-        currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,staffID=staffID,staffName=staffName,isManager=isManager,isDBA=isDBA)
+        currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,staffID=staffID,staffName=staffName,
+        isManager=isManager,isDBA=isDBA,villages=villages,zipCodes=zipCodes)
 
 
     # ---------------------------------------------------------------------------------------------------------    
@@ -157,14 +151,16 @@ def index(villageID,staffID):
     todays_date = date.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
      
-    if member.Temporary_Village_ID is not None:
+    if (member.Temporary_Village_ID == True):
         if member.Temporary_ID_Expiration_Date != None:
             minus30 = member.Temporary_ID_Expiration_Date - timedelta(days=30)
             if minus30 < todays_date:
                 expireMsg = '< 30 days'
             if member.Temporary_ID_Expiration_Date < todays_date:
                 expireMsg = 'ID EXPIRED!'
-    
+    else:
+        expireMsg = ''
+
     # SET BEGIN DATE TO 12 MONTHS PRIOR TO CURRENT DATE
     beginDateDAT = todays_date - timedelta(days=365)
     beginDateSTR = beginDateDAT.strftime('%m-%d-%Y')
@@ -217,7 +213,6 @@ def index(villageID,staffID):
             BWlastAcceptableTrainingDate = db.session.query(ControlVariables.Last_Acceptable_Monitor_Training_Date).filter(ControlVariables.Shop_Number == 2).scalar()
             if member.Last_Monitor_Training_Shop_2 < BWlastAcceptableTrainingDate:
                 BWtrainingNeeded = 'Training Needed'
-            #print('BWlastAcceptableTrainingDate - ',BWlastAcceptableTrainingDate)
     
     # GET LAST PAID YEAR
     lastYearPaid = db.session.query(func.max(DuesPaidYears.Dues_Year_Paid)).filter(DuesPaidYears.Member_ID == villageID).scalar()
@@ -233,13 +228,22 @@ def index(villageID,staffID):
     return render_template("member.html",member=member,hdgName=hdgName,nameArray=nameArray,expireMsg=expireMsg,
     futureDuty=futureDuty,pastDuty=pastDuty,RAtrainingNeeded=RAtrainingNeeded,BWtrainingNeeded=BWtrainingNeeded,
     lastYearPaid=lastYearPaid,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,
-    waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffID=staffID,staffName=staffName,isManager=isManager,isDBA=isDBA)
+    waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffID=staffID,staffName=staffName,
+    isManager=isManager,isDBA=isDBA,zipCodes=zipCodes)
     
 @app.route('/saveAddress', methods=['POST'])
 def saveAddress():
     
     # GET DATA FROM FORM
     memberID = request.form['memberID']
+    
+    print('request - ', request.form.get('hasTemporaryVillageID'))
+
+    if request.form.get('hasTemporaryVillageID') == 'True':
+        hasTemporaryVillageID = True
+    else:
+        hasTemporaryVillageID = False
+
     tempIDexpirationDate = request.form.get('expireDt')
     staffID = request.form['staffID']
     
@@ -247,20 +251,10 @@ def saveAddress():
     city = request.form['city']
     state = request.form['state']
     zipcode = request.form['zip']
-
     village = request.form.get('village')
-    #print('village selected - ',village)
-
     homePhone = request.form['homePhone']
     cellPhone = request.form['cellPhone']
     eMail = request.form['eMail']
-
-    if request.form.get('villagesWaiverSigned') == 'True':
-        villagesWaiverSigned = True
-    else:
-        villagesWaiverSigned = False
-    
-    villagesWaiverDateSigned = request.form.get('villagesWaiverDateSigned')
 
     # WAS ACTION CANCELLED?
     if request.form['localAction'] == 'CANCEL':
@@ -270,6 +264,12 @@ def saveAddress():
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     fieldsChanged = 0
 
+    print('old - ',member.Temporary_Village_ID, ' new - ',hasTemporaryVillageID)
+    if hasTemporaryVillageID != member.Temporary_Village_ID:
+        logChange(staffID,'Temp ID',memberID,member.Temporary_Village_ID,hasTemporaryVillageID)
+        member.Temporary_Village_ID = hasTemporaryVillageID
+        print('update Temp ID flag - ',member.Temporary_Village_ID)
+        fieldsChanged += 1
 
     if member.Address != street :
         logChange(staffID,'Street',memberID,street,member.Address)
@@ -286,7 +286,6 @@ def saveAddress():
         member.Zip = zipcode
         fieldsChanged += 1
 
-    #print('orig village - ',member.Village,' new village - ',village)
     if member.Village != village:
         logChange(staffID,'Village',memberID,village,member.Village)
         member.Village = village
@@ -308,29 +307,12 @@ def saveAddress():
         member.eMail = eMail
         fieldsChanged += 1
 
-    if villagesWaiverSigned != None:
-        if villagesWaiverSigned != member.Villages_Waiver_Signed:
-            logChange(staffID,'Waiver Signed',memberID,villagesWaiverSigned,member.Villages_Waiver_Signed)
-            member.Villages_Waiver_Signed = villagesWaiverSigned
-            fieldsChanged += 1
-
-    if villagesWaiverDateSigned != member.Villages_Waiver_Date_Signed:
-        logChange(staffID,'Waiver - Date Signed',memberID,villagesWaiverDateSigned,member.Villages_Waiver_Date_Signed)
-        if villagesWaiverDateSigned == '':
-            member.Villages_Waiver_Date_Signed = None 
-        else:
-            member.Villages_Waiver_Date_Signed = villagesWaiverDateSigned
-        fieldsChanged += 1
-
     if tempIDexpirationDate != member.Temporary_ID_Expiration_Date:
         logChange(staffID,'Temp Expire Dt',memberID,tempIDexpirationDate,member.Temporary_ID_Expiration_Date)
         member.Temporary_ID_Expiration_Date = tempIDexpirationDate
-        if tempIDexpirationDate == '':
-            member.Temporary_Village_ID = False
-        else:
-            member.Temporary_Village_ID = True
         fieldsChanged += 1
 
+    print('tempIDexpirationDate - ',tempIDexpirationDate)
     if tempIDexpirationDate == '':
         logChange(staffID,'Temp Expire Dt',memberID,'Null',member.Temporary_ID_Expiration_Date)
         member.Temporary_ID_Expiration_Date = None
@@ -369,7 +351,6 @@ def saveAltAddress():
     try: 
         member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     except Exception as e:
-       #print('ERROR - could not read record for member # ',memberID + '/n'+e)
         errorMsg = 'ERROR - could not read record for member # ',memberID + '\n'+e
         flash(errorMsg,'danger')
     if member.Alt_Adddress != street :
@@ -480,9 +461,6 @@ def saveEmergency():
         member.Emerg_Phone = phone
         fieldsChanged += 1    
 
-   #print('defibrillatorStatus - ',defibrillatorStatus, type(defibrillatorStatus))
-   #print('member.Defibrillator_Trained - ',member.Defibrillator_Trained,type(member.Defibrillator_Trained))
-
     if defibrillatorStatus != member.Defibrillator_Trained:
         logChange(staffID,'Defibrillator Trained',memberID,defibrillatorStatus,member.Defibrillator_Trained)
         member.Defibrillator_Trained = defibrillatorStatus
@@ -513,47 +491,6 @@ def saveEmergency():
         member.Emerg_MI = MI
         fieldsChanged += 1
 
-   #print('diabetes1 - ',diabetes1,type(diabetes1))
-   #print('member.Emerg_Diabetes_Type_1 - ',member.Emerg_Diabetes_Type_1,type(member.Emerg_Diabetes_Type_1))
-
-    if diabetes1 != member.Emerg_Diabetes_Type_1: 
-        logChange(staffID,'diabetes1',memberID,diabetes1,member.Emerg_Diabetes_Type_1)
-        member.Emerg_Diabetes_Type_1 = diabetes1
-        fieldsChanged += 1
-
-    if diabetes2 != member.Emerg_Diabetes_Type_2: 
-        logChange(staffID,'diabetes2',memberID,diabetes2,member.Emerg_Diabetes_Type_2)
-        member.Emerg_Diabetes_Type_2 = diabetes2
-        fieldsChanged += 1
-
-    if otherDiagnosis != member.Emerg_Other_Diagnosis:
-        logChange(staffID,'otherDiagnosis',memberID,otherDiagnosis,member.Emerg_Other_Diagnosis)
-        member.Emerg_Other_Diagnosis = otherDiagnosis
-        fieldsChanged += 1
-
-    if diabetesOther != member.Emerg_Diabetes_Other:
-        logChange(staffID,'diabetesOther',memberID,diabetesOther,member.Emerg_Diabetes_Other)
-        member.Emerg_Diabetes_Other = diabetesOther
-        fieldsChanged += 1
-
-    if alergies != member.Emerg_Medical_Alergies:
-        logChange(staffID,'alergies',memberID,alergies,member.Emerg_Medical_Alergies)
-        member.Emerg_Medical_Alergies = alergies
-        fieldsChanged += 1
-
-    # IF ANY FIELDS CHANGED, SAVE CHANGES
-    if fieldsChanged > 0:
-        try:
-            db.session.commit()
-           #print('Changes successful')
-            flash("Changes successful","success")
-        except Exception as e:
-           #print('Could not update emergency data',e)
-            flash("Could not update member emergency data.","danger")
-            db.session.rollback()
-
-    return redirect(url_for('index',villageID=memberID))
-
 @app.route('/saveMemberStatus', methods=['POST'])
 def saveMemberStatus():
     # GET DATA FROM FORM
@@ -563,6 +500,13 @@ def saveMemberStatus():
      
     staffID = request.form['staffID']
     
+
+    if request.form.get('villagesWaiverSigned') == 'True':
+        villagesWaiverSigned = True
+    else:
+        villagesWaiverSigned = False
+    villagesWaiverDateSigned = request.form.get('villagesWaiverDateSigned')
+
     if request.form.get('duesPaid') == 'True':
         duesPaid = True
     else:
@@ -603,9 +547,24 @@ def saveMemberStatus():
      # GET MEMBER RECORD 
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     if member == None:
-        print("ERROR - Member "+memberID+" not found.")
+        flash("ERROR - Member "+memberID+" not found; restricted reason.",'danger')
     fieldsChanged = 0
     
+
+    if villagesWaiverSigned != None:
+        if villagesWaiverSigned != member.Villages_Waiver_Signed:
+            logChange(staffID,'Waiver Signed',memberID,villagesWaiverSigned,member.Villages_Waiver_Signed)
+            member.Villages_Waiver_Signed = villagesWaiverSigned
+            fieldsChanged += 1
+
+    if villagesWaiverDateSigned != member.Villages_Waiver_Date_Signed:
+        logChange(staffID,'Waiver - Date Signed',memberID,villagesWaiverDateSigned,member.Villages_Waiver_Date_Signed)
+        if villagesWaiverDateSigned == '':
+            member.Villages_Waiver_Date_Signed = None 
+        else:
+            member.Villages_Waiver_Date_Signed = villagesWaiverDateSigned
+        fieldsChanged += 1
+
     if duesPaid != member.Dues_Paid:
         logChange(staffID,'Dues Paid',memberID,duesPaid,member.Dues_Paid)
         member.Dues_Paid = duesPaid
@@ -791,15 +750,11 @@ def saveCertification():
     if fieldsChanged > 0:
         try:
             db.session.commit()
-            print('Certification Info SAVED')
             flash("Changes successful","success")
         except SQLAlchemyError as e:
-            print ('certification data error')
             error = str(e.__dict__['orig'])
             flash('ERROR - Record not added.'+error,'danger')
-            print('error - ',error)
         except Exception as e:
-            print("Certification Info - Could not update certification data.","danger",e)
             flash("Certification Info - Could not update certification data.","danger")
             db.session.rollback()
 
@@ -1062,7 +1017,44 @@ def processNoteToMember():
         response += "/nEmail sent."
 
     return make_response (f"{response}")
+
+
+@app.route("/getPassword")
+def getPassword():
+    memberID = request.args.get('memberID')
+    password = db.session.query(Member.Password).filter(Member.Member_ID == memberID).scalar()
+    if (password == None):
+        password = 'Error - ' + 'Password not available.'
+    return jsonify(password=password)
+
+
+@app.route("/updatePassword")
+def updatePassword():
+    todays_date = datetime.today()
+    todaySTR = todays_date.strftime('%m-%d-%Y')
     
+    memberID=request.args.get('memberID')
+    curPassword = request.args.get('curPassword')
+    newPassword = request.args.get('newPassword')
+    response = ""
+
+    # GET MEMBER RECORD
+    member = db.session.query(
+        Member).filter(Member.Member_ID == memberID).first()
+    if member == None:
+        flash ('Error - member ID '+memberID + ' was not found.','danger')
+        return redirect(url_for('index',villageID=memberID))
+    
+    try:
+        member.Password = newPassword
+        db.session.commit()
+        response = "Password changed."
+        #flash ('Password changed.','success')   
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return make_response(f"ERROR - Could not update password.")
+
+    return make_response (f"{response}")
 
 def logChange(staffID,colName,memberID,newData,origData):
     if staffID == None or staffID == '':
@@ -1098,7 +1090,6 @@ def logChange(staffID,colName,memberID,newData,origData):
 @app.route('/newMemberApplication/<staffID>',methods=('GET','POST'))
 @app.route("/newMemberApplication",methods=('GET', 'POST'))
 def newMemberApplication(staffID):
-    print('staffID - ',staffID)
     # GATHER DATA FOR NEW MEMBER FORM
     if request.method != 'POST':
         todays_date = date.today()
@@ -1110,14 +1101,10 @@ def newMemberApplication(staffID):
         RAclasses = db.engine.execute(sqlSelect)
         RAclassArray = []
         for RA in RAclasses:
-            print (RA.trainingDate,RA.classLimit)
             RAenrolled = db.session.query(func.count(Member.Member_ID)).filter(Member.Certification_Training_Date == RA.trainingDate).scalar()
-            print('RAenrolled',RAenrolled)
             if RAenrolled < RA.classLimit:
-                print('RA match - ',RA.trainingDate)
                 RAclassArray.append(RA.trainingDate.strftime('%m-%d-%Y'))
-        #print('array - ',RAclassArray)
-        #print('RA length -',len(RAclassArray))
+       
         RAavailableDates = len(RAclassArray)
 
         # PREPARE LIST OF AVAILABLE CERTIFICATION DATES FOR BROWNWOOD
@@ -1127,14 +1114,9 @@ def newMemberApplication(staffID):
         BWclasses = db.engine.execute(sqlSelect)
         BWclassArray = []
         for BW in BWclasses:
-            #print ('BW - ',BW.trainingDate,BW.classLimit)
             BWenrolled = db.session.query(func.count(Member.Member_ID)).filter(Member.Certification_Training_Date_2 == BW.trainingDate).scalar()
-            #print('BWenrolled',BWenrolled)
             if BWenrolled < BW.classLimit:
-               #print('BW match - ',BW.trainingDate)
                 BWclassArray.append(BW.trainingDate.strftime('%m-%d-%Y'))
-        #print('array - ',BWclassArray)
-        #print('BA length -',len(BWclassArray))
         BWavailableDates = len(BWclassArray)
 
 
@@ -1181,9 +1163,8 @@ def newMemberApplication(staffID):
     city = request.form.get('city')
     state = request.form.get('state')
     zip = request.form.get('zip')
-    #print('zip - ',zip)
+    
     cellPhone = request.form.get('cellPhone')
-    #print('cellPhone - ',cellPhone, ' type - ',type(zip))
     homePhone = request.form.get('homePhone')
     eMail = request.form.get('eMail')
     dateJoined = request.form.get('dateJoined')
@@ -1235,7 +1216,6 @@ def newMemberApplication(staffID):
     except SQLAlchemyError as e:
         error = str(e.__dict__['orig'])
         flash('ERROR - '+error,'danger')
-        print('error - ',error)
         db.session.rollback()
     
     # ADD TO tblMember_Data TABLE
@@ -1245,7 +1225,6 @@ def newMemberApplication(staffID):
     except SQLAlchemyError as e:
         error = str(e.__dict__['orig'])
         flash('ERROR - '+error,'danger')
-        print('error - ',error)
         db.session.rollback()
 
     #  GET UTC TIME 
@@ -1266,7 +1245,6 @@ def newMemberApplication(staffID):
     except SQLAlchemyError as e:
         error = str(e.__dict__['orig'])
         flash('ERROR - '+error,'danger')
-        print('error - ',error)
         db.session.rollback()
 
     # SEND REQUEST FOR PAYMENT TO LIGHTSPEED
@@ -1278,20 +1256,13 @@ def newMemberApplication(staffID):
 def acceptDues():
    
     initiationFee = db.session.query(ControlVariables.Current_Initiation_Fee).filter(ControlVariables.Shop_Number == 1).scalar()
-    #print('initiation fee - ',initiationFee)
     initiationFeeAcct = db.session.query(ControlVariables.Initiation_Fee_Account).filter(ControlVariables.Shop_Number == 1).scalar()
-    #print('initiation fee acct - ',initiationFeeAcct)
-
     duesAmount = db.session.query(ControlVariables.Current_Dues_Amount).filter(ControlVariables.Shop_Number==1).scalar()
-    #print ('duesAmount - ',duesAmount)
     memberID=request.args.get('memberID')
-    #print('memberID - ',memberID)
     
     duesAccount = db.session.query(ControlVariables.Dues_Account).filter(ControlVariables.Shop_Number==1).scalar()
-    #print('duesAccount - ',duesAccount)
-    
     currentDuesYear = db.session.query(ControlVariables.Current_Dues_Year).filter(ControlVariables.Shop_Number == 1).scalar()
-    #print('currentDuesYear - ',currentDuesYear)
+   
     todays_date = datetime.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
 
@@ -1302,7 +1273,6 @@ def acceptDues():
     except SQLAlchemyError as e:
         error = str(e.__dict__['orig'])
         flash('ERROR - '+error,'danger')
-        print('error - ',error)
         db.session.rollback()
         
     # ADD RECORD TO tblDues_Paid_Years
@@ -1320,13 +1290,9 @@ def acceptDues():
     except SQLAlchemyError as e:
         error = str(e.__dict__['orig'])
         flash('ERROR - '+error,'danger')
-        print('error - ',error)
         db.session.rollback()
         return make_response(f"ERROR - Could not process payment.\n" + error)
 
-    
-    print('Data sent to Lightspeed - ',memberID,duesAccount,currentDuesYear,todaySTR,duesAmount)
-    #return redirect(url_for('index',villageID=memberID))
     flash ("SUCCESS - Payment processed","success")
     return make_response(f"SUCCESS - Payment processed")
 
@@ -1337,7 +1303,6 @@ def roles(memberID,staffID):
     if (memberID == ''):
         flash("You must select a member first.","info")
         return
-    print('staffID - ',staffID)
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     if (member == None):
         flash ("No member match for roles.",'danger')
@@ -1353,7 +1318,6 @@ def checkIns(memberID,staffID):
         flash("You must select a member first.","info")
         return
 
-    print('staffID - ',staffID)
     todaysDate = date.today()
     todaySTR = todaysDate.strftime('%m-%d-%Y')
     startDate = todaysDate - timedelta(days=730)
@@ -1587,10 +1551,8 @@ def saveRoles():
     if fieldsChanged > 0:
         try:
             db.session.commit()
-           #print('Changes successful')
             flash("Changes successful","success")
         except Exception as e:
-           #print('Could not update member role data',e)
             flash("Could not update member role data.","danger")
             db.session.rollback()
 
@@ -1638,7 +1600,6 @@ def printMemberSchedule(memberID):
 @app.route("/shiftChange")
 def shiftChange():
     staffID = request.args.get('staffID')
-    print('staffID - ',staffID)
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
     if staffMember == None:
         msg = "Not a valid member ID."
@@ -1648,7 +1609,6 @@ def shiftChange():
             msg = "Authorized"
         else:
             msg = memberName + " is not authorized to use this application."
-    print('msg - ',msg)
     return jsonify(msg=msg)
 
 
@@ -1731,115 +1691,45 @@ def changeVillageID(memberID,staffID):
 
 @app.route('/saveVillageID', methods=['POST'])
 def saveVillageID():
-    
     #  GET DATA FROM FORM
-    memberID = request.form['memberID']
-    staffID = request.form['staffID']
-    typeOfID = request.form['typeOfID']
-    newVillageID = request.form['newVillageID']
-    reTypedID = request.form['reTypedID']
-    expirationDate = request.form['expirationDate']
-
-    # CHECK FOR BAD NEW VILLAGE ID
-    if (newVillageID != None):
-        if (newVillageID != reTypedID):
-            flash ('The new and re-typed IDs do not match','info')
-            return redirect(url_for('changeVillageID',memberID=memberID,staffID=staffID))
-
-    # IS THIS A CHANGE TO A PERMANENT ID?
-    if (typeOfID == 'Permanent'):
-        if newVillageID == '':
-           flash("A new ID was not provided.",'info')
-           return redirect(url_for('changeVillageID',memberID=memberID,staffID=staffID))
-        # HAS THIS ID BEEN USED?
-        member = db.session.query(Member).filter(Member.Member_ID == newVillageID).first()
-        if member != None:
-            db.session.close()
+    curVillageID = request.form.get('memberID')
+    staffID = request.form.get('staffID')
+    newVillageID = request.form.get('newVillageID')
+   
+    # IF THERE IS A CHANGE TO THE MEMBER ID, CHECK TO SEE IF THE NEW NUMBER IS IN USE
+    if newVillageID != None and newVillageID != '':
+        memberExists = db.session.query(Member).filter(Member.Member_ID == newVillageID).first()
+        if memberExists != None:
             flash('The ID# '+newVillageID +' is already assigned to another member.','info')
-            return redirect(url_for('changeVillageID',memberID=memberID,staffID=staffID))
+            db.session.close()
+            return redirect(url_for('changeVillageID',memberID=curVillageID,staffID=staffID))
 
-        # CONTINUE WITH UPDATE OF VILLAGE ID
-        updateToPermanentID(memberID,newVillageID,staffID)
-        return redirect(url_for('index',villageID=newVillageID,staffID=staffID))
-    # END OF CHANGES FROM TEMPORARY TO PERMANENT VILLAGE ID
-    
-
-    #
-    # THE FOLLOWING IS FOR CHANGES TO TEMPORARY ID INFORMATION
-    #
-    # GET MEMBER RECORD 
-    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
-    if member == None:
-        flash('Member ' + memberID + ' for Village ID change was not found.','danger')
-        return redirect(url_for('index',villageID=memberID,staffID=staffID))
-
-    # IS THIS AN EXPIRATION DATE CHANGE?   
-    if member.Temporary_ID_Expiration_Date != expirationDate:
-        try:
-            # UPDATE TEMPORARY ID EXPIRATION DATE
-            member.Temporary_ID_Expiration_Date = expirationDate
-            db.session.commit()
-            flash("Temp status/date change successful","success")
-        except Exception as e:
-            flash("Could not update member expiration date.","danger")
-            db.session.rollback()
-            return redirect(url_for('index',villageID=memberID,staffID=staffID))
-
-    if (newVillageID != None and newVillageID != ''):
-        # CHANGE VILLAGE ID NUMBER
+    # GET THE CURRENT MEMBER RECORD
+    member = db.session.query(Member).filter(Member.Member_ID == curVillageID).first()
+    if (member == None):
+        flash("Record for member "+ curVillageID + ' is missing.','danger')
+        return redirect(url_for('index',villageID=curVillageID,staffID=staffID))
+     
+    # CHANGE THE MEMBER ID (VILLAGE ID)
+    if curVillageID != newVillageID:
+        # CHANGE VILLAGE ID IN tblMember_Data; SQL SERVER WILL CASCADE CHANGE OF MEMBER_ID
         #
         #  THIS APPROACH RELIES UPON SQL SERVER CASCADE UPDATES OF RELATED TABLES !!!
         #
-        changeVillageID(memberID,newVillageID,staffID)
-        return redirect(url_for('index',villageID=newVillageID,staffID=staffID))
-    else:
-        return redirect(url_for('index',villageID=memberID,staffID=staffID))
-
-def updateToPermanentID(memberID,newVillageID,staffID):
-    # REMOVE TEMPORARY FLAG, CLEAR EXPIRATION DATE
-    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
-    if member == None:
-        flash('Member ' + memberID + ' for Village ID change was not found.','danger')
-        return redirect(url_for('index',villageID=memberID,staffID=staffID))
-    try:
-        member.Temporary_ID_Expiration_Date = None
-        member.Temporary_Village_ID = False
-        db.session.commit()
-        logChange(staffID,'Temporary ID status',memberID,'True','False')    
-        logChange(staffID,'Temporary ID expiration date',newVillageID,'',member.Temporary_ID_Expiration_Date)    
-    except Exception as e:
-        flash("Could not clear member expiration date.","danger")
-        db.session.rollback()
-        return redirect(url_for('index',villageID=memberID,staffID=staffID))
-
-    changeVillageID(memberID, newVillageID,staffID)
-    flash("Village ID changed.","success")
-    return redirect(url_for('index',villageID=newVillageID,staffID=staffID))
-
-
-def changeVillageID(memberID,newVillageID,staffID): 
-    # RETRIEVE MEMBER RECORD
-    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
-    if member == None:
-        flash('Member for Village ID change was not found.','danger')
-        return redirect(url_for('index'))
-
-
-    # CHANGE VILLAGE ID IN tblMember_Data; SQL SERVER WILL CASCADE CHANGE OF MEMBER_ID
-    #
-    #  THIS APPROACH RELIES UPON SQL SERVER CASCADE UPDATES OF RELATED TABLES !!!
-    #
-    if (memberID != newVillageID):
         try:
-            # CHANGE VILLAGE ID TO A NEW NUMBER IN tblMember_Data
             member.Member_ID = newVillageID
             db.session.commit()
-            logChange(staffID,'Village ID changed',memberID,memberID,newVillageID)
-            return redirect(url_for('index',villageID=newVillageID,staffID=staffID))
+            logChange(staffID,'Village ID changed',newVillageID,curVillageID,newVillageID)    
+            flash("Village ID change successful","success")
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
-            flash("Could not change from member ID " + memberID + " to "+ newVillageID + ".\n" + error,"danger")
+            flash('ERROR - '+error,'danger')
+            flash("Could not change village ID.","danger")
             db.session.rollback()
-            return redirect(url_for('index',villageID=memberID,staffID=staffID))
+            return redirect(url_for('index',villageID=curVillageID,staffID=staffID))
 
-        
+    return redirect(url_for('index',villageID=newVillageID,staffID=staffID))
+   
+
+
+   
