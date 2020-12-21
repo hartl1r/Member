@@ -1,5 +1,5 @@
 .container {
-    width:75%;
+    width:40%;
     background-color:white;
     margin-top:120px;
 }
@@ -13,6 +13,11 @@
 .nameBody {
     background-color:lightgray;
     padding-left: 150px
+}
+.nameBody input {
+    width:10em;
+    border:1px solid black;
+    color:navy;
 }
 .nameFooter {
     background-color:gray;

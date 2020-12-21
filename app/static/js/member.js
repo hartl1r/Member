@@ -84,10 +84,15 @@ curVillage = document.getElementById('villageTextID').value
 selectVillage = document.getElementById('villageSelecterID')
 selectVillage.value =  curVillage
 
-// SHOW 'ACCEPT DUES ...' BUTTON IF TIME TO COLLECT DUES
+// SHOW 'ACCEPT DUES ...' BUTTON IF TIME TO COLLECT DUES AND MEMBER HAS NOT PAID
 acceptDuesDate = document.getElementById('acceptDuesDateID').value
 acceptDuesBtn = document.getElementById('acceptDuesID')
+duesPaid = document.getElementById('duesPaidID').value
+
 if (todaysDateSTR  < acceptDuesDate) {
+    acceptDuesBtn.style.display='none'
+}
+if (duesPaid == 'True') {
     acceptDuesBtn.style.display='none'
 }
 

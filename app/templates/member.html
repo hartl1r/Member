@@ -342,7 +342,7 @@
 
             <div class="row">
                 <div class="col-12 acceptDuesBtn">
-                    <input type='text' onclick="acceptDues()" class="btn btn-primary btn-sm" style=color:white value="ACCEPT DUES FOR {{currentDuesYear}}">    
+                    <input id='acceptDuesID' type='text' onclick="acceptDues()" class="btn btn-primary btn-sm" style=color:white value="ACCEPT DUES FOR {{currentDuesYear}}">    
                 </div>
             </div>
 
@@ -372,7 +372,7 @@
                 <div class='row'>
                     <div class='col-3'></div>
                     <div class='col-4 RAcolumn'>
-                        <input id='RAcertifiedID' disabled=true type="checkbox" readonly class="form-control" {% if member.Certified %} checked {% endif %} value="{{member.Certified}}">
+                        <input id='RAcertifiedID' disabled=true type="checkbox" class="form-control" {% if member.Certified %} checked {% endif %} value="{{member.Certified}}">
                     </div>
                     <div class='col-4 BWcolumn'>
                         <input id='BWcertifiedID' disabled=true type="checkbox" class="form-control"  {% if member.Certified_2 %} checked {% endif %} value="{{member.Certified_2}}">

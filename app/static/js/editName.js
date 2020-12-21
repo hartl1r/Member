@@ -2,7 +2,7 @@
 
 // EVENT LISTENERS
 nameBody = document.getElementById('nameBodyID')
-nameBody.addEventListener('change',nameDataChanged);
+nameBody.addEventListener('click',nameDataChanged);
 
 // FUNCTIONS
 function nameDataChanged() {
