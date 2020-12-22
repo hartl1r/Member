@@ -32,8 +32,8 @@ mail=Mail(app)
 @app.route('/index/<villageID>', defaults={'staffID':None})
 def index(villageID,staffID):
     # VALUES FROM URL NEEDED IN member.js ONLY; villageID and staffID WILL COME FROM FORM REQUEST
-    print('village - ',villageID)
-    print('staffID - ',staffID)
+    #print('village - ',villageID)
+    #print('staffID - ',staffID)
 
     # GET STAFF MEMBER NAME AND PRIVILEDGES
     staffName = ''
