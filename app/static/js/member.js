@@ -39,7 +39,7 @@ else {
 }
 
 // IF THE staffID WAS NOT PASSED IN FROM THE Login SCRIPT THE staffName WILL CONTAIN 'Staff ID missing'
-if (staffID == '') {
+if (staffID == '' | staffID == null) {
     // TRY TO GET STAFF ID FROM LOCALSTORAGE
     staffID = localStorage.getItem('staffID')
     if (!staffID) {
@@ -50,6 +50,7 @@ if (staffID == '') {
     window.location.href=link
     }    
 }
+console.log('current staffID - '+staffID)
 // SET STAFF ID IN EACH PANEL
 var staffIDelements = document.getElementsByClassName('staffID')
 for (var i = 0; i > staffIDelements.length; i++) {

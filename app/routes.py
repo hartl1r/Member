@@ -216,7 +216,6 @@ def index(villageID,staffID):
     
     # GET LAST PAID YEAR
     lastYearPaid = db.session.query(func.max(DuesPaidYears.Dues_Year_Paid)).filter(DuesPaidYears.Member_ID == villageID).scalar()
-
     
     # DOES MEMBER HAVE KEYS?
     numberOfKeys = db.session.query(func.count(KeysTable.MemberID)).filter(KeysTable.MemberID == villageID).scalar()

@@ -65,7 +65,7 @@ class Member(db.Model):
 
     Home_Phone = db.Column(db.String(14))
     Cell_Phone = db.Column(db.String(14))
-    eMail = db.Column(db.String(50))
+    eMail = db.Column('E-Mail',db.String(50))
     Dues_Paid=db.Column(db.Boolean)
     NonMember_Volunteer=db.Column(db.Boolean)
     Restricted_From_Shop = db.Column(db.Boolean)
