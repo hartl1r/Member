@@ -1732,3 +1732,7 @@ def saveVillageID():
 
 
    
+@app.route("/takePhoto")
+def takePhoto():
+    print('/takePhoto')
+    return render_template("photo.html")

@@ -136,6 +136,7 @@ document.getElementById("typeOfWorkSelecterID").addEventListener("change",typeOf
 document.getElementById("zipcodeSelecterID").addEventListener("change",zipCodeChangeRtn)
 document.getElementById("villageSelecterID").addEventListener("change",villageChangeRtn)
 
+document.getElementById("takePhotoBtn").addEventListener("click",takePhotoRtn)
 document.querySelector('#monthCheckboxesID').onclick = function(ev) {
     inputID = ev.target.id + 'ResidentValue'
     if (ev.target.checked) {
@@ -621,32 +622,33 @@ function updatePassword() {
     showMenu()
 }
 
-function rolesRoutine() {
-    // CHECK FOR EXISTING role
-    // IF FOUND, DISPLAY IN MSG
-    memberID = document.getElementById('memberID').value
-    $.ajax({
-        url : "/getRoles",
-        type: "GET",
-        data : {
-            memberID:memberID,
-            },
+// function rolesRoutine() {
+//     // CHECK FOR EXISTING role
+//     // IF FOUND, DISPLAY IN MSG
+//     memberID = document.getElementById('memberID').value
+//     $.ajax({
+//         url : "/getRoles",
+//         type: "GET",
+//         data : {
+//             memberID:memberID,
+//             },
  
-        success: function(data, textStatus, jqXHR)
-        {
-            if (data.msg) {
-                memberRoles = data.memberRoles
-            }
-        },
-        error: function(result){
-            alert("Error ..."+result)
-        }
-    })  
-    $('#roleModalID').modal('show')
-}
-function cancelRole() {
-    $('#roleModalID').modal('hide')
-}
+//         success: function(data, textStatus, jqXHR)
+//         {
+//             if (data.msg) {
+//                 memberRoles = data.memberRoles
+//             }
+//         },
+//         error: function(result){
+//             alert("Error ..."+result)
+//         }
+//     })  
+//     $('#roleModalID').modal('show')
+// }
+
+// function cancelRole() {
+//     $('#roleModalID').modal('hide')
+// }
 
 function setPhotoSrc() {
     photo = document.getElementsByClassName('memberImgID')
@@ -907,3 +909,7 @@ function setManagerPermissions() {
 
 }
   
+function takePhotoRtn() {
+    //alert('to be developed ...')
+    window.location.href="/takePhoto"
+}
