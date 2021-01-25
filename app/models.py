@@ -311,7 +311,7 @@ class ZipCode(db.Model):
     __table_args__ = {"schema": "dbo"}
     Zipcode = db.Column(db.String(5), primary_key=True)
 
- class MemberPhotos(db.Model):
+class MemberPhotos(db.Model):
     __tablename__='tblmemberPhotos'
     __table_args__ = {"schema": "dbo"}
     memberID = db.Column(db.String(6), primary_key=True)
