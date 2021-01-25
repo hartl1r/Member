@@ -913,3 +913,9 @@ function takePhotoRtn() {
     //alert('to be developed ...')
     window.location.href="/takePhoto"
 }
+
+document.getElementById('btnReturnToMember').addEventListener('click',goBackRtn)
+function goBackRtn() {
+    alert('go back')
+    window.history.back()
+}

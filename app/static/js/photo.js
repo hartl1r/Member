@@ -7,6 +7,16 @@
     return;
   }
 
+  // RETURN TO MEMBER SCREEN
+  document.getElementById('btnReturnToMember').onclick = function() {
+    window.history.back()
+}
+
+  // SAVE PHOTO
+  document.getElementById('btnSavePhoto').onclick = function() {
+    alert ('copy photo to database')
+  }
+  
   // get page elements
   const video = document.querySelector("#video");
   const btnPlay = document.querySelector("#btnPlay");
