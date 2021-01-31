@@ -1,16 +1,20 @@
 
 
-$(document).ready( function() {
-    
+$(document).ready( function() { 
     dateJoined = document.getElementById('dateJoined')
-    console.log('before - '+ dateJoined.value)
     todaysDate = new Date();
     var todaysDateSTR =  (todaysDate.getFullYear() + "-" + ("0"+(todaysDate.getMonth()+1)).slice(-2) + "-" + ("0" + todaysDate.getDate()).slice(-2))
-    console.log('todaysDateSTR - '+ todaysDateSTR)
     dateJoined.value = todaysDateSTR;
-    console.log('after - '+ dateJoined.value)
 })
 
+if (localStorage.getItem('staffID')) {
+    staffID = localStorage.getItem('staffID')
+}
+else {
+    staffID=prompt("Staff ID - ")
+    localStorage.setItem('staffID',staffID)
+}
+document.getElementById('staffID').value = staffID
 
 membershipType = document.getElementById('membershipType')
 membershipType.addEventListener('change',displayTotalFee);

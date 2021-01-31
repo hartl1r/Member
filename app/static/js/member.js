@@ -50,7 +50,7 @@ if (staffID == '' | staffID == null) {
     window.location.href=link
     }    
 }
-console.log('current staffID - '+staffID)
+
 // SET STAFF ID IN EACH PANEL
 var staffIDelements = document.getElementsByClassName('staffID')
 for (var i = 0; i > staffIDelements.length; i++) {

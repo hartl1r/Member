@@ -1,5 +1,6 @@
 # routes.py
 from flask import session, render_template, flash, redirect, url_for, request, jsonify, json, make_response, after_this_request
+from sqlalchemy.sql.expression import false, true
 from flask_wtf import FlaskForm
 #from wtforms import StringField, PasswordField, TextAreaField, SubmitField, DateField, SelectField
 #from wtforms.validators import ValidationError, DataRequired, Length, Email, EqualTo
@@ -1085,10 +1086,10 @@ def logChange(staffID,colName,memberID,newData,origData):
 # @app.route("/roles/<memberID>/<staffID>")
 # def roles(memberID,staffID):
 
-@app.route('/newMemberApplication/',defaults={'staffID':None},methods=('GET','POST'))
-@app.route('/newMemberApplication/<staffID>',methods=('GET','POST'))
+#@app.route('/newMemberApplication/',defaults={'staffID':None},methods=('GET','POST'))
+#@app.route('/newMemberApplication/<staffID>',methods=('GET','POST'))
 @app.route("/newMemberApplication",methods=('GET', 'POST'))
-def newMemberApplication(staffID):
+def newMemberApplication():
     # GATHER DATA FOR NEW MEMBER FORM
     if request.method != 'POST':
         todays_date = date.today()
@@ -1136,12 +1137,14 @@ def newMemberApplication(staffID):
         RAavailableDates=RAavailableDates,BWavailableDates=BWavailableDates,\
         singleInitiationFeeCUR=singleInitiationFeeCUR,familyInitiationFeeCUR=familyInitiationFeeCUR,\
         annualFeeCUR=annualFeeCUR,currentDuesYear=currentDuesYear,dateJoined=todaySTR,\
-        singleTotalFeeCUR=singleTotalFeeCUR,familyTotalFeeCUR=familyTotalFeeCUR,staffID=staffID)
+        singleTotalFeeCUR=singleTotalFeeCUR,familyTotalFeeCUR=familyTotalFeeCUR)
 
     # POST REQUEST; PROCESS FORM DATA; IF OK SEND PAYMENT DATA, ADD TO MEMBER_DATA, INSERT TRANSACTION ('ADD'), DISPLAY MEMBER FORM
     if request.form['newMember'] == 'CANCEL':
         return redirect(url_for('newMemberApplication'))
-    staffID = request.form['staffID']
+    staffID = request.form.get('staffID')
+    if staffID == None or staffID == '':
+        staffID = '999999'
     todays_date = datetime.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
     duesAmount = db.session.query(ControlVariables.Current_Dues_Amount).filter(ControlVariables.Shop_Number==1).scalar()
@@ -1154,6 +1157,11 @@ def newMemberApplication(staffID):
         return redirect(url_for('index',villageID=memberID,todaysDate=todaySTR))
 
     expireDate = request.form.get('expireDate')
+    if expireDate:
+        hasTempID = 1
+    else:
+        hasTempID = 0
+
     firstName = request.form.get('firstName')
     middleName = request.form.get('middleName')
     lastName = request.form.get('lastName')
@@ -1736,3 +1744,93 @@ def saveVillageID():
 def takePhoto():
     print('/takePhoto')
     return render_template("photo.html")
+
+#@app.route('/newVolunteerApplication/',defaults={'staffID':None},methods=('GET','POST'))
+#@app.route('/newVolunteerApplication/<staffID>',methods=('GET','POST'))
+@app.route("/newVolunteerApplication",methods=('GET', 'POST'))
+def newVolunteerApplication():
+    print('/newVolunteerApplication')
+    todays_date = date.today()
+    todaySTR = todays_date.strftime('%m-%d-%Y')
+    
+    # DISPLAY BLANK NEW VOLUNTEER FORM
+    if request.method != 'POST':
+        return render_template("newVolunteer.html")
+
+    # DID USER CANCEL?
+    if request.form['newMember'] == 'CANCEL':
+        return redirect(url_for('index',villageID='',todaysDate=todaySTR))
+
+    # COLLECT DATA FROM FORM
+    villageID = request.form.get('villageID')
+    member = Member.query.filter_by(Member_ID=villageID).first()
+    if member != None:
+        flash("Village ID "+villageID + " is already on file.",'danger')
+        return redirect(url_for('index',villageID=villageID,todaysDate=todaySTR))
+
+    # PROCESS NEW VOLUNTEER
+    staffID = request.form.get('staffID')
+    firstName = request.form.get('firstName')
+    middleName = request.form.get('middleName')
+    lastName = request.form.get('lastName')
+    nickname = request.form.get('nickname')
+    street = request.form.get('street')
+    city = request.form.get('city')
+    state = request.form.get('state')
+    zip = request.form.get('zip')
+    
+    cellPhone = request.form.get('cellPhone')
+    homePhone = request.form.get('homePhone')
+    eMail = request.form.get('eMail')
+    typeOfWork = request.form.get('typeOfWork')
+
+    newVolunteer = Member(
+        Member_ID = villageID,
+        First_Name = firstName,
+        Middle_Name = middleName,
+        Last_Name = lastName,
+        Nickname = nickname,
+        Address = street,
+        City = city,
+        State = state,
+        Zip = zip,
+        Cell_Phone = cellPhone,
+        Home_Phone = homePhone,
+        eMail = eMail,
+        Default_Type_Of_Work = typeOfWork
+    ) 
+
+    # GET UTC TIME
+    est = timezone('EST')
+    
+    # ADD TO tblMember_Data TABLE
+    try:
+        db.session.add(newVolunteer)
+        db.session.commit()
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        flash('ERROR - '+error,'danger')
+        db.session.rollback()
+
+    # ADD TO MEMBER TRANSACTION TABLE
+    newTransaction = MemberTransactions(
+        Transaction_Date = datetime.now(est),
+        Member_ID = villageID,
+        Staff_ID = staffID,
+        Original_Data = '',
+        Current_Data = villageID,
+        Data_Item = 'NEW VOLUNTEER',
+        Action = 'NEW'
+    )
+    # WRITE TO MEMBER_TRANSACTION TABLE
+    try:
+        db.session.add(newTransaction)
+        db.session.commit() 
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        flash('ERROR - '+error,'danger')
+        db.session.rollback()
+
+    # DISPLAY NEW MEMBER RECORD SO STAFF CAN ENTER REMAINING DATA
+    return redirect(url_for('index',villageID=villageID,todaysDate=todaySTR))
+    

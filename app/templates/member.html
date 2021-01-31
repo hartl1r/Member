@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Jan 25, 2020</h6>
+            <h6>ver. Jan 31, 2020</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -61,7 +61,8 @@
                     <button id='showCheckInsID' class="dropdown-item" disabled style=display:none onclick="window.location.href='/checkIns/{{member.Member_ID}}/{{staffID}}'">Show check-ins</button>
                     <button id='passwordBtnID' class='dropdown-item' disabled style=display:none onclick='passwordRoutine()'>Change password</button>                   
                     <hr>
-                    <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication/{{staffID}}'">New Member Application</button>
+                    <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication'">New Member Application</button>
+                    <button id='newVolunteerBtnID' class='dropdown-item' onclick="window.location.href='/newVolunteerApplication'">New Volunteer Application</button>
                     <button id='shiftChangeBtnID' class='dropdown-item' onclick='shiftChange()'>Shift Change</button>
                 </div>
                 <button id='showPhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='showHidePhoto(this)''>SHOW PHOTO</button>
