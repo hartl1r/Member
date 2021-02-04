@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Jan 31, 2020</h6>
+            <h6>ver. Feb 4, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -89,7 +89,16 @@
             <div class="row">
                 <label class="col-3">Temp ID</label>
                 <div class="col-9">
-                    <input id='hasTempVillageID' type="checkbox" class="form-check-input" name="hasTemporaryVillageID"  {% if member.Temporary_Village_ID %} checked value="True" {% else %} value="False"{% endif %}>
+                    <input 
+                        id='hasTempVillageID' 
+                        type="checkbox" 
+                        class="form-check-input" 
+                        name="hasTemporaryVillageID"  
+                        {% if member.Temporary_Village_ID %} 
+                            checked value="True" 
+                        {% else %} 
+                            value="False"
+                        {% endif %}>
                     <input id='expireDt' type="date" class="datepick" name="expireDt" style=height:30px;width:9em value="{{member.Temporary_ID_Expiration_Date}}">
                     {% if expireMsg == 'ID EXPIRED!' or expireMsg == '< 30 days' %}
                         <label style="color:red;font-size:12px;margin-left:20px" >{{ expireMsg }}</label>
@@ -121,10 +130,10 @@
             <div class="row">
                 <label class="col-3" for="village">Village</label>
                 <div class="villageData col-6">
-                    <input id=villageTextID type="hidden" name="village" value={{member.Village}}>
+                    <input id=villageTextID type="hidden" name="village" value="{{member.Village}}">
                     <select id="villageSelecterID" style="padding-bottom:3px; width:300px; color:navy;font-family:inherit" name="villageSelecterName">
                         {% for village in villages %}
-                            <option  class="optVillage" value = "{{village.Village_Name}}">{{village.Village_Name}}</option>
+                            <option  class="optVillage" value ="{{village.Village_Name}}">{{village.Village_Name}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -133,7 +142,13 @@
             <div class="row">
                 <label class="col-3" for="homePhone">Home</label>
                 <div class="col-2">
-                    <input type="text" class="phones form-control-md" style=width:130px id="homePhone" name="homePhone"value="{{ member.Home_Phone }}">
+                    <input
+                        type="text" 
+                        class="phones form-control-md" 
+                        style=width:130px 
+                        id="homePhone" 
+                        name="homePhone"
+                        value="{{ member.Home_Phone }}">
                 </div>
             </div>
             <div class="row">
@@ -205,7 +220,12 @@
             <div class="row">
                 <label class="control-label col-md-3 col-form-label-md" >Phone</label>
                 <div class="col-md-3">
-                    <input type="tel" class="form-control-md" style=width:130px  name="altPhone"value="{{ member.Alt_Phone }}">
+                    <input 
+                        type="text" 
+                        class="phones form-control-md" 
+                        style=width:130px  
+                        name="altPhone"
+                        value="{{ member.Alt_Phone }}">
                 </div>
             </div>
             
@@ -227,7 +247,7 @@
             <div class="row">
                 <label class="col-2 col-form-label"style=margin-top:0px>Contact</label>
                 <input type="text" class="form-control col-4" style=height:30px name="emergContact" placeholder='Name' value="{{member.Emerg_Name}}">
-                <input type="tel" class="form-control form-control-md col-md-4" style="height:30px;width:143px" name="emergPhone" placeholder="Phone" value="{{member.Emerg_Phone}}">
+                <input type="text" class="phones form-control form-control-md col-md-4" style="height:30px;width:143px" name="emergPhone" placeholder="Phone" value="{{member.Emerg_Phone}}">
             </div>
  
             <div class='medConditions'>
@@ -428,7 +448,7 @@
                 <div class="row">
                     <div class='col-12'>
                         <label class="control-label col-form-label-md">Type of work</label>
-                        <input id=typeOfWorkTextID type="hidden" class="form-control-md" name="typeOfWorkHidden" value={{member.Default_Type_Of_Work}}>
+                        <input id=typeOfWorkTextID type="hidden" class="form-control-md" name="typeOfWorkHidden" value="{{member.Default_Type_Of_Work}}">
                         <select id="typeOfWorkSelecterID" class="form-control-md selectTypeOfWork" style=margin-left:10px name="typeOfWorkSelecterName">
                             <option value='General'>General</option>
                             <option value='Administrative'>Administration</option>
@@ -436,12 +456,11 @@
                             <option value='Education'>Education</option>
                             <option value='Repair'>Repair</option>
                             <option value='Special Project'>Special Project</option>
-                            <option value="Stained\nbspGlass">Stained Glass</option>
-                            <option value='Toy\nbspBuilding'>Toy Building</option>
+                            <option value="Stained Glass">Stained Glass</option>
+                            <option value="Toy Building">Toy Building</option>
                             <option value='Turner'>Turner</option>
                             <option value='Painting'>Painting</option>
                         </select>
-                    
                     </div>
                 </div>
                 

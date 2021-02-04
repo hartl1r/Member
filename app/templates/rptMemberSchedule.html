@@ -11,8 +11,8 @@
 <div class='wholePage'>
 
 <div class="pageButtons">
-    <button id="printPageButton" style=margin-right:20px; onClick="window.print();">PRINT</button>
-    <button id="closePageButton" style=margin-right:20px; onclick="window.history.back()" >CLOSE PAGE</button>
+    <button id="printPageButton" class='btn btn-primary' style=margin-right:20px; onClick="window.print();">PRINT</button>
+    <button id="closePageButton" class='btn btn-secondary' style=margin-right:20px; onclick="window.history.back()" >CLOSE PAGE</button>
 </div> 
 <br> 
 <!-- <title>Monitor Duty Schedule</title> -->
@@ -24,13 +24,13 @@
     <br>
     <h3 class="text-center">Monitor Duty Schedule</h3>
     <h3 class="text-center">As of {{ todays_date }}</h3>
-    <h3 class="text-center">{{needTraining}}</h3>
+    <h3 class="text-center" style=color:red>{{needsTraining}}</h3>
 
     <table style="display: inline block;">                      
         <tbody>
         <tr>
             <th style="width:50px"> </th>
-            <th style="text-align:center">DATE</th>
+            <th style="width:100px;text-align:center">DATE</th>
             <th style="text-align:center">SHIFT</th>
             <th style="text-align:center">DUTY</th>
             <th style="text-align:center">LOCATION</th>
@@ -39,7 +39,7 @@
     {% for s in schedule %}
     <tr>
         <td style="width:50px"> </td>
-        <td style="text-align:center">{{s.DateScheduled}}</td>
+        <td style="width:100px;text-align:right">{{s.DateScheduled}}</td>
         <td style="text-align:center">{{s.AM_PM}}</td>
         <td style="text-align:center">{{s.Duty}}</td>
         <td style="text-align:center">{{s.Shop_Name}}</td>

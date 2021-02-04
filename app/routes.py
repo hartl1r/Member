@@ -25,48 +25,105 @@ from pytz import timezone
 from flask_mail import Mail, Message
 mail=Mail(app)
 
+@app.route('/setsession')
+def setsession():
+    session['Username'] = 'Admin'
+    return f"The session has been Set"
+ 
+@app.route('/getsession')
+def getsession():
+    if 'Username' in session:
+        Username = session['Username']
+        return f"Welcome {Username}"
+    else:
+        return "Welcome Anonymous"
+ 
+@app.route('/popsession')
+def popsession():
+    session.pop('Username',None)
+    return "Session Deleted"
+ 
 
-@app.route('/', defaults={'villageID':None,'staffID':None})
-@app.route('/index/', defaults={'villageID':None,'staffID':None})
-@app.route('/index/<villageID>/<staffID>')
-@app.route('/index/<staffID>', defaults={'villageID':None})
-@app.route('/index/<villageID>', defaults={'staffID':None})
-def index(villageID,staffID):
-    # VALUES FROM URL NEEDED IN member.js ONLY; villageID and staffID WILL COME FROM FORM REQUEST
-    #print('village - ',villageID)
-    #print('staffID - ',staffID)
+#@app.route('/', defaults={'villageID':None})
+#@app.route('/index/', defaults={'villageID':None})
+#@app.route('/index/<villageID>/')
+@app.route('/')
+@app.route('/index/')
+def index():
+    print("/index/")
+    # GET VILLAGE ID FROM QUERY STRING IN URL, ?villageID=123456
+    villageID = request.args.get('villageID')
+    print('villageID - ',villageID)
+    
+    # GET SESSION VARIABLES
+    # staffID
+    try:
+        staffID = session['staffID']
+    except:
+        # SET staffID and session variables (only for testing)
+        session['staffID'] = '604875'
+        staffID = '604875'
+    
+    # shopID       
+    try:
+        shopID = session['shopID']
+    except:
+        # SET RA FOR TESTING; SEND FLASH ERROR MESSAGE FOR PRODUCTION
+        shopID = 'RA'
+        msg = "Missing location information; cannot continue."
+        #flash(msg,"danger")
+        #return msg
+    if shopID =='RA':
+        shopNumber = 1
+    else:
+        if shopID == 'BW':
+            shopNumber = 2
+        else:
+            shopNumber = 0
+            flash ("Missing valid shop location.","danger")
 
-    # GET STAFF MEMBER NAME AND PRIVILEDGES
-    staffName = ''
-    isManager= 'False'
-    isDBA = 'False'
+    # staffName
+    # GET STAFF MEMBER NAME AND PRIVILEDGES (staffName is also available as session variable)
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
     if staffMember != None:
+        staffName = staffMember.First_Name
         if staffMember.Nickname != None:
-            staffName = staffMember.Nickname + ' ' + staffMember.Last_Name
-        else:
-            staffName = staffMember.First_Name + ' ' + staffMember.Last_Name 
-        #  ADD POSITION TO NAME DISPLAY
-        if (staffMember.DBA):
-            isDBA = 'True'
-            staffName += ' (DBA)'
-        else:
-            isDBA = 'False'
-            if (staffMember.Manager):
-                isManager = 'True'
-                staffName += ' (Manager)'
-            else:
-                isManager = 'False'
-                if (staffMember.Office_Staff):
-                    isStaff = 'True'
-                    staffName += ' (Staff)'
-                else:
-                    staffName = 'NOT AUTHORIZED'
+            staffName += ' (' + staffMember.Nickname + ')'
+        staffName += ' ' +  staffMember.Last_Name
     else:
-        staffName = 'Staff ID missing.'                
+        msg = "No match for staffID " + villageID + "; cannot continue."
+        flash(msg,"danger")
+        return msg
 
-    # PREPARE LIST OF MEMBER NAMES AND VILLAGE IDs
-    # BUILD ARRAY OF NAMES FOR DROPDOWN LIST OF MEMBERS
+    print('staffID - ',staffID)
+    print('staffName - ',staffName)
+    print('shopID - ',shopID, '  shopNumber - ', shopNumber)
+
+    # GET POSITION OF USER - Staff, DBA, Manager
+    # isDBA, isManager, isStaff are not boolean because we cannot pass boolean values to client???
+    if (staffMember.DBA):
+        isDBA = 'True'
+    else:
+        isDBA = 'False'
+
+    if (staffMember.Manager):
+        isManager = 'True'
+    else:
+        isManager = 'False'
+
+    if (staffMember.Office_Staff):
+        isStaff = 'True'
+    else:
+        isStaff = 'False'
+    
+    if (isDBA == 'False' and isManager == 'False' and isStaff == 'False') :
+        msg = "This user is not authorized for this application."
+        flash (msg,'danger')
+        return msg               
+    
+
+
+    # BUILD ARRAY OF NAMES & ID's FOR DROPDOWN LIST OF MEMBERS
     nameArray=[]
     sqlSelect = "SELECT Last_Name, First_Name, Member_ID FROM tblMember_Data "
     sqlSelect += "ORDER BY Last_Name, First_Name "
@@ -88,6 +145,7 @@ def index(villageID,staffID):
             lastFirst = n.Last_Name + ', ' + n.First_Name + ' (' + n.Member_ID + ')'
         nameArray.append(lastFirst)
 
+
     # PREPARE LIST OF VILLAGES
     sqlSelect = "SELECT Village_Name FROM tblValid_Village_Names "
     sqlSelect += "ORDER BY Village_Name"
@@ -100,9 +158,11 @@ def index(villageID,staffID):
     if villages == None:
         flash('No villages to list.','info')
     
+
     # GET ZIPCODES
     zipCodes = db.session.query(ZipCode).order_by(ZipCode.Zipcode).all()
    
+
     # COMPUTE NUMBER ON WAIT LIST
     waitListCnt = db.session.query(func.count(WaitList.MemberID))\
     .filter(WaitList.NoLongerInterested == None)\
@@ -127,10 +187,8 @@ def index(villageID,staffID):
         isManager=isManager,isDBA=isDBA,villages=villages,zipCodes=zipCodes)
 
 
-    # ---------------------------------------------------------------------------------------------------------    
-    # VILLAGE ID WAS PASSED IN ...
-    # ---------------------------------------------------------------------------------------------------------
-    
+    # IF A VILLAGE ID WAS PASSED IN ...
+
     # RUN QUERY TO POPULATE LOCAL ADDRESS PHONE EMAIL
     member = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (member == None):
@@ -148,7 +206,6 @@ def index(villageID,staffID):
 
     # TEST FOR TEMPORARY VILLAGE ID EXPIRATION DATE
     expireMsg = ''
-    #todays_date = datetime.today()
     todays_date = date.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
      
@@ -228,7 +285,7 @@ def index(villageID,staffID):
     return render_template("member.html",member=member,hdgName=hdgName,nameArray=nameArray,expireMsg=expireMsg,
     futureDuty=futureDuty,pastDuty=pastDuty,RAtrainingNeeded=RAtrainingNeeded,BWtrainingNeeded=BWtrainingNeeded,
     lastYearPaid=lastYearPaid,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,
-    waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffID=staffID,staffName=staffName,
+    waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffID=staffID,staffName=staffName,isStaff=isStaff,
     isManager=isManager,isDBA=isDBA,zipCodes=zipCodes)
     
 @app.route('/saveAddress', methods=['POST'])
@@ -237,8 +294,6 @@ def saveAddress():
     # GET DATA FROM FORM
     memberID = request.form['memberID']
     
-    print('request - ', request.form.get('hasTemporaryVillageID'))
-
     if request.form.get('hasTemporaryVillageID') == 'True':
         hasTemporaryVillageID = True
     else:
@@ -263,13 +318,6 @@ def saveAddress():
     # GET MEMBER RECORD 
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     fieldsChanged = 0
-
-    print('old - ',member.Temporary_Village_ID, ' new - ',hasTemporaryVillageID)
-    if hasTemporaryVillageID != member.Temporary_Village_ID:
-        logChange(staffID,'Temp ID',memberID,member.Temporary_Village_ID,hasTemporaryVillageID)
-        member.Temporary_Village_ID = hasTemporaryVillageID
-        print('update Temp ID flag - ',member.Temporary_Village_ID)
-        fieldsChanged += 1
 
     if member.Address != street :
         logChange(staffID,'Street',memberID,street,member.Address)
@@ -307,17 +355,24 @@ def saveAddress():
         member.eMail = eMail
         fieldsChanged += 1
 
+    if tempIDexpirationDate != '':
+        hasTemporaryVillageID == True
+
+    if hasTemporaryVillageID != member.Temporary_Village_ID:
+        logChange(staffID,'Temp ID',memberID,hasTemporaryVillageID,member.Temporary_Village_ID)
+        member.Temporary_Village_ID = hasTemporaryVillageID
+        fieldsChanged += 1
+
     if tempIDexpirationDate != member.Temporary_ID_Expiration_Date:
         logChange(staffID,'Temp Expire Dt',memberID,tempIDexpirationDate,member.Temporary_ID_Expiration_Date)
         member.Temporary_ID_Expiration_Date = tempIDexpirationDate
         fieldsChanged += 1
-
-    print('tempIDexpirationDate - ',tempIDexpirationDate)
-    if tempIDexpirationDate == '':
-        logChange(staffID,'Temp Expire Dt',memberID,'Null',member.Temporary_ID_Expiration_Date)
-        member.Temporary_ID_Expiration_Date = None
-        member.Temporary_Village_ID = False
-        fieldsChanged += 1
+    else:
+        if tempIDexpirationDate == '':
+            logChange(staffID,'Temp Expire Dt',memberID,'Null',member.Temporary_ID_Expiration_Date)
+            member.Temporary_ID_Expiration_Date = None
+            member.Temporary_Village_ID = False
+            fieldsChanged += 1
    
     if fieldsChanged > 0:
         try:
@@ -395,7 +450,7 @@ def saveAltAddress():
 
 @app.route('/saveEmergency', methods=['POST'])
 def saveEmergency():
-    
+    print('/saveEmergency')
     #  DID USER CANCEL?
     memberID = request.form['memberID']
     if request.form['emergAction'] == 'CANCEL':
@@ -490,6 +545,44 @@ def saveEmergency():
         logChange(staffID,'MI',memberID,MI,member.Emerg_MI)
         member.Emerg_MI = MI
         fieldsChanged += 1
+
+    if diabetes1 != member.Emerg_Diabetes_Type_1: 
+        logChange(staffID,'diabetes1',memberID,diabetes1,member.Emerg_Diabetes_Type_1)
+        member.Emerg_Diabetes_Type_1 = diabetes1
+        fieldsChanged += 1
+
+    if diabetes2 != member.Emerg_Diabetes_Type_2: 
+        logChange(staffID,'diabetes2',memberID,diabetes2,member.Emerg_Diabetes_Type_2)
+        member.Emerg_Diabetes_Type_2 = diabetes2
+        fieldsChanged += 1
+
+    if otherDiagnosis != member.Emerg_Other_Diagnosis:
+        logChange(staffID,'otherDiagnosis',memberID,otherDiagnosis,member.Emerg_Other_Diagnosis)
+        member.Emerg_Other_Diagnosis = otherDiagnosis
+        fieldsChanged += 1
+
+    if diabetesOther != member.Emerg_Diabetes_Other:
+        logChange(staffID,'diabetesOther',memberID,diabetesOther,member.Emerg_Diabetes_Other)
+        member.Emerg_Diabetes_Other = diabetesOther
+        fieldsChanged += 1
+
+    if alergies != member.Emerg_Medical_Alergies:
+        logChange(staffID,'alergies',memberID,alergies,member.Emerg_Medical_Alergies)
+        member.Emerg_Medical_Alergies = alergies
+        fieldsChanged += 1
+
+    # IF ANY FIELDS CHANGED, SAVE CHANGES
+    if fieldsChanged > 0:
+        try:
+            db.session.commit()
+           #print('Changes successful')
+            flash("Changes successful","success")
+        except Exception as e:
+           #print('Could not update emergency data',e)
+            flash("Could not update member emergency data.","danger")
+            db.session.rollback()
+
+    return redirect(url_for('index',villageID=memberID))
 
 @app.route('/saveMemberStatus', methods=['POST'])
 def saveMemberStatus():
@@ -658,8 +751,7 @@ def saveCertification():
     BWmonitorTrainingDate = request.form.get('BWmonitorTrainingDate')    
     
     typeOfWork = request.form.get('typeOfWorkSelecterName')
-
-    #skillLevel = request.form.get('skillLevelSelecterName')
+   
     waiverExpirationDate = request.form.get('waiverExpirationDate')
     waiverReason = request.form.get('waiverReason')
 
@@ -718,18 +810,12 @@ def saveCertification():
         else:
             member.Last_Monitor_Training_Shop_2 = BWmonitorTrainingDate
         fieldsChanged += 1
-     
+    
     if typeOfWork != None:
         if typeOfWork != member.Default_Type_Of_Work:
             logChange(staffID,'Default_Type_Of_Work',memberID,typeOfWork,member.Default_Type_Of_Work)
             member.Default_Type_Of_Work = typeOfWork
             fieldsChanged += 1
-
-    # if skillLevel != None:
-    #     if skillLevel != member.Skill_Level:
-    #         logChange(staffID,'Skill_Level',memberID,skillLevel,member.Skill_Level)
-    #         member.Skill_Level = skillLevel
-    #         fieldsChanged += 1
 
     if waiverExpirationDate != member.Monitor_Duty_Waiver_Expiration_Date:
         logChange(staffID,'Monitor Waiver Expiration',memberID,waiverExpirationDate,member.Monitor_Duty_Waiver_Expiration_Date)
@@ -883,6 +969,14 @@ def saveMonitorDuty():
         member.Dec_resident = dec
         fieldsChanged += 1
 
+    if request.form['needsToolCribID'] == 'True':
+        needsToolCrib = True
+    else:
+        needsToolCrib = False
+    if member.Requires_Tool_Crib_Duty != needsToolCrib:
+        logChange(staffID,'Requires Tool Crib Duty',memberID,needsToolCrib,member.Requires_Tool_Crib_Duty)
+        member.Requires_Tool_Crib_Duty = needsToolCrib
+        fieldsChanged += 1
 
     # jan=request.form['jan']
     # feb=request.form['feb']
@@ -1176,6 +1270,7 @@ def newMemberApplication():
     eMail = request.form.get('eMail')
     dateJoined = request.form.get('dateJoined')
     typeOfWork = request.form.get('typeOfWork')
+    print('typeOfWork - ',typeOfWork)
     skillLevel = request.form.get('skillLevel')
     membershipType = request.form.get('membershipType')
     if membershipType == 'single' :
@@ -1574,13 +1669,21 @@ def printMemberSchedule(memberID):
     member = db.session.query(Member).filter(Member.Member_ID== memberID).first()
     displayName = member.First_Name + ' ' + member.Last_Name
     lastTraining = member.Last_Monitor_Training
-
+    if lastTraining != None:
+        lastTrainingSTR = lastTraining.strftime('%m-%d-%Y')
+    else:
+        lastTrainingSTR = 'NEVER'
+    print ('lastTrainingSTR - ',lastTrainingSTR)
+        
     # RETRIEVE LAST_ACCEPTABLE_TRAINING_DATE FROM tblControl_Variables
     lastAcceptableTrainingDate = db.session.query(ControlVariables.Last_Acceptable_Monitor_Training_Date).filter(ControlVariables.Shop_Number == '1').scalar()
-    if (lastTraining < lastAcceptableTrainingDate):
+    if lastTraining == None or lastTraining == '':
         needsTraining = 'TRAINING IS NEEDED'
     else:
-        needsTraining = ''
+        if (lastTraining < lastAcceptableTrainingDate):
+            needsTraining = 'TRAINING IS NEEDED'
+        else:
+            needsTraining = 'Last training - ' + lastTrainingSTR
 
     # RETRIEVE MEMBER SCHEDULE FOR CURRENT YEAR AND FORWARD
     todays_date = date.today()
@@ -1593,7 +1696,7 @@ def printMemberSchedule(memberID):
     sqlSelect = "SELECT tblMember_Data.Member_ID as memberID, "
     sqlSelect += "First_Name + ' ' + Last_Name as displayName, tblShop_Names.Shop_Name, "
     sqlSelect += "Last_Monitor_Training as trainingDate, tblMonitor_Schedule.Member_ID, "
-    sqlSelect += " format(Date_Scheduled,'M/d/yyyy') as DateScheduled, AM_PM, Duty, No_Show, tblMonitor_Schedule.Shop_Number "
+    sqlSelect += " format(Date_Scheduled,'MMM d, yyyy') as DateScheduled, AM_PM, Duty, No_Show, tblMonitor_Schedule.Shop_Number "
     sqlSelect += "FROM tblMember_Data "
     sqlSelect += "LEFT JOIN tblMonitor_Schedule ON tblMonitor_Schedule.Member_ID = tblMember_Data.Member_ID "
     sqlSelect += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
@@ -1653,25 +1756,56 @@ def saveName():
     # HAVE ANY FIELDS CHANGED?
     fieldsChanged = 0
     if member.First_Name != firstName:
-        member.First_Name = firstName
         logChange(staffID,'First name',memberID,firstName,member.First_Name)
+        member.First_Name = firstName
         fieldsChanged += 1 
 
     if member.Middle_Name != middleName:
-        member.Middle_Name = middleName
         logChange(staffID,'Middle name',memberID,middleName,member.Middle_Name)
+        member.Middle_Name = middleName
         fieldsChanged += 1 
 
     if member.Last_Name != lastName:
-        member.Last_Name = lastName
         logChange(staffID,'Last name',memberID,lastName,member.Last_Name)
+        member.Last_Name = lastName
         fieldsChanged += 1 
 
     if member.Nickname != nickName:
-        member.Nickname = nickName
         logChange(staffID,'Nick name',memberID,nickName,member.Nickname)
-        fieldsChanged += 1 
+        member.Nickname = nickName
+        fieldsChanged += 1
+
+    # CONSTRUCT LF_Name
+    member.LF_Name = lastName + ', ' + firstName
+
+    # CONSTRUCT LFM_Name 
+    member.LFM_Name = lastName + ', '+firstName 
+    if middleName != None and middleName != '':
+        member.LFM_Name += ' ' + middleName
+
+    # CONSTRUCT LFN_Name
+    member.LFN_Name = lastName + ', '+firstName
+    if nickName != None and nickName != '':
+        member.LFN_Name +=  ' (' + nickName + ')'
+
+    # CONSTRUCT FML_Name
+    member.FML_Name = firstName
+    if middleName != None and middleName != '':
+        member.FML_Name += ' ' + middleName
+    member.FML_Name += ' ' + lastName
     
+    # CONSTRUCT FLN_Name
+    member.FNL_Name = firstName
+    if nickName != None and nickName != '':
+        member.FNL_Name += ' (' + nickName
+    member.FNL_Name += ') ' + lastName
+
+    # CONSTRUCT Initials
+    member.Initials = firstName[0:1].lower()
+    if middleName != None and middleName != '':
+        member.Initials += middleName[0:1].lower()
+    member.Initials += lastName[0:1].lower()
+
     # IF ANY FIELDS CHANGED, SAVE CHANGES
     if fieldsChanged > 0:
         try:

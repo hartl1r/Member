@@ -22,34 +22,6 @@ const colors = {
     fg_PastDate:"#FFFFFF"   // White (#FFFFFF)
 };
 
-// GET staffID FROM URL IF AVAILABLE
-const params = new URLSearchParams(window.location.search)
-var pathArray = window.location.pathname.split('/');
-if (pathArray.length = 4) {
-    if (pathArray[3] != null & pathArray[3] != '') {
-        staffID = pathArray[3]
-        localStorage.setItem('staffID',staffID)
-    }
-    else {
-        staffID = ''
-    }
-}
-else {
-    staffID = ''
-}
-
-// IF THE staffID WAS NOT PASSED IN FROM THE Login SCRIPT THE staffName WILL CONTAIN 'Staff ID missing'
-if (staffID == '' | staffID == null) {
-    // TRY TO GET STAFF ID FROM LOCALSTORAGE
-    staffID = localStorage.getItem('staffID')
-    if (!staffID) {
-        staffID = prompt("Staff ID - ")
-        localStorage.setItem('staffID',staffID)
-    // RELOAD THE PAGE TO SHOW STAFF NAME
-    link='/index/ /' + staffID 
-    window.location.href=link
-    }    
-}
 
 // SET STAFF ID IN EACH PANEL
 var staffIDelements = document.getElementsByClassName('staffID')
@@ -147,6 +119,15 @@ document.querySelector('#monthCheckboxesID').onclick = function(ev) {
     }
 }
 
+document.getElementById("needsToolCribID").onclick = function(ev) {
+    console.log('ev.id - '+ev.id)
+    if (ev.checked) {
+        document.getElementById("needsToolCribID").value = 'True'
+    }
+    else {
+        document.getElementById("needsToolCribID").value = 'False'
+    }
+}
 // HIDE DETAIL UNTIL A MEMBER IS SELECTED
 if (memberID.value == 'undefined' | memberID.value == ''){
     panels = document.getElementsByClassName('panel')
@@ -357,7 +338,7 @@ function memberSelectedRtn() {
 
     // SET UP LINK TO MEMBER FORM 
     var linkToMemberBtn = document.getElementById('linkToMember');
-    link='/index/' + currentMemberID +'/' + staffID
+    link='/index/?villageID=' + currentMemberID 
     linkToMemberBtn.setAttribute('href', link)
     linkToMemberBtn.click()
 }
@@ -709,10 +690,7 @@ function villageChangeRtn() {
 // }
 function clearScreen() {
     var linkToMemberBtn = document.getElementById('linkToMember');
-    if (staffID == null | staffID == '') {
-        staffID=localStorage.get('staffID')
-    }
-    link='/index/ /'+staffID 
+    link='/index/'
     linkToMemberBtn.setAttribute('href', link)
     linkToMemberBtn.click()
 }
@@ -777,16 +755,19 @@ function classSignUp() {
 }
 
 function linkToMonitorSchedule() {
-    alert('link not ready')
+    memberID = document.getElementById('memberID').value
+    console.log('memberID - '+memberID)
+    if (memberID != ''){
+        link = "https://fd.thevwc.org:42735/?villageID=" + memberID 
+    }
+    else{
+        link = "https://fd.thevwc.org:42735/"
+    }
+    console.log('link - '+ link)
+    window.location.href = link
+   
 }
 
-// cellPhone = document.getElementById('cellPhone')
-// cellPhone.addEventListener('focus', (event) => {
-//     alert('cellPhone - '+ cellPhone.value)
-//     if (event.target.val().length ===1) {
-//         event.target.value = ''
-//     }
-// })
 $('.phones').usPhoneFormat({
     format: '(xxx) xxx-xxxx',
 });
@@ -881,12 +862,8 @@ $('input[type="tel"]')
                 location.reload()
                 return
             }
-            //  SAVE COOKIE
-            localStorage.setItem('staffID',staffID)
             // RESTART PAGE
-            //link='/index/' + '' +'/' + staffID
-            link='/index/ /' + staffID  
-            //alert('link - '+ link)
+            link='/index/' 
             window.location.href=link
             // LAUNCH INDEX PAGE
             //clearScreen()
@@ -914,8 +891,8 @@ function takePhotoRtn() {
     window.location.href="/takePhoto"
 }
 
-document.getElementById('btnReturnToMember').addEventListener('click',goBackRtn)
-function goBackRtn() {
-    alert('go back')
-    window.history.back()
-}
+// document.getElementById('btnReturnToMember').addEventListener('click',goBackRtn)
+// function goBackRtn() {
+//     alert('go back')
+//     window.history.back()
+// }
