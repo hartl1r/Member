@@ -21,24 +21,23 @@
                 <input id='memberID' type="text" required class="form-control-md" style="width:60px" name="memberID">
                 <label for=expireDate class="col-md-3 form-label-md" >Expiration date</label>
                 <input type="date" datepicker class="form-control-md" name='expireDate'>
-                <input id='staffID' type="hidden" name="staffID">   
             </div>
             
             
             <br>    
-            <div class='form-group-md'>
+            <div class='form-group-md memberName '>
                 <label for="firstName" class="col-md-4 form-label-md">Name</label>
                 <input id="firstName"type='text' required class='form-control-md' name='firstName' placeholder="First name">
             </div>
-            <div class='form-group-md'>
+            <div class='form-group-md memberName '>
                 <label for="middleName" class="col-md-4 form-label-md"></label>
                 <input id="middleName"type='text' class='form-control-md' name='middleName' placeholder="Middle name">
             </div>
-            <div class='form-group-md'>
+            <div class='form-group-md memberName '>
                 <label for="lastName" class="col-md-4 form-label-md"></label>
                 <input id="lastName"type='text' required class='form-control-md' name='lastName' placeholder="Last name">
             </div>
-            <div class='form-group-md'>
+            <div class='form-group-md memberName '>
                 <label for="nickname" class="col-md-4 form-label-md"></label>
                 <input id="nickname"type='text' class='form-control-md' name='nickname' placeholder="Nickname">
             </div>
@@ -134,7 +133,7 @@
             
             <div class='form-group-md'>
                 <label for="membershipType" class="col-md-5 form-label-md">Membership</label>
-                <select id="membershipType" class="form-control-md"  style=margin-left:0px name="membershipType"  >
+                <select id="membershipType" class="form-control-md" required style=margin-left:0px name="membershipType"  >
                     <option value='' selected >Select one -</option>
                     <option value='single'>Regular membership ({{singleInitiationFeeCUR}})</option>
                     <option value='family'>2nd membership ({{familyInitiationFeeCUR}})</option>

@@ -1,35 +1,7 @@
-/* * {
-    box-sizing: border-box;
-  } */
-/* For mobile phones: */
-/* [class*="col-"] {
-    width: 100%;
-  } */
-  
-
-
-
-  /* @media only screen and (orientation: landscape) {
-    body {
-      background-color: lightblue;
-    }
-  }
-.row::after {
-    content: "";
-    clear: both;
-    display: table;
-} */
-
-/* html {
-    font-family: "Lucida Sans", sans-serif;
-} */
-
 
 .parent {
     display: grid;
     grid-template-columns:1fr 1fr;
-    /* grid-template-rows:50px 1fr 1fr; */
-    /* grid-template-rows: repeat(3, minmax(50px, auto)); */
     grid-template-areas:    "hdgArea            hdgArea  "
                             "demographicArea    column2Area"
                             "footerBtnsArea    footerBtnsArea";
@@ -62,13 +34,7 @@ form {
     padding:10px;
     margin-left:30px;
 }
-/* .demographic form {
-    padding-left: 20px;
-    padding-top:0px;
-} */
-/* .demographic .row {
-    height:30px;
-} */
+
 .demographic input {
     border: 1px solid black;
     font-size:16px;
@@ -107,4 +73,12 @@ form {
 }
 saveBtn:disabled {
     background-color: gray;
+}
+:required {
+    border:1px solid red;
+    background-color:rgb(235, 213, 213);
+}
+
+.memberName {
+    padding-bottom:.25em;
 }

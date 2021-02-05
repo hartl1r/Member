@@ -7,15 +7,6 @@ $(document).ready( function() {
     dateJoined.value = todaysDateSTR;
 })
 
-if (localStorage.getItem('staffID')) {
-    staffID = localStorage.getItem('staffID')
-}
-else {
-    staffID=prompt("Staff ID - ")
-    localStorage.setItem('staffID',staffID)
-}
-document.getElementById('staffID').value = staffID
-
 membershipType = document.getElementById('membershipType')
 membershipType.addEventListener('change',displayTotalFee);
 
@@ -28,9 +19,6 @@ function displayTotalFee() {
     initiationFee = document.getElementById('initiationFee')
     saveBtn = document.getElementById('saveBtn')
 
-    //console.log('initiationFee - '+ singleInitiationFee)
-    //annualFee = document.getElementById('annualFee').value
-    //console.log('annualFee - ' + annualFee)
     if (membershipType.value == 'single') {
         initiationFee.value = singleInitiationFee
         totalFee = singleTotalFee

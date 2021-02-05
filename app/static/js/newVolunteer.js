@@ -6,8 +6,6 @@ $(document).ready( function() {
 
     document.getElementById('newVolunteerForm').addEventListener('click',showSaveBtn())
     
-    staffID = localStorage.getItem('staffID')
-    document.getElementById('staffID').value = staffID
 
 })
 function showSaveBtn() {

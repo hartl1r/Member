@@ -24,38 +24,20 @@ from pytz import timezone
 
 from flask_mail import Mail, Message
 mail=Mail(app)
-
-@app.route('/setsession')
-def setsession():
-    session['Username'] = 'Admin'
-    return f"The session has been Set"
  
-@app.route('/getsession')
-def getsession():
-    if 'Username' in session:
-        Username = session['Username']
-        return f"Welcome {Username}"
-    else:
-        return "Welcome Anonymous"
- 
-@app.route('/popsession')
-def popsession():
-    session.pop('Username',None)
-    return "Session Deleted"
- 
-
-#@app.route('/', defaults={'villageID':None})
-#@app.route('/index/', defaults={'villageID':None})
-#@app.route('/index/<villageID>/')
 @app.route('/')
 @app.route('/index/')
 def index():
-    print("/index/")
     # GET VILLAGE ID FROM QUERY STRING IN URL, ?villageID=123456
     villageID = request.args.get('villageID')
-    print('villageID - ',villageID)
     
     # GET SESSION VARIABLES
+    print(session.keys())
+    print(session.items())
+
+    staffID = getStaffID()
+    shopID = getShopID()
+
     # staffID
     try:
         staffID = session['staffID']
@@ -64,24 +46,7 @@ def index():
         session['staffID'] = '604875'
         staffID = '604875'
     
-    # shopID       
-    try:
-        shopID = session['shopID']
-    except:
-        # SET RA FOR TESTING; SEND FLASH ERROR MESSAGE FOR PRODUCTION
-        shopID = 'RA'
-        msg = "Missing location information; cannot continue."
-        #flash(msg,"danger")
-        #return msg
-    if shopID =='RA':
-        shopNumber = 1
-    else:
-        if shopID == 'BW':
-            shopNumber = 2
-        else:
-            shopNumber = 0
-            flash ("Missing valid shop location.","danger")
-
+    
     # staffName
     # GET STAFF MEMBER NAME AND PRIVILEDGES (staffName is also available as session variable)
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
@@ -94,10 +59,6 @@ def index():
         msg = "No match for staffID " + villageID + "; cannot continue."
         flash(msg,"danger")
         return msg
-
-    print('staffID - ',staffID)
-    print('staffName - ',staffName)
-    print('shopID - ',shopID, '  shopNumber - ', shopNumber)
 
     # GET POSITION OF USER - Staff, DBA, Manager
     # isDBA, isManager, isStaff are not boolean because we cannot pass boolean values to client???
@@ -183,7 +144,7 @@ def index():
     # IF A VILLAGE ID WAS NOT PASSED IN, DISPLAY THE BLANK INDEX.HTML FORM AND HAVE USER SELECT A NAME OR ID
     if (villageID == None):
         return render_template("member.html",member="",nameArray=nameArray,waitListCnt=waitListCnt,
-        currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,staffID=staffID,staffName=staffName,
+        currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,staffName=staffName,
         isManager=isManager,isDBA=isDBA,villages=villages,zipCodes=zipCodes)
 
 
@@ -193,7 +154,7 @@ def index():
     member = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (member == None):
         #flash('A valid member number must be specified','info')
-        return render_template("member.html",member='',nameArray=nameArray,staffID=staffID,staffName=staffName)
+        return render_template("member.html",member='',nameArray=nameArray,staffName=staffName)
          
     hdgName = member.First_Name
     if member.Middle_Name is not None:
@@ -285,7 +246,7 @@ def index():
     return render_template("member.html",member=member,hdgName=hdgName,nameArray=nameArray,expireMsg=expireMsg,
     futureDuty=futureDuty,pastDuty=pastDuty,RAtrainingNeeded=RAtrainingNeeded,BWtrainingNeeded=BWtrainingNeeded,
     lastYearPaid=lastYearPaid,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,
-    waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffID=staffID,staffName=staffName,isStaff=isStaff,
+    waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffName=staffName,isStaff=isStaff,
     isManager=isManager,isDBA=isDBA,zipCodes=zipCodes)
     
 @app.route('/saveAddress', methods=['POST'])
@@ -320,38 +281,38 @@ def saveAddress():
     fieldsChanged = 0
 
     if member.Address != street :
-        logChange(staffID,'Street',memberID,street,member.Address)
+        logChange('Street',memberID,street,member.Address)
         member.Address = street
         fieldsChanged += 1
 
     if member.City != city :
-        logChange(staffID,'City',memberID,city,member.City)
+        logChange('City',memberID,city,member.City)
         member.City = city
         fieldsChanged += 1
 
     if member.Zip != zipcode:
-        logChange(staffID,'Zipcode',memberID,zipcode,member.Zip)
+        logChange('Zipcode',memberID,zipcode,member.Zip)
         member.Zip = zipcode
         fieldsChanged += 1
 
     if member.Village != village:
-        logChange(staffID,'Village',memberID,village,member.Village)
+        logChange('Village',memberID,village,member.Village)
         member.Village = village
         fieldsChanged += 1
         
     if member.Home_Phone != homePhone :
-        logChange(staffID,'Home Phone',memberID,homePhone,member.Home_Phone)
+        logChange('Home Phone',memberID,homePhone,member.Home_Phone)
         member.Home_Phone = homePhone
         fieldsChanged += 1
 
 
     if member.Cell_Phone != cellPhone :
-        logChange(staffID,'Cell Phone',memberID,cellPhone,member.Cell_Phone)
+        logChange('Cell Phone',memberID,cellPhone,member.Cell_Phone)
         member.Cell_Phone = cellPhone
         fieldsChanged += 1
 
     if member.eMail != eMail :
-        logChange(staffID,'Email',memberID,eMail,member.eMail)
+        logChange('Email',memberID,eMail,member.eMail)
         member.eMail = eMail
         fieldsChanged += 1
 
@@ -359,17 +320,17 @@ def saveAddress():
         hasTemporaryVillageID == True
 
     if hasTemporaryVillageID != member.Temporary_Village_ID:
-        logChange(staffID,'Temp ID',memberID,hasTemporaryVillageID,member.Temporary_Village_ID)
+        logChange('Temp ID',memberID,hasTemporaryVillageID,member.Temporary_Village_ID)
         member.Temporary_Village_ID = hasTemporaryVillageID
         fieldsChanged += 1
 
     if tempIDexpirationDate != member.Temporary_ID_Expiration_Date:
-        logChange(staffID,'Temp Expire Dt',memberID,tempIDexpirationDate,member.Temporary_ID_Expiration_Date)
+        logChange('Temp Expire Dt',memberID,tempIDexpirationDate,member.Temporary_ID_Expiration_Date)
         member.Temporary_ID_Expiration_Date = tempIDexpirationDate
         fieldsChanged += 1
     else:
         if tempIDexpirationDate == '':
-            logChange(staffID,'Temp Expire Dt',memberID,'Null',member.Temporary_ID_Expiration_Date)
+            logChange('Temp Expire Dt',memberID,'Null',member.Temporary_ID_Expiration_Date)
             member.Temporary_ID_Expiration_Date = None
             member.Temporary_Village_ID = False
             fieldsChanged += 1
@@ -409,32 +370,32 @@ def saveAltAddress():
         errorMsg = 'ERROR - could not read record for member # ',memberID + '\n'+e
         flash(errorMsg,'danger')
     if member.Alt_Adddress != street :
-        logChange(staffID,'Alt Street',memberID,street,member.Alt_Adddress)
+        logChange('Alt Street',memberID,street,member.Alt_Adddress)
         member.Alt_Adddress = street
         fieldsChanged += 1
 
     if member.Alt_City != city :
-        logChange(staffID,'Alt City',memberID,city,member.Alt_City)
+        logChange('Alt City',memberID,city,member.Alt_City)
         member.Alt_City = city
         fieldsChanged += 1
 
     if member.Alt_State != state :
-        logChange(staffID,'Alt State',memberID,state,member.Alt_State)
+        logChange('Alt State',memberID,state,member.Alt_State)
         member.Alt_State = state
         fieldsChanged += 1
 
     if member.Alt_Country != country :
-        logChange(staffID,'Alt Country',memberID,country,member.Alt_Country)
+        logChange('Alt Country',memberID,country,member.Alt_Country)
         member.Alt_Country = country
         fieldsChanged += 1
 
     if member.Alt_Zip != zipcode:
-        logChange(staffID,'Alt Zipcode',memberID,zipcode,member.Alt_Zip)
+        logChange('Alt Zipcode',memberID,zipcode,member.Alt_Zip)
         member.Alt_Zip = zipcode
         fieldsChanged += 1
 
     if member.Alt_Phone != phone :
-        logChange(staffID,'Alt Phone',memberID,phone,member.Alt_Phone)
+        logChange('Alt Phone',memberID,phone,member.Alt_Phone)
         member.Alt_Phone = phone
         fieldsChanged += 1
 
@@ -450,7 +411,6 @@ def saveAltAddress():
 
 @app.route('/saveEmergency', methods=['POST'])
 def saveEmergency():
-    print('/saveEmergency')
     #  DID USER CANCEL?
     memberID = request.form['memberID']
     if request.form['emergAction'] == 'CANCEL':
@@ -517,57 +477,57 @@ def saveEmergency():
         fieldsChanged += 1    
 
     if defibrillatorStatus != member.Defibrillator_Trained:
-        logChange(staffID,'Defibrillator Trained',memberID,defibrillatorStatus,member.Defibrillator_Trained)
+        logChange('Defibrillator Trained',memberID,defibrillatorStatus,member.Defibrillator_Trained)
         member.Defibrillator_Trained = defibrillatorStatus
         fieldsChanged += 1
 
     if noEmergData != member.Emerg_No_Data_Provided:
-        logChange(staffID,'No Data Provided',memberID,noEmergData,member.Emerg_No_Data_Provided)
+        logChange('No Data Provided',memberID,noEmergData,member.Emerg_No_Data_Provided)
         member.Emerg_No_Data_Provided = noEmergData
         fieldsChanged += 1
     
     if pacemaker != member.Emerg_Pacemaker: 
-        logChange(staffID,'Pacemaker',memberID,pacemaker,member.Emerg_Pacemaker)
+        logChange('Pacemaker',memberID,pacemaker,member.Emerg_Pacemaker)
         member.Emerg_Pacemaker = pacemaker
         fieldsChanged += 1
 
     if stent != member.Emerg_Stent: 
-        logChange(staffID,'Stent',memberID,stent,member.Emerg_Stent)
+        logChange('Stent',memberID,stent,member.Emerg_Stent)
         member.Emerg_Stent = stent
         fieldsChanged += 1
 
     if CABG != member.Emerg_CABG: 
-        logChange(staffID,'CABG',memberID,CABG,member.Emerg_CABG)
+        logChange('CABG',memberID,CABG,member.Emerg_CABG)
         member.Emerg_CABG = CABG
         fieldsChanged += 1
 
     if MI != member.Emerg_MI: 
-        logChange(staffID,'MI',memberID,MI,member.Emerg_MI)
+        logChange('MI',memberID,MI,member.Emerg_MI)
         member.Emerg_MI = MI
         fieldsChanged += 1
 
     if diabetes1 != member.Emerg_Diabetes_Type_1: 
-        logChange(staffID,'diabetes1',memberID,diabetes1,member.Emerg_Diabetes_Type_1)
+        logChange('diabetes1',memberID,diabetes1,member.Emerg_Diabetes_Type_1)
         member.Emerg_Diabetes_Type_1 = diabetes1
         fieldsChanged += 1
 
     if diabetes2 != member.Emerg_Diabetes_Type_2: 
-        logChange(staffID,'diabetes2',memberID,diabetes2,member.Emerg_Diabetes_Type_2)
+        logChange('diabetes2',memberID,diabetes2,member.Emerg_Diabetes_Type_2)
         member.Emerg_Diabetes_Type_2 = diabetes2
         fieldsChanged += 1
 
     if otherDiagnosis != member.Emerg_Other_Diagnosis:
-        logChange(staffID,'otherDiagnosis',memberID,otherDiagnosis,member.Emerg_Other_Diagnosis)
+        logChange('otherDiagnosis',memberID,otherDiagnosis,member.Emerg_Other_Diagnosis)
         member.Emerg_Other_Diagnosis = otherDiagnosis
         fieldsChanged += 1
 
     if diabetesOther != member.Emerg_Diabetes_Other:
-        logChange(staffID,'diabetesOther',memberID,diabetesOther,member.Emerg_Diabetes_Other)
+        logChange('diabetesOther',memberID,diabetesOther,member.Emerg_Diabetes_Other)
         member.Emerg_Diabetes_Other = diabetesOther
         fieldsChanged += 1
 
     if alergies != member.Emerg_Medical_Alergies:
-        logChange(staffID,'alergies',memberID,alergies,member.Emerg_Medical_Alergies)
+        logChange('alergies',memberID,alergies,member.Emerg_Medical_Alergies)
         member.Emerg_Medical_Alergies = alergies
         fieldsChanged += 1
 
@@ -575,10 +535,8 @@ def saveEmergency():
     if fieldsChanged > 0:
         try:
             db.session.commit()
-           #print('Changes successful')
             flash("Changes successful","success")
         except Exception as e:
-           #print('Could not update emergency data',e)
             flash("Could not update member emergency data.","danger")
             db.session.rollback()
 
@@ -646,12 +604,12 @@ def saveMemberStatus():
 
     if villagesWaiverSigned != None:
         if villagesWaiverSigned != member.Villages_Waiver_Signed:
-            logChange(staffID,'Waiver Signed',memberID,villagesWaiverSigned,member.Villages_Waiver_Signed)
+            logChange('Waiver Signed',memberID,villagesWaiverSigned,member.Villages_Waiver_Signed)
             member.Villages_Waiver_Signed = villagesWaiverSigned
             fieldsChanged += 1
 
     if villagesWaiverDateSigned != member.Villages_Waiver_Date_Signed:
-        logChange(staffID,'Waiver - Date Signed',memberID,villagesWaiverDateSigned,member.Villages_Waiver_Date_Signed)
+        logChange('Waiver - Date Signed',memberID,villagesWaiverDateSigned,member.Villages_Waiver_Date_Signed)
         if villagesWaiverDateSigned == '':
             member.Villages_Waiver_Date_Signed = None 
         else:
@@ -659,48 +617,48 @@ def saveMemberStatus():
         fieldsChanged += 1
 
     if duesPaid != member.Dues_Paid:
-        logChange(staffID,'Dues Paid',memberID,duesPaid,member.Dues_Paid)
+        logChange('Dues Paid',memberID,duesPaid,member.Dues_Paid)
         member.Dues_Paid = duesPaid
         fieldsChanged += 1
 
     if dateJoined != member.Date_Joined:
-        logChange(staffID,'Date Joined',memberID,dateJoined,member.Date_Joined)
+        logChange('Date Joined',memberID,dateJoined,member.Date_Joined)
         member.Date_Joined = dateJoined
         fieldsChanged += 1
 
     if volunteer != None:
         if volunteer != member.NonMember_Volunteer:
-            logChange(staffID,'Volunteer',memberID,volunteer,member.NonMember_Volunteer)
+            logChange('Volunteer',memberID,volunteer,member.NonMember_Volunteer)
             member.NonMember_Volunteer = volunteer
             fieldsChanged += 1
     
     if inactive != None:
         if inactive != member.Inactive:
-            logChange(staffID,'Inactive',memberID,inactive,member.Inactive)
+            logChange('Inactive',memberID,inactive,member.Inactive)
             member.Inactive = inactive
             fieldsChanged += 1   
 
     if inactiveDate != None:
         if inactiveDate != member.Inactive_Date:
-            logChange(staffID,'Inactive Date',memberID,inactiveDate,member.Inactive_Date)
+            logChange('Inactive Date',memberID,inactiveDate,member.Inactive_Date)
             member.Inactive_Date = inactiveDate
             fieldsChanged += 1 
 
     if deceased != None:
         if deceased != member.Deceased:
-            logChange(staffID,'Deceased',memberID,deceased,member.Deceased)
+            logChange('Deceased',memberID,deceased,member.Deceased)
             member.Deceased = deceased
             fieldsChanged += 1
 
     if restricted != None:
         if restricted != member.Restricted_From_Shop:
-            logChange(staffID,'Restricted',memberID,restricted,member.Restricted_From_Shop)
+            logChange('Restricted',memberID,restricted,member.Restricted_From_Shop)
             member.Restricted_From_Shop = restricted
             fieldsChanged += 1
 
     if reasonRestricted != None:
         if reasonRestricted != member.Reason_For_Restricted_From_Shop:
-            logChange(staffID,'Reason Restricted',memberID,reasonRestricted,member.Reason_For_Restricted_From_Shop)
+            logChange('Reason Restricted',memberID,reasonRestricted,member.Reason_For_Restricted_From_Shop)
             member.Reason_For_Restricted_From_Shop = reasonRestricted
             fieldsChanged += 1
 
@@ -760,17 +718,17 @@ def saveCertification():
     fieldsChanged = 0
      
     if certifiedRA != member.Certified:
-        logChange(staffID,'Certified RA',memberID,certifiedRA,member.Certified)
+        logChange('Certified RA',memberID,certifiedRA,member.Certified)
         member.Certified = certifiedRA
         fieldsChanged += 1
 
     if certifiedBW != member.Certified_2:
-        logChange(staffID,'Certified BW',memberID,certifiedBW,member.Certified_2)
+        logChange('Certified BW',memberID,certifiedBW,member.Certified_2)
         member.Certified_2 = certifiedBW
         fieldsChanged += 1
 
     if certifiedRAdate != member.Certification_Training_Date:
-        logChange(staffID,'RA certification',memberID,certifiedRAdate,member.Certification_Training_Date)
+        logChange('RA certification',memberID,certifiedRAdate,member.Certification_Training_Date)
         if certifiedRAdate == '':
             member.Certification_Training_Date = None
         else:
@@ -778,7 +736,7 @@ def saveCertification():
         fieldsChanged += 1
     
     if certifiedBWdate != member.Certification_Training_Date_2:
-        logChange(staffID,'BW certification',memberID,certifiedBWdate,member.Certification_Training_Date_2)
+        logChange('BW certification',memberID,certifiedBWdate,member.Certification_Training_Date_2)
         if certifiedBWdate == '':
             member.Certification_Training_Date_2 = None
         else:
@@ -786,17 +744,17 @@ def saveCertification():
         fieldsChanged += 1
 
     if willSubRA != member.Monitor_Sub:
-        logChange(staffID,'Will sub RA',memberID,willSubRA,member.Monitor_Sub)
+        logChange('Will sub RA',memberID,willSubRA,member.Monitor_Sub)
         member.Monitor_Sub = willSubRA
         fieldsChanged += 1
 
     if willSubBW != member.Monitor_Sub_2:
-        logChange(staffID,'Will sub BW',memberID,willSubBW,member.Monitor_Sub_2)
+        logChange('Will sub BW',memberID,willSubBW,member.Monitor_Sub_2)
         member.Monitor_Sub_2 = willSubBW
         fieldsChanged += 1
 
     if RAmonitorTrainingDate != member.Last_Monitor_Training:
-        logChange(staffID,'RA Monitor Training',memberID,RAmonitorTrainingDate,member.Last_Monitor_Training)
+        logChange('RA Monitor Training',memberID,RAmonitorTrainingDate,member.Last_Monitor_Training)
         if RAmonitorTrainingDate == '':
             member.Last_Monitor_Training = None
         else:
@@ -804,7 +762,7 @@ def saveCertification():
         fieldsChanged += 1
      
     if BWmonitorTrainingDate != member.Last_Monitor_Training_Shop_2:
-        logChange(staffID,'BW Monitor Training',memberID,BWmonitorTrainingDate,member.Last_Monitor_Training_Shop_2)
+        logChange('BW Monitor Training',memberID,BWmonitorTrainingDate,member.Last_Monitor_Training_Shop_2)
         if BWmonitorTrainingDate == '':
             member.Last_Monitor_Training_Shop_2 = None
         else:
@@ -813,12 +771,12 @@ def saveCertification():
     
     if typeOfWork != None:
         if typeOfWork != member.Default_Type_Of_Work:
-            logChange(staffID,'Default_Type_Of_Work',memberID,typeOfWork,member.Default_Type_Of_Work)
+            logChange('Default_Type_Of_Work',memberID,typeOfWork,member.Default_Type_Of_Work)
             member.Default_Type_Of_Work = typeOfWork
             fieldsChanged += 1
 
     if waiverExpirationDate != member.Monitor_Duty_Waiver_Expiration_Date:
-        logChange(staffID,'Monitor Waiver Expiration',memberID,waiverExpirationDate,member.Monitor_Duty_Waiver_Expiration_Date)
+        logChange('Monitor Waiver Expiration',memberID,waiverExpirationDate,member.Monitor_Duty_Waiver_Expiration_Date)
         if waiverExpirationDate == '':
             member.Monitor_Duty_Waiver_Expiration_Date = None
         else:
@@ -826,7 +784,7 @@ def saveCertification():
         fieldsChanged += 1
 
     if waiverReason != member.Monitor_Duty_Waiver_Reason:
-        logChange(staffID,'Monitor Waiver Reason',memberID,waiverReason,member.Monitor_Duty_Waiver_Reason)
+        logChange('Monitor Waiver Reason',memberID,waiverReason,member.Monitor_Duty_Waiver_Reason)
         if waiverReason == '':
             member.Monitor_Duty_Waiver_Reason = None
         else:
@@ -866,7 +824,7 @@ def saveMonitorDuty():
     else:
         jan = False
     if member.Jan_resident != jan:
-        logChange(staffID,'Jan',memberID,jan,member.Jan_resident)
+        logChange('Jan',memberID,jan,member.Jan_resident)
         member.Jan_resident = jan
         fieldsChanged += 1
 
@@ -875,7 +833,7 @@ def saveMonitorDuty():
     else:
         feb = False
     if member.Feb_resident != feb:
-        logChange(staffID,'Feb',memberID,feb,member.Feb_resident)
+        logChange('Feb',memberID,feb,member.Feb_resident)
         member.Feb_resident = feb
         fieldsChanged += 1
 
@@ -884,7 +842,7 @@ def saveMonitorDuty():
     else:
         mar = False
     if member.Mar_resident != mar:
-        logChange(staffID,'Mar',memberID,mar,member.Mar_resident)
+        logChange('Mar',memberID,mar,member.Mar_resident)
         member.Mar_resident = mar
         fieldsChanged += 1
 
@@ -893,7 +851,7 @@ def saveMonitorDuty():
     else:
         apr = False
     if member.Apr_resident != apr:
-        logChange(staffID,'Apr',memberID,apr,member.Apr_resident)
+        logChange('Apr',memberID,apr,member.Apr_resident)
         member.Apr_resident = apr
         fieldsChanged += 1
 
@@ -902,7 +860,7 @@ def saveMonitorDuty():
     else:
         may = False
     if member.May_resident != may:
-        logChange(staffID,'may',memberID,may,member.May_resident)
+        logChange('may',memberID,may,member.May_resident)
         member.May_resident = may
         fieldsChanged += 1
 
@@ -911,7 +869,7 @@ def saveMonitorDuty():
     else:
         jun = False
     if member.Jun_resident != jun:
-        logChange(staffID,'Jun',memberID,jun,member.Jun_resident)
+        logChange('Jun',memberID,jun,member.Jun_resident)
         member.Jun_resident = jun
         fieldsChanged += 1
 
@@ -920,7 +878,7 @@ def saveMonitorDuty():
     else:
         jul = False
     if member.Jul_resident != jul:
-        logChange(staffID,'Jul',memberID,jul,member.Jul_resident)
+        logChange('Jul',memberID,jul,member.Jul_resident)
         member.Jul_resident = jul
         fieldsChanged += 1
 
@@ -929,7 +887,7 @@ def saveMonitorDuty():
     else:
         aug = False
     if member.Aug_resident != aug:
-        logChange(staffID,'Aug',memberID,aug,member.Aug_resident)
+        logChange('Aug',memberID,aug,member.Aug_resident)
         member.Aug_resident = aug
         fieldsChanged += 1
 
@@ -938,7 +896,7 @@ def saveMonitorDuty():
     else:
         sep = False
     if member.Sep_resident != sep:
-        logChange(staffID,'Sep',memberID,sep,member.Sep_resident)
+        logChange('Sep',memberID,sep,member.Sep_resident)
         member.Sep_resident = sep
         fieldsChanged += 1
 
@@ -947,7 +905,7 @@ def saveMonitorDuty():
     else:
         oct = False
     if member.Oct_resident != oct:
-        logChange(staffID,'Oct',memberID,oct,member.Oct_resident)
+        logChange('Oct',memberID,oct,member.Oct_resident)
         member.Oct_resident = oct
         fieldsChanged += 1
 
@@ -956,7 +914,7 @@ def saveMonitorDuty():
     else:
         nov = False
     if member.Nov_resident != nov:
-        logChange(staffID,'Nov',memberID,nov,member.Nov_resident)
+        logChange('Nov',memberID,nov,member.Nov_resident)
         member.Nov_resident = nov
         fieldsChanged += 1
 
@@ -965,7 +923,7 @@ def saveMonitorDuty():
     else:
         dec = False
     if member.Dec_resident != dec:
-        logChange(staffID,'Dec',memberID,dec,member.Dec_resident)
+        logChange('Dec',memberID,dec,member.Dec_resident)
         member.Dec_resident = dec
         fieldsChanged += 1
 
@@ -974,7 +932,7 @@ def saveMonitorDuty():
     else:
         needsToolCrib = False
     if member.Requires_Tool_Crib_Duty != needsToolCrib:
-        logChange(staffID,'Requires Tool Crib Duty',memberID,needsToolCrib,member.Requires_Tool_Crib_Duty)
+        logChange('Requires Tool Crib Duty',memberID,needsToolCrib,member.Requires_Tool_Crib_Duty)
         member.Requires_Tool_Crib_Duty = needsToolCrib
         fieldsChanged += 1
 
@@ -1150,7 +1108,8 @@ def updatePassword():
 
     return make_response (f"{response}")
 
-def logChange(staffID,colName,memberID,newData,origData):
+def logChange(colName,memberID,newData,origData):
+    staffID = getStaffID()
     if staffID == None or staffID == '':
         flash('Missing staffID in logChange routine.','danger')
         staffID = '111111'
@@ -1176,14 +1135,10 @@ def logChange(staffID,colName,memberID,newData,origData):
         flash('Transaction could not be logged.\n'+error,'danger')
         db.session.rollback()
 
-# @app.route('/roles/', defaults={'memberID':None})   
-# @app.route("/roles/<memberID>/<staffID>")
-# def roles(memberID,staffID):
-
-#@app.route('/newMemberApplication/',defaults={'staffID':None},methods=('GET','POST'))
-#@app.route('/newMemberApplication/<staffID>',methods=('GET','POST'))
 @app.route("/newMemberApplication",methods=('GET', 'POST'))
 def newMemberApplication():
+    staffID = getStaffID()
+    
     # GATHER DATA FOR NEW MEMBER FORM
     if request.method != 'POST':
         todays_date = date.today()
@@ -1234,11 +1189,10 @@ def newMemberApplication():
         singleTotalFeeCUR=singleTotalFeeCUR,familyTotalFeeCUR=familyTotalFeeCUR)
 
     # POST REQUEST; PROCESS FORM DATA; IF OK SEND PAYMENT DATA, ADD TO MEMBER_DATA, INSERT TRANSACTION ('ADD'), DISPLAY MEMBER FORM
+    
     if request.form['newMember'] == 'CANCEL':
-        return redirect(url_for('newMemberApplication'))
-    staffID = request.form.get('staffID')
-    if staffID == None or staffID == '':
-        staffID = '999999'
+        return redirect(url_for('index'))
+    
     todays_date = datetime.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
     duesAmount = db.session.query(ControlVariables.Current_Dues_Amount).filter(ControlVariables.Shop_Number==1).scalar()
@@ -1247,7 +1201,7 @@ def newMemberApplication():
     memberID = request.form.get('memberID')
     member = Member.query.filter_by(Member_ID=memberID).first()
     if member != None:
-        flash("Member ID "+ memberID + " is already on file.",'info')
+        flash("Member ID "+ memberID + " is already on file.",'success')
         return redirect(url_for('index',villageID=memberID,todaysDate=todaySTR))
 
     expireDate = request.form.get('expireDate')
@@ -1270,7 +1224,7 @@ def newMemberApplication():
     eMail = request.form.get('eMail')
     dateJoined = request.form.get('dateJoined')
     typeOfWork = request.form.get('typeOfWork')
-    print('typeOfWork - ',typeOfWork)
+    
     skillLevel = request.form.get('skillLevel')
     membershipType = request.form.get('membershipType')
     if membershipType == 'single' :
@@ -1352,6 +1306,7 @@ def newMemberApplication():
     # SEND REQUEST FOR PAYMENT TO LIGHTSPEED
 
     # DISPLAY NEW MEMBER RECORD SO STAFF CAN ENTER REMAINING DATA
+    flash("New member added successfully.","success")
     return redirect(url_for('index',villageID=memberID,todaysDate=todaySTR))
     
 @app.route("/acceptDues")
@@ -1399,9 +1354,10 @@ def acceptDues():
     return make_response(f"SUCCESS - Payment processed")
 
 
-@app.route('/roles/', defaults={'memberID':None})   
-@app.route("/roles/<memberID>/<staffID>")
-def roles(memberID,staffID):
+@app.route('/roles/')  
+def roles():
+    staffID = getStaffID()
+    memberID = request.args.get('villageID')
     if (memberID == ''):
         flash("You must select a member first.","info")
         return
@@ -1410,12 +1366,13 @@ def roles(memberID,staffID):
         flash ("No member match for roles.",'danger')
         return render_template("roles.html",member='')
         #return redirect(url_for('index'))
-    return render_template("roles.html",member=member,staffID=staffID)
+    return render_template("roles.html",member=member)
 
 
-@app.route('/checkIns/', defaults={'memberID':None})   
-@app.route("/checkIns/<memberID>/<staffID>")
-def checkIns(memberID,staffID):
+@app.route('/checkIns/')   
+def checkIns():
+    staffID = getStaffID()
+    memberID = request.args.get('villageID')
     if (memberID == ''):
         flash("You must select a member first.","info")
         return
@@ -1471,17 +1428,14 @@ def checkIns(memberID,staffID):
     #     flash ("No member match for check-ins.",'info')
     #     return redirect(url_for('index',villageID=memberID,todaysDate=todaySTR))
 
-    return render_template("checkIns.html",activityDict=activityDict,memberID=memberID,staffID=staffID)
+    return render_template("checkIns.html",activityDict=activityDict,memberID=memberID)
 
 @app.route('/saveRoles', methods=['POST'])
 def saveRoles():
-    staffID = '123456'
+    staffID = getStaffID()
     
-    #  DID USER CANCEL?
     memberID = request.form['memberID']
-    # if request.form['emergAction'] == 'CANCEL':
-    #     return redirect(url_for('index',villageID=memberID))
-
+   
     # GET DATA FROM FORM
     if request.form.get('askMe') == 'True':
         askMe = True
@@ -1570,82 +1524,82 @@ def saveRoles():
     fieldsChanged = 0
     if member.isAskMe != askMe:
         member.isAskMe = askMe
-        logChange(staffID,'isAskMe',memberID,askMe,member.isAskMe)
+        logChange('isAskMe',memberID,askMe,member.isAskMe)
         fieldsChanged += 1 
 
     if member.Mentor != mentor:
         member.Mentor = mentor
-        logChange(staffID,'Mentor',memberID,mentor,member.Mentor)
+        logChange('Mentor',memberID,mentor,member.Mentor)
         fieldsChanged += 1 
 
     if member.isBODmember != bod:
         member.isBODmember = bod
-        logChange(staffID,'isBODmember',memberID,bod,member.isBODmember)
+        logChange('isBODmember',memberID,bod,member.isBODmember)
         fieldsChanged += 1 
 
     if member.canSellMdse != mdse:
         member.canSellMdse = mdse
-        logChange(staffID,'canSellMdse',memberID,mdse,member.canSellMdse)
+        logChange('canSellMdse',memberID,mdse,member.canSellMdse)
         fieldsChanged += 1 
 
     if member.Certification_Staff != certification:
         member.Certification_Staff = certification
-        logChange(staffID,'Certification_Staff',memberID,certification,member.Certification_Staff)
+        logChange('Certification_Staff',memberID,certification,member.Certification_Staff)
         fieldsChanged += 1 
 
     if member.Office_Staff != staff:
         member.Office_Staff = staff
-        logChange(staffID,'Office_Staff',memberID,staff,member.Office_Staff)
+        logChange('Office_Staff',memberID,staff,member.Office_Staff)
         fieldsChanged += 1 
 
     if member.DBA != DBA:
         member.DBA = DBA
-        logChange(staffID,'DBA',memberID,DBA,member.DBA)
+        logChange('DBA',memberID,DBA,member.DBA)
         fieldsChanged += 1 
 
     if member.Monitor_Coordinator != monitorCoordinator:
         member.Monitor_Coordinator = monitorCoordinator
-        logChange(staffID,'Monitor_Coordinator',memberID,monitorCoordinator,member.Monitor_Coordinator)
+        logChange('Monitor_Coordinator',memberID,monitorCoordinator,member.Monitor_Coordinator)
         fieldsChanged += 1 
 
     if member.Instructor != instructor:
         member.Instructor = instructor
-        logChange(staffID,'Instructor',memberID,instructor,member.Instructor)
+        logChange('Instructor',memberID,instructor,member.Instructor)
         fieldsChanged += 1 
 
     if member.isPresident != president:
         member.isPresident = president
-        logChange(staffID,'isPresident',memberID,president,member.isPresident)
+        logChange('isPresident',memberID,president,member.isPresident)
         fieldsChanged += 1 
 
     if member.canSellLumber != lumber:
         member.canSellLumber = lumber
-        logChange(staffID,'canSellLumber',memberID,lumber,member.canSellLumber)
+        logChange('canSellLumber',memberID,lumber,member.canSellLumber)
         fieldsChanged += 1 
 
     if member.isSafetyCommittee != safety:
         member.isSafetyCommittee = safety
-        logChange(staffID,'isSafetyCommittee',memberID,safety,member.isSafetyCommittee)
+        logChange('isSafetyCommittee',memberID,safety,member.isSafetyCommittee)
         fieldsChanged += 1 
 
     if member.Maintenance != maintenance:
         member.Maintenance = maintenance
-        logChange(staffID,'Maintenance',memberID,maintenance,member.Maintenance)
+        logChange('Maintenance',memberID,maintenance,member.Maintenance)
         fieldsChanged += 1 
 
     if member.isSpecialProjects != specProj:
         member.isSpecialProjects = specProj
-        logChange(staffID,'isSpecialProjects',memberID,specProj,member.isSpecialProjects)
+        logChange('isSpecialProjects',memberID,specProj,member.isSpecialProjects)
         fieldsChanged += 1 
 
     if member.Manager != mgr:
         member.Manager = mgr
-        logChange(staffID,'Manager',memberID,mgr,member.Manager)
+        logChange('Manager',memberID,mgr,member.Manager)
         fieldsChanged += 1 
 
     if member.isVP != vp:
         member.isVP = vp
-        logChange(staffID,'isVP',memberID,vp,member.isVP)
+        logChange('isVP',memberID,vp,member.isVP)
         fieldsChanged += 1 
 
 
@@ -1662,9 +1616,9 @@ def saveRoles():
 
 
 # PRINT MEMBER MONITOR DUTY SCHEDULE
-@app.route("/printMemberSchedule/<string:memberID>/", methods=['GET','POST'])
-def printMemberSchedule(memberID):
-    
+@app.route("/printMemberSchedule/", methods=['GET','POST'])
+def printMemberSchedule():
+    memberID = request.args.get('villageID')
     # GET MEMBER NAME
     member = db.session.query(Member).filter(Member.Member_ID== memberID).first()
     displayName = member.First_Name + ' ' + member.Last_Name
@@ -1673,7 +1627,6 @@ def printMemberSchedule(memberID):
         lastTrainingSTR = lastTraining.strftime('%m-%d-%Y')
     else:
         lastTrainingSTR = 'NEVER'
-    print ('lastTrainingSTR - ',lastTrainingSTR)
         
     # RETRIEVE LAST_ACCEPTABLE_TRAINING_DATE FROM tblControl_Variables
     lastAcceptableTrainingDate = db.session.query(ControlVariables.Last_Acceptable_Monitor_Training_Date).filter(ControlVariables.Shop_Number == '1').scalar()
@@ -1709,7 +1662,10 @@ def printMemberSchedule(memberID):
 
 @app.route("/shiftChange")
 def shiftChange():
-    staffID = request.args.get('staffID')
+    #staffID = request.args.get('staffID')
+    session.pop('staffID',None)
+    session['staffID'] = request.args.get('staffID')
+    staffID = session['staffID']
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
     if staffMember == None:
         msg = "Not a valid member ID."
@@ -1722,9 +1678,10 @@ def shiftChange():
     return jsonify(msg=msg)
 
 
-@app.route('/editName/', defaults={'memberID':None,'staffID':None})  
-@app.route("/editName/<memberID>/<staffID>")
-def editName(memberID,staffID):
+@app.route('/editName/')  
+def editName():
+    staffID = getStaffID()
+    memberID = request.args.get('villageID')
     if (memberID == ''):
         flash("You must select a member first.","info")
     
@@ -1732,7 +1689,7 @@ def editName(memberID,staffID):
     if (member == None):
         flash ("No member match for name change.",'danger')
         return redirect(url_for('index'))
-    return render_template("editName.html",member=member,staffID=staffID)
+    return render_template("editName.html",member=member)
 
 @app.route('/saveName', methods=['POST'])
 def saveName():
@@ -1756,22 +1713,22 @@ def saveName():
     # HAVE ANY FIELDS CHANGED?
     fieldsChanged = 0
     if member.First_Name != firstName:
-        logChange(staffID,'First name',memberID,firstName,member.First_Name)
+        logChange('First name',memberID,firstName,member.First_Name)
         member.First_Name = firstName
         fieldsChanged += 1 
 
     if member.Middle_Name != middleName:
-        logChange(staffID,'Middle name',memberID,middleName,member.Middle_Name)
+        logChange('Middle name',memberID,middleName,member.Middle_Name)
         member.Middle_Name = middleName
         fieldsChanged += 1 
 
     if member.Last_Name != lastName:
-        logChange(staffID,'Last name',memberID,lastName,member.Last_Name)
+        logChange('Last name',memberID,lastName,member.Last_Name)
         member.Last_Name = lastName
         fieldsChanged += 1 
 
     if member.Nickname != nickName:
-        logChange(staffID,'Nick name',memberID,nickName,member.Nickname)
+        logChange('Nick name',memberID,nickName,member.Nickname)
         member.Nickname = nickName
         fieldsChanged += 1
 
@@ -1818,9 +1775,10 @@ def saveName():
     return redirect(url_for('index',villageID=memberID))
 
 
-@app.route('/changeVillageID/', defaults={'memberID':None,'staffID':None})  
-@app.route("/changeVillageID/<memberID>/<staffID>")
-def changeVillageID(memberID,staffID):
+@app.route('/changeVillageID/')  
+def changeVillageID():
+    staffID = getStaffID()
+    memberID = request.args.get('villageID')
     if (memberID == ''):
         flash("You must select a member first.","info")
     
@@ -1828,7 +1786,7 @@ def changeVillageID(memberID,staffID):
     if (member == None):
         flash ("No member match for Village ID change.",'danger')
         return redirect(url_for('index'))
-    return render_template("chgVillageID.html",member=member,staffID=staffID)
+    return render_template("chgVillageID.html",member=member)
 
 @app.route('/saveVillageID', methods=['POST'])
 def saveVillageID():
@@ -1843,13 +1801,13 @@ def saveVillageID():
         if memberExists != None:
             flash('The ID# '+newVillageID +' is already assigned to another member.','info')
             db.session.close()
-            return redirect(url_for('changeVillageID',memberID=curVillageID,staffID=staffID))
+            return redirect(url_for('changeVillageID',memberID=curVillageID))
 
     # GET THE CURRENT MEMBER RECORD
     member = db.session.query(Member).filter(Member.Member_ID == curVillageID).first()
     if (member == None):
         flash("Record for member "+ curVillageID + ' is missing.','danger')
-        return redirect(url_for('index',villageID=curVillageID,staffID=staffID))
+        return redirect(url_for('index',villageID=curVillageID))
      
     # CHANGE THE MEMBER ID (VILLAGE ID)
     if curVillageID != newVillageID:
@@ -1860,30 +1818,29 @@ def saveVillageID():
         try:
             member.Member_ID = newVillageID
             db.session.commit()
-            logChange(staffID,'Village ID changed',newVillageID,curVillageID,newVillageID)    
+            logChange('Village ID changed',newVillageID,curVillageID,newVillageID)    
             flash("Village ID change successful","success")
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
             flash('ERROR - '+error,'danger')
             flash("Could not change village ID.","danger")
             db.session.rollback()
-            return redirect(url_for('index',villageID=curVillageID,staffID=staffID))
+            return redirect(url_for('index',villageID=curVillageID))
 
-    return redirect(url_for('index',villageID=newVillageID,staffID=staffID))
+    return redirect(url_for('index',villageID=newVillageID))
    
 
 
    
 @app.route("/takePhoto")
 def takePhoto():
-    print('/takePhoto')
     return render_template("photo.html")
 
-#@app.route('/newVolunteerApplication/',defaults={'staffID':None},methods=('GET','POST'))
-#@app.route('/newVolunteerApplication/<staffID>',methods=('GET','POST'))
+
 @app.route("/newVolunteerApplication",methods=('GET', 'POST'))
 def newVolunteerApplication():
-    print('/newVolunteerApplication')
+    staffID = getStaffID()
+
     todays_date = date.today()
     todaySTR = todays_date.strftime('%m-%d-%Y')
     
@@ -1892,8 +1849,8 @@ def newVolunteerApplication():
         return render_template("newVolunteer.html")
 
     # DID USER CANCEL?
-    if request.form['newMember'] == 'CANCEL':
-        return redirect(url_for('index',villageID='',todaysDate=todaySTR))
+    if request.form.get('volunteerCancelBtn') == 'CANCEL':
+        return redirect(url_for('index',todaysDate=todaySTR))
 
     # COLLECT DATA FROM FORM
     villageID = request.form.get('villageID')
@@ -1903,7 +1860,6 @@ def newVolunteerApplication():
         return redirect(url_for('index',villageID=villageID,todaysDate=todaySTR))
 
     # PROCESS NEW VOLUNTEER
-    staffID = request.form.get('staffID')
     firstName = request.form.get('firstName')
     middleName = request.form.get('middleName')
     lastName = request.form.get('lastName')
@@ -1945,6 +1901,7 @@ def newVolunteerApplication():
         error = str(e.__dict__['orig'])
         flash('ERROR - '+error,'danger')
         db.session.rollback()
+        return redirect(url_for('index',todaysDate=todaySTR)) 
 
     # ADD TO MEMBER TRANSACTION TABLE
     newTransaction = MemberTransactions(
@@ -1968,3 +1925,30 @@ def newVolunteerApplication():
     # DISPLAY NEW MEMBER RECORD SO STAFF CAN ENTER REMAINING DATA
     return redirect(url_for('index',villageID=villageID,todaysDate=todaySTR))
     
+def getStaffID():
+    if 'staffID' in session:
+        staffID = session['staffID']
+    else:
+        staffID = '604875'
+    return staffID
+
+def getShopID():
+    
+    if 'shopID' in session:
+        shopID = session['shopID']
+    else:
+        # SET RA FOR TESTING; SEND FLASH ERROR MESSAGE FOR PRODUCTION
+        shopID = 'RA'
+        msg = "Missing location information; Rolling Acres assumed."
+        #flash(msg,"danger")
+    if shopID =='RA':
+        shopNumber = 1
+    else:
+        if shopID == 'BW':
+            shopNumber = 2
+        else:
+            msg = "The shopID of " + shopID + "is invalid, 'RA' assumed"
+            #flash (msg,'danger')
+            shopID == 'RA'
+            shopNumber = 1
+    return shopID    

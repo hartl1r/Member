@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Feb 4, 2021</h6>
+            <h6>ver. Feb 5, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -50,20 +50,20 @@
                 <div id="myDropdown" class="dropdown-content"style=text-align:left>
                     <button id='clearScreenBtnID' class='dropdown-item' disabled onclick='clearScreen()'>Clear Screen</button>
                     <hr>
-                    <button id='mntrSchedBtnID' class='dropdown-item' disabled onclick="window.location.href='/printMemberSchedule/{{member.Member_ID}}'">Print Schedule</button>
+                    <button id='mntrSchedBtnID' class='dropdown-item' disabled onclick="window.location.href='/printMemberSchedule/?villageID={{member.Member_ID}}'">Print Schedule</button>
                     <button id='noteBtnID' class='dropdown-item' disabled onclick='noteRoutine()'>Note to Member</button>                   
                     <button id='classSignUpBtnID' class='dropdown-item' disabled onclick='classSignUp()'>Class Signup</button>
-                    <button id='rolesBtnID' class='dropdown-item' disabled onclick="window.location.href='/roles/{{member.Member_ID}}/{{staffID}}'">Roles</button>
-                    <button id="editNameBtnID" class='dropdown-item' disabled onclick="window.location.href='/editName/{{member.Member_ID}}/{{staffID}}'">Edit name</button>
-                    <button id="chgVillageID" class='dropdown-item' disabled onclick="window.location.href='/changeVillageID/{{member.Member_ID}}/{{staffID}}'">Edit Village ID</button>
+                    <button id='rolesBtnID' class='dropdown-item' disabled onclick="window.location.href='/roles/?villageID={{member.Member_ID}}'">Roles</button>
+                    <button id="editNameBtnID" class='dropdown-item' disabled onclick="window.location.href='/editName/?villageID={{member.Member_ID}}'">Edit name</button>
+                    <button id="chgVillageID" class='dropdown-item' disabled onclick="window.location.href='/changeVillageID/?villageID={{member.Member_ID}}'">Edit Village ID</button>
                     <button id='monitorSchedulingBtnID' class='dropdown-item' disabled onclick='linkToMonitorSchedule()'>Schedule Monitor Duty</button>
                     <hr>
-                    <button id='showCheckInsID' class="dropdown-item" disabled style=display:none onclick="window.location.href='/checkIns/{{member.Member_ID}}/{{staffID}}'">Show check-ins</button>
+                    <button id='showCheckInsID' class="dropdown-item" disabled style=display:none onclick="window.location.href='/checkIns/?villageID={{member.Member_ID}}'">Show check-ins</button>
                     <button id='passwordBtnID' class='dropdown-item' disabled style=display:none onclick='passwordRoutine()'>Change password</button>                   
                     <hr>
                     <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication'">New Member Application</button>
                     <button id='newVolunteerBtnID' class='dropdown-item' onclick="window.location.href='/newVolunteerApplication'">New Volunteer Application</button>
-                    <button id='shiftChangeBtnID' class='dropdown-item' onclick='shiftChange()'>Shift Change</button>
+                    <button id='shiftChangeBtnID' class='dropdown-item' disabled onclick='shiftChange()'>Temporary Login</button>
                 </div>
                 <button id='showPhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='showHidePhoto(this)''>SHOW PHOTO</button>
                 <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='takePhoto(this)''>TAKE PHOTO</button>
@@ -99,6 +99,7 @@
                         {% else %} 
                             value="False"
                         {% endif %}>
+                        
                     <input id='expireDt' type="date" class="datepick" name="expireDt" style=height:30px;width:9em value="{{member.Temporary_ID_Expiration_Date}}">
                     {% if expireMsg == 'ID EXPIRED!' or expireMsg == '< 30 days' %}
                         <label style="color:red;font-size:12px;margin-left:20px" >{{ expireMsg }}</label>

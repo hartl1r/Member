@@ -24,10 +24,10 @@ const colors = {
 
 
 // SET STAFF ID IN EACH PANEL
-var staffIDelements = document.getElementsByClassName('staffID')
-for (var i = 0; i > staffIDelements.length; i++) {
-    staffIDelements[i].setAttribute("value", staffID);
-}
+// var staffIDelements = document.getElementsByClassName('staffID')
+// for (var i = 0; i > staffIDelements.length; i++) {
+//     staffIDelements[i].setAttribute("value", staffID);
+// }
 
 // DECLARE GLOBAL VARIABLES
 var todaysDate = new Date();
@@ -750,22 +750,27 @@ function acceptDues() {
 }
 
 function classSignUp() {
-    alert ('routine not ready')
+    memberID = document.getElementById('memberID').value
+    if (memberID != ''){
+        link = "https://fd.thevwc.org:42738/?villageID=" + memberID 
+    }
+    else{
+        link = "https://fd.thevwc.org:42738/"
+    }
+    window.location.href = link 
+
     return
 }
 
 function linkToMonitorSchedule() {
     memberID = document.getElementById('memberID').value
-    console.log('memberID - '+memberID)
     if (memberID != ''){
         link = "https://fd.thevwc.org:42735/?villageID=" + memberID 
     }
     else{
         link = "https://fd.thevwc.org:42735/"
     }
-    console.log('link - '+ link)
-    window.location.href = link
-   
+    window.location.href = link 
 }
 
 $('.phones').usPhoneFormat({
@@ -844,7 +849,7 @@ $('input[type="tel"]')
 		}
   });
 
-  function shiftChange() {
+function shiftChange() {
     //   PROMPT FOR STAFF ID
     staffID = prompt("Staff ID - ","xxxxxx")
     $.ajax({
@@ -872,7 +877,7 @@ $('input[type="tel"]')
             alert("shiftChange Error ..."+errorThrown+'\n'+textStatus)
         }
     })
-  }
+}
 
 function setManagerPermissions() {
     // REMOVE READONLY FROM SPECIFIC ELEMENTS
