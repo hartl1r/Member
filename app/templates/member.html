@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Feb 5, 2021</h6>
+            <h6>ver. Feb 6, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -358,6 +358,11 @@
                 <textarea name="reasonRestricted"  style=margin-left:10px;margin-top:5px id="reasonRestricted" cols="30" rows="2">{{member.Reason_For_Restricted_From_Shop}}</textarea>
             </div>
             
+            <div class="row" style=padding-top:2em>
+                <label for="memberNotesID">Member notes:</label>
+                <textarea name="memberNotes" id="memberNotesID" cols="30" rows="2" style='padding-left:2px'>{{member.Member_Notes}}</textarea>
+            </div>
+
             <div class='row'>
                 <div class="col" style=margin-top:35px;margin-left:40px>
                     <label style='color:red'>{{hasKeys}}</label>
@@ -489,122 +494,133 @@
     <!-- MONITOR DUTY -->
     <div id="monitorDutyID" class="monitorDutyInfo overflow-auto panel">
         <h5>MONITOR DUTY</h5>
-        <form method='POST'  action="/saveMonitorDuty" style="padding-left:0px;padding-top:10px">
+        <form method='POST'  action="/saveMonitorDuty" style="padding-left:0px;padding-top:0px">
             <div class='monthsInTheVillages'>
                 <div class="monthNames" style="margin:0; padding:0;">
-                    <ul>
-                        <li>Jan</li>
-                        <li>Feb</li>
-                        <li>Mar</li>
-                        <li>Apr</li>
-                        <li>May</li>
-                        <li>Jun</li>
-                        <li>Jul</li>
-                        <li>Aug</li>
-                        <li>Sep</li>
-                        <li>Oct</li>
-                        <li>Nov</li>
-                        <li>Dec</li>
-                    </ul>
+                    <label>Jan</label>
+                    <label>Feb</label>
+                    <label>Mar</label>
+                    <label>Apr</label>
+                    <label>May</label>
+                    <label>Jun</label>
+                    <label>Jul</label>
+                    <label>Aug</label>
+                    <label>Sep</label>
+                    <label>Oct</label>
+                    <label>Nov</label>
+                    <label>Dec</label>
                 </div>
                 
                 <div id = "monthCheckboxesID" class="monthCheckboxes">
-                    <ul>
-                        <li>
-                            <input type="checkbox" id='jan' style=margin-left:5px name='janResident' {% if member.Jan_resident %} checked {% endif %} value='janResidentValue'>
-                            <input type="hidden" id='janResidentValue' name='jan' value="{{ member.Jan_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='feb' name='febResident' {% if member.Feb_resident %} checked {% endif %} value='febResidentValue'>
-                            <input type="hidden" id='febResidentValue' name='feb' value="{{ member.Feb_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='mar' name='marResident' {% if member.Mar_resident %} checked {% endif %} value='marResidentValue'>
-                            <input type="hidden" id='marResidentValue' name='mar' value="{{ member.Mar_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='apr' name='aprResident' {% if member.Apr_resident %} checked {% endif %} value='aprResidentValue'>
-                            <input type="hidden" id='aprResidentValue' name='apr' value="{{ member.Apr_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='may' name='mayResident' {% if member.May_resident %} checked {% endif %} value='mayResidentValue'>
-                            <input type="hidden" id='mayResidentValue' name='may' value="{{ member.May_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='jun' style=margin-left:4px name='junResident' {% if member.Jun_resident %} checked {% endif %} value='junResidentValue'>
-                            <input type="hidden" id='junResidentValue' name='jun' value="{{ member.Jun_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='jul' name='julResident' {% if member.Jul_resident %} checked {% endif %} value='julResidentValue'>
-                            <input type="hidden" id='julResidentValue' name='jul' value="{{ member.Jul_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='aug' name='augResident' {% if member.Aug_resident %} checked {% endif %} value='augResidentValue'>
-                            <input type="hidden" id='augResidentValue' name='aug' value="{{ member.Aug_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='sep' name='sepResident' {% if member.Sep_resident %} checked {% endif %} value='sepResidentValue'>
-                            <input type="hidden" id='sepResidentValue' name='sep' value="{{ member.Sep_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='oct' name='octResident' {% if member.Oct_resident %} checked {% endif %} value='octResidentValue'>
-                            <input type="hidden" id='octResidentValue' name='oct' value="{{ member.Oct_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='nov' name='novResident' {% if member.Nov_resident %} checked {% endif %} value='novResidentValue'>
-                            <input type="hidden" id='novResidentValue' name='nov' value="{{ member.Nov_resident }}">
-                        </li>
-                        <li>
-                            <input type="checkbox" id='dec' name='decResident' {% if member.Dec_resident %} checked {% endif %} value='decResidentValue'>
-                            <input type="hidden" id='decResidentValue' name='dec' value="{{ member.Dec_resident }}">
-                        </li>
-                    </ul>
+                    <input
+                        id='jan' 
+                        type="checkbox"  
+                        style=margin-left:5px 
+                        name='jan' 
+                        {% if member.Jan_resident %}
+                            checked
+                        {% endif %}
+                        value={{member.Jan_resident }}
+                    >
+                    <input type="checkbox" id='feb' name='feb' {% if member.Feb_resident %} checked {% endif %} value={{member.Feb_resident}}>
+                    <input type="checkbox" id='mar' name='mar' {% if member.Mar_resident %} checked {% endif %} value={{member.Mar_resident}}>
+                    <input type="checkbox" id='apr' name='apr' {% if member.Apr_resident %} checked {% endif %} value={{member.Apr_resident}}>
+                    <input type="checkbox" id='may' name='may' {% if member.May_resident %} checked {% endif %} value={{member.May_resident}}>
+                    <input type="checkbox" id='jun' style=margin-left:4px name='jun' {% if member.Jun_resident %} checked {% endif %} value={{member.Jun_resident}}>
+                    <input type="checkbox" id='jul' name='jul' {% if member.Jul_resident %} checked {% endif %} value={{member.Jul_resident}}>
+                    <input type="checkbox" id='aug' name='aug' {% if member.Aug_resident %} checked {% endif %} value={{member.Aug_resident}}>
+                    <input type="checkbox" id='sep' name='sep' {% if member.Sep_resident %} checked {% endif %} value={{member.Sep_resident}}>
+                    <input type="checkbox" id='oct' name='oct' {% if member.Oct_resident %} checked {% endif %} value={{member.Oct_resident}}>
+                    <input type="checkbox" id='nov' name='nov' {% if member.Nov_resident %} checked {% endif %} value={{member.Nov_resident}}>
+                    <input type="checkbox" id='dec' name='dec' {% if member.Dec_resident %} checked {% endif %} value={{member.Dec_resident}}>
                 </div>
             </div>
-            <!-- FUTURE MONITOR DUTY -->
-            <div class='monitorDuty'>
-                <table class="table table-sm overflow-auto">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Date</th>
-                            <th>Shift</th>
-                            <th>Duty</th>
-                            <th>NS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <div class='futureDuty'>
-                            {% for f in futureDuty %}
-                                <tr class='futureDuty'>
-                                    <td>{{ f.Shop_Abbr }}</td>
-                                    <td>{{ f.DateScheduled }}</td>
-                                    <td>{{ f.AM_PM }}</td>
-                                    <td>{{ f.Duty }}</td>
-                                    <td>{{ f.NoShow }}</td>
-                                </tr>
-                            {% endfor %}
+            <!-- MEMBER SCHEDULE -->
+            <div id="memberSchedule-container">
+                <div id="schedHdg1" class="memberScheduleHeader">
+                    <span>Location</span>
+                    <span>Date</span>
+                    <span>Shift</span>
+                    <span>Duty</span>
+                    <span>No Show</span>
+                </div>
+                <div id="memberScheduleDetailID" class="memberScheduleDetail">
+                    <!-- FUTURE DUTY -->
+                    <div class="futureDuty">
+                        {% for f in futureDuty %}
+                        <div class="memberScheduleRow" style="color:red">
+                            <span class="memberScheduleCol">{{f.Shop_Name}}</span>
+                            <span class="memberScheduleCol">{{f.DateScheduled}}</span>
+                            <span class="memberScheduleCol">{{f.AM_PM}}</span>
+                            <span class="memberScheduleCol">{{f.Duty}}</span>
+                            <input 
+                                type="checkbox" 
+                                class="memberScheduleCol"
+                                onclick="return false"
+                                {% if f.NoShow == 'NS' %}
+                                    checked
+                                    value = 'True'
+                                {% else %}
+                                    value = 'False'
+                                {% endif %}
+                            >
                         </div>
-                        <div class='pastDuty'>
-                            {% for p in pastDuty %}
-                                <tr class='pastDuty'>
-                                    <td>{{ p.Shop_Abbr }}</td>
-                                    <td>{{ p.DateScheduled }}</td>
-                                    <td>{{ p.AM_PM }}</td>
-                                    <td>{{ p.Duty }}</td>
-                                    <td>{{ p.NoShow }}</td>
-                                </tr>
-                            {% endfor %}   
+                        {% endfor %}
+                    </div>
+                    <div class="pastDuty">
+                        {% for p in pastDuty %}
+                        <div class="memberScheduleRow" style="color:green">
+                            <span class="memberScheduleCol">{{p.Shop_Name}}</span>
+                            <span class="memberScheduleCol">{{p.DateScheduled}}</span>
+                            <span class="memberScheduleCol">{{p.AM_PM}}</span>
+                            <span class="memberScheduleCol">{{p.Duty}}</span>
+                            <input 
+                            type="checkbox"
+                            class="memberScheduleCol" 
+                            onclick="return false"
+                            {% if p.NoShow == 'NS' %}
+                                checked
+                            {% endif %}
+                            >
+                            
                         </div>
-                    </tbody>
-                </table>
-               
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-            <div class='col-5' style=margin-left:150px>
-                <input id='needsToolCribID' type="checkbox" class="form-check-input" name="villagesWaiverSigned"   {% if member.Requires_Tool_Crib_Duty %} checked  {% endif %} value="True">
-                <label for='needsToolCribID' class="form-check-label" >Needs Tool Crib Duty</label>    
+           
+            <div class='col-5' style=margin-left:10px>
+                <input 
+                    id='needsToolCribID' 
+                    type="checkbox"  
+                    name="needsToolCrib"   
+                    {% if member.Requires_Tool_Crib_Duty %}
+                        checked 
+                    {% endif %} 
+                    value = {{member.Requires_Tool_Crib_Duty}}>
+                <label 
+                    for='needsToolCribID' 
+                    class="form-check-label" >
+                    Needs Tool Crib Duty
+                </label>    
             </div>
-
+            
+            <div class='monitorDutyNotes'>
+                <div class=col-3>
+                    <label style=margin-bottom:3em>Monitor Duty Notes</label>
+                </div>
+                <div class=col-9>
+                    <textarea 
+                        id="monitorDutyNotesID"
+                        name="monitorDutyNotes"
+                        style=text-align:left  
+                        readonly 
+                        cols="50" rows="3"
+                        >
+                        {{member.Monitor_Duty_Notes}}
+                    </textarea>
+                </div>
+            </div>
             <div class="cancelSave" style=padding-left:100px>
                 <input type="hidden" class='staffID' name='staffID' value='{{staffID}}'>
                 <input type="hidden" class='clientLocation' name='clientLocation'>

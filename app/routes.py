@@ -25,6 +25,8 @@ from pytz import timezone
 from flask_mail import Mail, Message
 mail=Mail(app)
  
+import pyodbc
+
 @app.route('/')
 @app.route('/index/')
 def index():
@@ -32,8 +34,8 @@ def index():
     villageID = request.args.get('villageID')
     
     # GET SESSION VARIABLES
-    print(session.keys())
-    print(session.items())
+    # print(session.keys())
+    # print(session.items())
 
     staffID = getStaffID()
     shopID = getShopID()
@@ -568,7 +570,7 @@ def saveMemberStatus():
     if request.form.get('restricted') == 'True':
         restricted = True
     else:
-        reasonRestricted = False
+        restricted = False
     
     if request.form.get('volunteer') == 'True':
         volunteer = True
@@ -593,7 +595,7 @@ def saveMemberStatus():
         restricted = False
     
     reasonRestricted = request.form.get('reasonRestricted')
-
+    memberNotes = request.form.get('memberNotes')
 
      # GET MEMBER RECORD 
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
@@ -662,12 +664,18 @@ def saveMemberStatus():
             member.Reason_For_Restricted_From_Shop = reasonRestricted
             fieldsChanged += 1
 
+    if memberNotes != None:
+        if memberNotes != member.Member_Notes:
+            logChange('Member note',memberID,memberNotes,member.Member_Notes)
+            member.Member_Notes = memberNotes
+            fieldsChanged += 1
+
     if fieldsChanged > 0:
         try:
             db.session.commit()
             flash("Changes successful","success")
         except Exception as e:
-            flash("Could not update member data.","danger")
+            flash("Could not update membership data.","danger")
             db.session.rollback()
 
     return redirect(url_for('index',villageID=memberID))
@@ -807,9 +815,10 @@ def saveCertification():
 
 @app.route('/saveMonitorDuty', methods=['POST'])
 def saveMonitorDuty():
+    staffID = getStaffID()
+
     # GET DATA FROM FORM
     memberID = request.form['memberID']
-    staffID = request.form['staffID']
     
     # DID USER CANCEL?
     if request.form['monitorAction'] == 'CANCEL':
@@ -818,8 +827,8 @@ def saveMonitorDuty():
     # RETRIEVE MEMBER RECORD 
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     fieldsChanged = 0
-
-    if request.form['jan'] == 'True':
+    
+    if request.form.get('jan') == 'True':
         jan = True
     else:
         jan = False
@@ -828,7 +837,7 @@ def saveMonitorDuty():
         member.Jan_resident = jan
         fieldsChanged += 1
 
-    if request.form['feb'] == 'True':
+    if request.form.get('feb') == 'True':
         feb = True
     else:
         feb = False
@@ -837,7 +846,7 @@ def saveMonitorDuty():
         member.Feb_resident = feb
         fieldsChanged += 1
 
-    if request.form['mar'] == 'True':
+    if request.form.get('mar') == 'True':
         mar = True
     else:
         mar = False
@@ -846,7 +855,7 @@ def saveMonitorDuty():
         member.Mar_resident = mar
         fieldsChanged += 1
 
-    if request.form['apr'] == 'True':
+    if request.form.get('apr') == 'True':
         apr = True
     else:
         apr = False
@@ -855,7 +864,7 @@ def saveMonitorDuty():
         member.Apr_resident = apr
         fieldsChanged += 1
 
-    if request.form['may'] == 'True':
+    if request.form.get('may') == 'True':
         may = True
     else:
         may = False
@@ -864,7 +873,7 @@ def saveMonitorDuty():
         member.May_resident = may
         fieldsChanged += 1
 
-    if request.form['jun'] == 'True':
+    if request.form.get('jun') == 'True':
         jun = True
     else:
         jun = False
@@ -873,7 +882,7 @@ def saveMonitorDuty():
         member.Jun_resident = jun
         fieldsChanged += 1
 
-    if request.form['jul'] == 'True':
+    if request.form.get('jul') == 'True':
         jul = True
     else:
         jul = False
@@ -882,7 +891,7 @@ def saveMonitorDuty():
         member.Jul_resident = jul
         fieldsChanged += 1
 
-    if request.form['aug'] == 'True':
+    if request.form.get('aug') == 'True':
         aug = True
     else:
         aug = False
@@ -891,7 +900,7 @@ def saveMonitorDuty():
         member.Aug_resident = aug
         fieldsChanged += 1
 
-    if request.form['sep'] == 'True':
+    if request.form.get('sep') == 'True':
         sep = True
     else:
         sep = False
@@ -900,7 +909,7 @@ def saveMonitorDuty():
         member.Sep_resident = sep
         fieldsChanged += 1
 
-    if request.form['oct'] == 'True':
+    if request.form.get('oct') == 'True':
         oct = True
     else:
         oct = False
@@ -909,7 +918,7 @@ def saveMonitorDuty():
         member.Oct_resident = oct
         fieldsChanged += 1
 
-    if request.form['nov'] == 'True':
+    if request.form.get('nov') == 'True':
         nov = True
     else:
         nov = False
@@ -918,7 +927,7 @@ def saveMonitorDuty():
         member.Nov_resident = nov
         fieldsChanged += 1
 
-    if request.form['dec'] == 'True':
+    if request.form.get('dec') == 'True':
         dec = True
     else:
         dec = False
@@ -927,83 +936,41 @@ def saveMonitorDuty():
         member.Dec_resident = dec
         fieldsChanged += 1
 
-    if request.form['needsToolCribID'] == 'True':
+    if request.form.get('needsToolCrib') == 'True':
         needsToolCrib = True
     else:
         needsToolCrib = False
+
     if member.Requires_Tool_Crib_Duty != needsToolCrib:
         logChange('Requires Tool Crib Duty',memberID,needsToolCrib,member.Requires_Tool_Crib_Duty)
         member.Requires_Tool_Crib_Duty = needsToolCrib
         fieldsChanged += 1
 
-    # jan=request.form['jan']
-    # feb=request.form['feb']
-    # mar=request.form['mar']
-    # apr=request.form['apr']
-    # may=request.form['may']
-    # jun=request.form['jun']
-    # jul=request.form['jul']
-    # aug=request.form['aug']
-    # sep=request.form['sep']
-    # oct=request.form['oct']
-    # nov=request.form['nov']
-    # dec=request.form['dec']
-    
-    
-    # if (jan=='True'):
-    #     member.Jan_resident = True
-    # else:
-    #     member.Jan_resident = False
-    # if (feb=='True'):
-    #     member.Feb_resident = True
-    # else:
-    #     member.Feb_resident = False
-    # if (mar=='True'):
-    #     member.Mar_resident = True
-    # else:
-    #     member.Mar_resident = False
-    # if (apr=='True'):
-    #     member.Apr_resident = True
-    # else:
-    #     member.Apr_resident = False
-    # if (may=='True'):
-    #     member.May_resident = True
-    # else:
-    #     member.May_resident = False
-    # if (jun=='True'):
-    #     member.Jun_resident = True
-    # else:
-    #     member.Jun_resident = False
-    # if (jul=='True'):
-    #     member.Jul_resident = True
-    # else:
-    #     member.Jul_resident = False
-    # if (aug=='True'):
-    #     member.Aug_resident = True
-    # else:
-    #     member.Aug_resident = False
-    # if (sep=='True'):
-    #     member.Sep_resident = True
-    # else:
-    #     member.Sep_resident = False
-    # if (oct=='True'):
-    #     member.Oct_resident = True
-    # else:
-    #     member.Oct_resident = False
-    # if (nov=='True'):
-    #     member.Nov_resident = True
-    # else:
-    #     member.Nov_resident = False
-    # if (dec=='True'):
-    #     member.Dec_resident = True
-    # else:
-    #     member.Dec_resident = False
+    monitorDutyNotes = request.form.get('monitorDutyNotes')
+    if len(monitorDutyNotes) > 255:
+        flash ('Monitor duty notes may not exceed 255 characters.','danger')
+    else:    
+        if member.Monitor_Duty_Notes != monitorDutyNotes:
+            logChange('Monitor Duty Notes',memberID,monitorDutyNotes,member.Monitor_Duty_Notes)
+            member.Monitor_Duty_Notes = monitorDutyNotes
+            print('notes -',member.Monitor_Duty_Notes)
+            print('length - ',len(member.Monitor_Duty_Notes))
+            fieldsChanged += 1
    
     try:
         db.session.commit()
         flash("Changes successful","success")
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        print('error - ',error)
+        return error
+    except pyodbc.Error as err:
+        print('err - ',err)
+        flash("pyodbc error in monitor duty routine.")
+        return redirect(url_for('index',villageID=memberID))
     except Exception as e:
-        flash("Could not update member data.","danger")
+        print('e - ',e)
+        flash("Could not update monitor duty data.","danger")
         db.session.rollback()
     
     return redirect(url_for('index',villageID=memberID))

@@ -885,6 +885,8 @@ function setManagerPermissions() {
     document.getElementById('BWcertifiedID').disabled=false
     document.getElementById('RAdateCertifiedID').removeAttribute('readonly')
     document.getElementById('BWdateCertifiedID').removeAttribute('readonly')
+    document.getElementById('monitorDutyNotesID').removeAttribute('readonly')
+
     document.getElementById('showCheckInsID').style.display='block'
     document.getElementById('passwordBtnID').style.display='block'
     // REMOVE DISABLED FROM SPECIFIC BUTTONS
@@ -901,3 +903,22 @@ function takePhotoRtn() {
 //     alert('go back')
 //     window.history.back()
 // }
+
+document.querySelector('#monthCheckBoxesID').onclick = function(ev) {
+    console.log('checkbox clicked - '+ev.target.id)
+    inputID = ev.target.id
+    if (ev.target.checked) {
+        document.getElementById(inputID).value='True'
+    }
+    else {
+        document.getElementById(inputID).value='False' 
+    }
+}
+document.getElementById('needsToolCribID').onclick = function(ev) {
+    if (ev.target.checked) {
+        document.getElementById('needsToolCribID').value = 'True'
+    }
+    else {
+        document.getElementById('needsToolCribID').value = 'False'
+    }
+}
