@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Feb 15, 2021</h6>
+            <h6>ver. Feb 18, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -65,8 +65,9 @@
                     <button id='newVolunteerBtnID' class='dropdown-item' onclick="window.location.href='/newVolunteerApplication'">New Volunteer Application</button>
                     <button id='shiftChangeBtnID' class='dropdown-item' disabled onclick='shiftChange()'>Temporary Login</button>
                 </div>
-                <button id='showPhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='showHidePhoto(this)''>SHOW PHOTO</button>
-                <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='takePhoto(this)''>TAKE PHOTO</button>
+                <button id='showPhotoBtn' class='btn btn-secondary' style=margin-left:20px disabled onclick='showHidePhoto(this)''>SHOW PHOTO</button>
+                <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px disabled onclick="window.location.href='/takePhoto/?villageID={{member.Member_ID}}'">TAKE PHOTO</button>
+                <!-- <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='takePhotoRtn(this)''>TAKE PHOTO</button> -->
                 
             </div>     
         </div> 
@@ -242,7 +243,14 @@
 
     <!-- EMERGENCY INFORMATION -->
     <div id="emergencyID" class="emergencyInfo panel" style="padding-left:0px">
-        <img id="memberImgID" src="" alt="NO PHOTO AVAILABLE" width="300" height="200" style=display:none;margin-top:20px;margin-left:200px >
+        <img 
+            id="memberImgID" 
+            src=""
+            alt="NO PHOTO AVAILABLE" 
+            width="300" 
+            height="200" 
+            style=display:none;margin-top:20px;margin-left:200px;color:red; 
+            >
         <h5>EMERGENCY INFORMATION</h5>
         <form method='POST' action="/saveEmergency">
             <div class="row">
@@ -703,6 +711,27 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for error messages. -->
+<div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalTitle"></h5>
+				<button type="button" class="close" onclick=closeModal() aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" id=modalBody style=text-align:center>
+			</div>
+			
+				<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick=closeModal() data-dismiss="modal">CLOSE</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 
 {% endblock %}
 

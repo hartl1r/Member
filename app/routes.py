@@ -1799,10 +1799,11 @@ def saveVillageID():
 
 
    
-@app.route("/takePhoto")
+@app.route("/takePhoto/")
 def takePhoto():
-    return render_template("photo.html")
-
+    villageID = request.args.get('villageID')
+    print('take photo of villageID - ',villageID)
+    return render_template("photo.html",memberID=villageID)
 
 @app.route("/newVolunteerApplication",methods=('GET', 'POST'))
 def newVolunteerApplication():
@@ -1892,6 +1893,9 @@ def newVolunteerApplication():
     # DISPLAY NEW MEMBER RECORD SO STAFF CAN ENTER REMAINING DATA
     return redirect(url_for('index',villageID=villageID,todaysDate=todaySTR))
     
+
+
+
 def getStaffID():
     if 'staffID' in session:
         staffID = session['staffID']
@@ -1919,3 +1923,23 @@ def getShopID():
             shopID == 'RA'
             shopNumber = 1
     return shopID    
+
+
+@app.route("/savePhoto", methods=['GET','POST'])
+def savePhoto():
+    #print('savePhoto ...')
+    memberID = request.form['memberID']
+    #print('MEMBER ID - ',memberID)
+    img = request.form['imgBase64']
+    # DOES IMAGE EXIST?
+    photo = db.session.query(MemberPhoto).filter(MemberPhoto.memberID == memberID).first()
+    if photo:
+        photo.memberPhoto = img
+        photo.commit
+    else:
+        insertSQL = "INSERT INTO tblMember_Photos (Member_ID, Member_Photo) "
+        insertSQL += "VALUES ('" + memberID + "', '" + img + "'"
+        db.session.execute(insertSQL)
+
+    return redirect(url_for('index') )   
+    

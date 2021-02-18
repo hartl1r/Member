@@ -108,16 +108,16 @@ document.getElementById("typeOfWorkSelecterID").addEventListener("change",typeOf
 document.getElementById("zipcodeSelecterID").addEventListener("change",zipCodeChangeRtn)
 document.getElementById("villageSelecterID").addEventListener("change",villageChangeRtn)
 
-document.getElementById("takePhotoBtn").addEventListener("click",takePhotoRtn)
-document.querySelector('#monthCheckboxesID').onclick = function(ev) {
-    inputID = ev.target.id + 'ResidentValue'
-    if (ev.target.checked) {
-        document.getElementById(inputID).value='True'
-    }
-    else {
-        document.getElementById(inputID).value='False' 
-    }
-}
+//document.getElementById("takePhotoBtn").addEventListener("click",takePhotoRtn)
+// document.querySelector('#monthCheckboxesID').onclick = function(ev) {
+//     inputID = ev.target.id + 'ResidentValue'
+//     if (ev.target.checked) {
+//         document.getElementById(inputID).value='True'
+//     }
+//     else {
+//         document.getElementById(inputID).value='False' 
+//     }
+// }
 
 document.getElementById("needsToolCribID").onclick = function(ev) {
     console.log('ev.id - '+ev.id)
@@ -147,6 +147,7 @@ else
     document.getElementById('chgVillageID').removeAttribute('disabled')
     document.getElementById('mntrSchedBtnID').removeAttribute('disabled')
     document.getElementById('showPhotoBtn').removeAttribute('disabled')
+    document.getElementById('takePhotoBtn').removeAttribute('disabled')
     document.getElementById('showCheckInsID').removeAttribute('disabled')
     document.getElementById('monitorSchedulingBtnID').removeAttribute('disabled')
     
@@ -825,21 +826,7 @@ $('input[type="tel"]')
         }
         console.log('click - ' + $phone.val() + $phone.val().length)
 	})
-    
-    // .bind('focus', function () {
-	// 	$phone = $(this);
-		
-	// 	if ($phone.val().length === 0) {
-	// 		$phone.val('(');
-	// 	}
-	// 	else {
-	// 		var val = $phone.val();
-	// 		$phone.val('').val(val); // Ensure cursor remains at the end
-    //     }
-    //     var val = $phone.val();
-	// 	$phone.val('').val(val); // Ensure cursor remains at the end
-    //     console.log('focus - ' + $phone.val() + $phone.val().length)
-    // })
+
     
 	.blur(function () {
 		$phone = $(this);
@@ -892,19 +879,7 @@ function setManagerPermissions() {
     // REMOVE DISABLED FROM SPECIFIC BUTTONS
 
 }
-  
-function takePhotoRtn() {
-    //alert('to be developed ...')
-    window.location.href="/takePhoto"
-}
-
-// document.getElementById('btnReturnToMember').addEventListener('click',goBackRtn)
-// function goBackRtn() {
-//     alert('go back')
-//     window.history.back()
-// }
-
-document.querySelector('#monthCheckBoxesID').onclick = function(ev) {
+document.querySelector('#monthCheckboxesID').onclick = function(ev) {
     console.log('checkbox clicked - '+ev.target.id)
     inputID = ev.target.id
     if (ev.target.checked) {
@@ -914,6 +889,7 @@ document.querySelector('#monthCheckBoxesID').onclick = function(ev) {
         document.getElementById(inputID).value='False' 
     }
 }
+
 document.getElementById('needsToolCribID').onclick = function(ev) {
     if (ev.target.checked) {
         document.getElementById('needsToolCribID').value = 'True'
@@ -922,3 +898,16 @@ document.getElementById('needsToolCribID').onclick = function(ev) {
         document.getElementById('needsToolCribID').value = 'False'
     }
 }
+
+function modalAlert(title,msg) {
+	document.getElementById("modalTitle").innerHTML = title
+	document.getElementById("modalBody").innerHTML= msg
+	$('#myModalMsg').modal('show')
+}
+
+
+// function noPhotoAvailable() {
+//     showPhotoBtn = document.getElementById('showPhotoBtn')
+//     showPhotoBtn.innerHTML = 'NO PHOTO'
+//     //modalAlert("MEMBER PHOTO","No photo available.")
+// }
