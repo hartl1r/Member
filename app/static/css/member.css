@@ -439,23 +439,21 @@ tr {
 table th {
     color:var(--main-txt-color);
 } */
-.monitorDuty {
+/* .monitorDuty {
     border:1px solid black;
     text-align: center;
 }
 .monitorDuty td {
     border:1px solid black;
-}
+} */
 .futureDuty td {
     color:green;
 }
 .pastDuty td {
     color:red;
 }
-.monitorDutyNotes {
-    display:flex;
-    padding-top:1em;
-
+#monitorDutyNotesID {
+    text-align:left;
 }
 /* .center {
     display: block;
@@ -743,7 +741,7 @@ table th {
         grid-template-areas:    "searchArea memberNameArea versionArea   menuArea"
                                 "searchArea memberNameArea staffNameArea menuArea";
         grid-template-rows: 25px 25px;
-        grid-template-columns:1fr 2fr 1.5fr 1.5fr;
+        grid-template-columns:1fr 2fr .5fr 2fr;
         gap:1em;
         background-color: var(--main-hdg-bg-color); 
         color:var(--main-hdg-txt-color);
@@ -756,7 +754,7 @@ table th {
         text-align:left;
         padding-top:0rem;
         margin-right:0;
-        margin-left:200px;
+        margin-left:0px;
 
     }
     
@@ -766,7 +764,7 @@ table th {
         align-items:left;
         text-align:left;
         padding-top:0rem;
-        margin-left:200px;
+        margin-left:0px;
         
     }
     

@@ -158,9 +158,6 @@ def index():
         #flash('A valid member number must be specified','info')
         return render_template("member.html",member='',nameArray=nameArray,staffName=staffName)
 
-    print('Certified RA - ',member.Certified)
-    print('Certified BW - ',member.Certified_2)
-
     hdgName = member.First_Name
     if member.Middle_Name is not None:
         if len(member.Middle_Name) > 0 :
@@ -679,6 +676,7 @@ def saveMemberStatus():
             flash("Changes successful","success")
         except Exception as e:
             flash("Could not update membership data.","danger")
+            print('Error - ',e)
             db.session.rollback()
 
     return redirect(url_for('index',villageID=memberID))
@@ -956,8 +954,6 @@ def saveMonitorDuty():
         if member.Monitor_Duty_Notes != monitorDutyNotes:
             logChange('Monitor Duty Notes',memberID,monitorDutyNotes,member.Monitor_Duty_Notes)
             member.Monitor_Duty_Notes = monitorDutyNotes
-            print('notes -',member.Monitor_Duty_Notes)
-            print('length - ',len(member.Monitor_Duty_Notes))
             fieldsChanged += 1
    
     try:
@@ -1084,6 +1080,15 @@ def logChange(colName,memberID,newData,origData):
         flash('Missing staffID in logChange routine.','danger')
         staffID = '111111'
 
+    # CHECK FOR STRINGS > 50 CHARACTERS (could change field size to 255)
+    if isinstance(newData,str):
+        if len(newData) > 50:
+            newData = newData[0:50]
+            
+    if isinstance(origData,str):        
+        if len(origData) > 50:
+            origData = origData[0:50]
+            
     #  GET UTC TIME
     est = timezone('EST')
     # Write data changes to tblMember_Data_Transactions

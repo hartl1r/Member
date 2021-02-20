@@ -46,7 +46,7 @@
         <!-- ------------------------------------------------------ -->
         <div class="memberMenu">
             <div class="dropdown">
-                <button id='menuID' onclick="showMenu()" class="btn btn-secondary">SHOW MENU</button>
+                <button id='menuID' onclick="showMenu()" class="btn btn-secondary btn-sm">SHOW MENU</button>
                 <div id="myDropdown" class="dropdown-content"style=text-align:left>
                     <button id='clearScreenBtnID' class='dropdown-item' disabled onclick='clearScreen()'>Clear Screen</button>
                     <hr>
@@ -65,8 +65,8 @@
                     <button id='newVolunteerBtnID' class='dropdown-item' onclick="window.location.href='/newVolunteerApplication'">New Volunteer Application</button>
                     <button id='shiftChangeBtnID' class='dropdown-item' disabled onclick='shiftChange()'>Temporary Login</button>
                 </div>
-                <button id='showPhotoBtn' class='btn btn-secondary' style=margin-left:20px disabled onclick='showHidePhoto(this)''>SHOW PHOTO</button>
-                <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px disabled onclick="window.location.href='/takePhoto/?villageID={{member.Member_ID}}'">TAKE PHOTO</button>
+                <button id='showPhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick='showHidePhoto(this)''>SHOW PHOTO</button>
+                <button id='takePhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick="window.location.href='/takePhoto/?villageID={{member.Member_ID}}'">TAKE PHOTO</button>
                 <!-- <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='takePhotoRtn(this)''>TAKE PHOTO</button> -->
                 
             </div>     
@@ -340,7 +340,7 @@
             <div class="row form-check">
                     <input id="duesPaidID" type="checkbox" class="form-check-input" style=margin-top:10px name="duesPaid" {% if member.Dues_Paid %} checked {% endif %} value={{member.Dues_Paid}}>
                     <label class="form-check-label">Dues paid ({{lastYearPaid}})</label> 
-                    <label for='dateJoinedID' class="col-form-label" style=margin-top:-5px;margin-left:40px>Date Joined</label>
+                    <label for='dateJoinedID' class="col-form-label" style=margin-top:-5px;margin-left:160px>Date Joined</label>
                     <input id='dateJoinedID' type="date" class="form-control-md "  name="dateJoined" value="{{member.Date_Joined}}"> 
             </div> 
             
@@ -349,30 +349,29 @@
                 <label for='volunteerID' class="form-check-label">Volunteer</label>
             </div>
             
-            <div class="row form-check" style=margin-top:10px>
-                <input id="inactiveID" type="checkbox" class="form-check-input" style=margin-top:10px name="inactive" {% if member.Inactive %} checked {% endif %}value="{{member.Inactive}}">
-                <label for='inactiveID' class="form-check-label" style=margin-top:0px>Inactive</label>
-                <input id="inactiveDateID" type="date" class="form-control-md" style=margin-left:20px name="inactiveDate" placeholder="inactive" value="{{member.Inactive_Date}}">
-            </div>
-                
-            <div class="row form-check">
-                <input id="deceasedID" type="checkbox" class="form-check-input" style=margin-top:5px name="deceased" {% if member.Deceased %} checked {% endif %}value="{{member.Deceased}}">
-                <label class="form-check-label"style=margin-top:0px>Deceased</label>
+            <div class="row form-check" style='margin-top:10px;'>
+                <div>
+                    <input id="inactiveID" type="checkbox" class="form-check-input" style=margin-top:8px name="inactive" {% if member.Inactive %} checked {% endif %}value="{{member.Inactive}}">
+                    <label for='inactiveID' class="form-check-label" style=margin-top:0px>Inactive</label>
+                    <input id="inactiveDateID" type="date" class="form-control-md" style=margin-left:20px name="inactiveDate" placeholder="inactive" value="{{member.Inactive_Date}}">
+                    <input id="deceasedID" type="checkbox" class="form-check-input" style=margin-top:8px;margin-left:60px; name="deceased" {% if member.Deceased %} checked {% endif %}value="{{member.Deceased}}">
+                    <label for='deceasedID' class="form-check-label"style=margin-top:0px;margin-left:80px>Deceased</label>
+                </div>
             </div>
 
             <div class="row">
-                <input id="restrictedID" type="checkbox" class="form-check-input" style=margin-top:5px;margin-left:0px name="restricted" {% if member.Restricted_From_Shop %} checked {% endif %}value="{{member.Restricted_From_Shop}}">
-                <label class="form-check-label" style=margin-top:0px;margin-left:20px>Restricted</label>
-                <textarea name="reasonRestricted"  style=margin-left:10px;margin-top:5px id="reasonRestricted" cols="30" rows="2">{{member.Reason_For_Restricted_From_Shop}}</textarea>
+                <input id="restrictedID" type="checkbox" class="form-check-input" style=margin-top:10px;margin-left:0px name="restricted" {% if member.Restricted_From_Shop %} checked {% endif %}value="{{member.Restricted_From_Shop}}">
+                <label class="form-check-label" style=margin-top:8px;margin-left:20px>Restricted</label>
+                <textarea name="reasonRestricted"  style=margin-left:10px;margin-top:5px id="reasonRestricted" cols="60" rows="2">{{member.Reason_For_Restricted_From_Shop}}</textarea>
             </div>
             
-            <div class="row" style=padding-top:2em>
+            <div class="row" style='padding-top:2em;'>
                 <label for="memberNotesID">Member notes:</label>
-                <textarea name="memberNotes" id="memberNotesID" cols="30" rows="2" style='padding-left:2px'>{{member.Member_Notes}}</textarea>
+                <textarea name="memberNotes" id="memberNotesID" cols="60" rows="2" style='margin-left:3px;padding-left:2px'>{{member.Member_Notes}}</textarea>
             </div>
 
             <div class='row'>
-                <div class="col" style=margin-top:35px;margin-left:40px>
+                <div class="col" style=margin-top:35px;margin-left:75px>
                     <label style='color:red'>{{hasKeys}}</label>
                 </div>
             </div>
@@ -581,7 +580,7 @@
                     <span>Date</span>
                     <span>Shift</span>
                     <span>Duty</span>
-                    <span>No Show</span>
+                    <span>NS</span>
                 </div>
                 <div id="memberScheduleDetailID" class="memberScheduleDetail">
                     <!-- FUTURE DUTY -->
@@ -620,15 +619,14 @@
                             {% if p.NoShow == 'NS' %}
                                 checked
                             {% endif %}
-                            >
-                            
+                            >  
                         </div>
                         {% endfor %}
                     </div>
                 </div>
             </div>
            
-            <div class='col-5' style=margin-left:10px>
+            <div class='col-5' style=margin-left:0px>
                 <input 
                     id='needsToolCribID' 
                     type="checkbox"  
@@ -643,29 +641,26 @@
                     Needs Tool Crib Duty
                 </label>    
             </div>
-            
-            <div class='monitorDutyNotes'>
+        
+            <div class='row monitorDutyNotes'>
                 <div class=col-3>
-                    <label style=margin-bottom:3em>Monitor Duty Notes</label>
+                    <label style=margin-bottom:3em;margin-left:20px>Monitor Duty Notes</label>
                 </div>
                 <div class=col-9>
                     <textarea 
                         id="monitorDutyNotesID"
-                        name="monitorDutyNotes"
-                        style=text-align:left  
+                        name="monitorDutyNotes" 
                         readonly 
-                        cols="50" rows="3"
-                        >
-                        {{member.Monitor_Duty_Notes}}
-                    </textarea>
+                        cols="60" rows="2"
+                        >{{member.Monitor_Duty_Notes}}</textarea>
                 </div>
             </div>
-            <div class="cancelSave" style=padding-left:100px>
+            <div class="cancelSave" style=padding-left:100px;padding-top:0px;margin-top:0px;>
+                <button id="monitorDutyCancelBtn" type="submit" name="monitorAction" class="btn-default" style=display:none value="CANCEL">CANCEL</button>
+                <button id="monitorDutySaveBtn" type="submit" name="monitorAction" class="btn-primary" style=display:none value="SAVE">SAVE</button>
                 <input type="hidden" class='staffID' name='staffID' value='{{staffID}}'>
                 <input type="hidden" class='clientLocation' name='clientLocation'>
                 <input type="hidden" class="memberID" name="memberID" value={{member.Member_ID}}>
-                <button id="monitorDutyCancelBtn" type="submit" name="monitorAction" class="btn-default" style=display:none value="CANCEL">CANCEL</button>
-                <button id="monitorDutySaveBtn" type="submit" name="monitorAction" class="btn-primary" style=display:none value="SAVE">SAVE</button>
             </div> 
         </form>
     </div>      
