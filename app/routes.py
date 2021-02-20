@@ -157,7 +157,10 @@ def index():
     if (member == None):
         #flash('A valid member number must be specified','info')
         return render_template("member.html",member='',nameArray=nameArray,staffName=staffName)
-         
+
+    print('Certified RA - ',member.Certified)
+    print('Certified BW - ',member.Certified_2)
+
     hdgName = member.First_Name
     if member.Middle_Name is not None:
         if len(member.Middle_Name) > 0 :
