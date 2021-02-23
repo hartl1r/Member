@@ -88,8 +88,7 @@ class Member(db.Model):
     Oct_resident = db.Column(db.Boolean)
     Nov_resident = db.Column(db.Boolean)
     Dec_resident = db.Column(db.Boolean)
-
-    Alt_Adddress = db.Column(db.String(30))
+    Alt_Street = db.Column('Alt_Adddress',db.String(30))
     Alt_City = db.Column(db.String(25))
     Alt_State = db.Column(db.String(2))
     Alt_Zip = db.Column(db.String(10))
@@ -141,7 +140,7 @@ class Member(db.Model):
     isSpecialProjects = db.Column(db.Boolean)
     Manager = db.Column(db.Boolean)
     isVP = db.Column(db.Boolean)
-
+    LightspeedID = db.Column(db.String(20))
     fullName = column_property(First_Name + " " + Last_Name)
     # Relationships
     #activities = db.relationship('MemberActivity', backref='member')

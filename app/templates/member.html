@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Feb 20, 2021</h6>
+            <h6>ver. Feb 23, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -81,9 +81,9 @@
             <div class="row">
                 <label class="col-3" for="memberID">Village ID</label>
                 <div class="col-9">
-                    <input id='memberID' type="text" maxlength=6 size=6 style="width:70px" readonly color=green name="memberID" value="{{member.Member_ID}}">
+                    <input id='memberID' type="text" maxlength=6 size=6 style="width:70px" readonly name="memberID" value="{{member.Member_ID}}">
                     <label for="lightspeedID" style="margin-left:20px">Lightspeed ID:</label>
-                    <input id="lightspeedID" type="text" maxlength=6 size=6 style="width:70px" class="lightspeedID" value="{{ member.lightSpeedID }}">
+                    <input id="lightspeedID" name='lightspeedID' type="text" maxlength=6 size=6 style="width:80px" class="lightspeedID" value="{{ member.LightspeedID }}">
                 </div>
             </div>
 
@@ -118,8 +118,8 @@
             <div class="row">
                 <label class="col-3" for="cityStateZip">City/St/Zip</label>   
                 <div id='cityStateZip' class="cityStateZip col-9">
-                    <input type="text" name="city" style=width:100px; value='{{member.City}}'>
-                    <input type="text" style=width:30px id="state" name="state" value='{{member.State}}'>
+                    <input type="text" name="city" style=width:100px; readonly value='The Villages'>
+                    <input type="text" style=width:30px id="state" name="state" readonly value='{{member.State}}'>
                     <input type="hidden" id="zipcodeTextID" name="zip" style=width:50px; value='{{member.Zip}}'>
                     <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:90px;color:navy;font-family:inherit>
                         {% for z in zipCodes %}
@@ -192,30 +192,31 @@
             <div class="row">
                 <label class="control-label col-md-3 col-form-label-md" for="altStreet">Street</label>
                 <div class="col-md-9">
-                    <input type="text" class="form-control-md" style="width:250px" id="altStreet" name="altStreet" value="{{member.Alt_Adddress}}">
+                    <input type="text" class="form-control-md" style="width:250px" id="altStreet" name="altStreet" value="{{member.Alt_Street if member.Alt_Street}}">
                 </div>
             </div>
 
             <div class="row">
                 <label class="control-label col-md-3 col-form-label-md">City/State</label>   
                 <div class="col-md-5">
-                    <input type="text" class="form-control-md" style="width:200px"id="altCity" name="altCity" value='{{member.Alt_City}}'>
+                    <input type="text" class="form-control-md" style="width:200px"id="altCity" name="altCity" value='{{member.Alt_City if member.Alt_City}}'>
                 </div>
                 <div class="col-md-1">
-                    <input type="text" class="form-control-md" style=width:30px;margin-left:20px name="altState" value='{{member.Alt_State}}'>
+                    <input type="text" class="form-control-md" style=width:30px;margin-left:20px name="altState" value='{{member.Alt_State if member.Alt_State}}'>
                 </div>
             </div>
             <div class="row">
                 <label class="control-label col-md-3 col-form-label-md" >Zip</label>   
                 <div class="col-md-2">
-                    <input type="text" class="form-control-md" style=width:150px name="altZip" value='{{member.Alt_Zip}}'>
+                    <input type="text" class="form-control-md" style=width:150px name="altZip" value='{{ member.Alt_Zip if member.Alt_Zip }}'>
                 </div>
             </div>
 
             <div class="row">
                 <label class="control-label col-md-3 col-form-label-md" >Country</label>
                 <div class="col-md-4">
-                    <input type="text" class="form-control-md" name="altCountry" value="{{ member.Alt_Country }}">
+                    <input type="text" class="form-control-md" name="altCountry" 
+                    {{ member.Alt_Country if member.Alt_Country }}>
                 </div>
             </div>
             <br>
@@ -227,7 +228,7 @@
                         class="phones form-control-md" 
                         style=width:130px  
                         name="altPhone"
-                        value="{{ member.Alt_Phone }}">
+                        value="{{ member.Alt_Phone if member.Alt_Phone}}">
                 </div>
             </div>
             
@@ -255,61 +256,83 @@
         <form method='POST' action="/saveEmergency">
             <div class="row">
                 <label class="col-2 col-form-label"style=margin-top:0px>Contact</label>
-                <input type="text" class="form-control col-4" style=height:30px name="emergContact" placeholder='Name' value="{{member.Emerg_Name}}">
-                <input type="text" class="phones form-control form-control-md col-md-4" style="height:30px;width:143px" name="emergPhone" placeholder="Phone" value="{{member.Emerg_Phone}}">
+                <input 
+                    type="text" 
+                    class="form-control col-4" 
+                    style=height:30px 
+                    name="emergContact" 
+                    placeholder='Name' 
+                    value="{{member.Emerg_Name if member.Emerg_Name}}">
+
+                <input 
+                    type="text" 
+                    class="phones form-control form-control-md col-md-4" 
+                    style="height:30px;width:143px" 
+                    name="emergPhone" 
+                    placeholder="Phone" 
+                    value="{{member.Emerg_Phone if member.Emerg_Phone}}">
             </div>
  
             <div class='medConditions'>
                 <div class= 'medCol1'>
                     <input id=emergMemberID type="hidden" name='emergMemberID'>
+                    <br>
                     <div class='form-group-sm'>
                         <input id='noEmergDataID' type="checkbox" class="form-check-input" name="emergNoData"   {% if member.Emerg_No_Data_Provided %} checked {% endif %}value="{{member.Emerg_No_Data_Provided}}">
-                        <label for="noEmergDataID" class="col-sm-2 form-check-label"> No&nbspData</label>    
+                        <label for="noEmergDataID" class="col-sm-2 form-check-label" style='margin-top:5px'> No&nbspData</label>    
                     </div>
+                    <br>
                     <div class='form-group-sm'>
                         <input id='emergPacemakerID' type='checkbox' class='form-check-input' name='pacemaker' {% if member.Emerg_Pacemaker %} checked {% endif %}  value="{{member.Emerg_Pacemaker}}">
-                        <label for="emergPacemakerID" class="col-sm-2 form-check-label">Pacemaker</label>
+                        <label for="emergPacemakerID" class="col-sm-2 form-check-label" style='margin-top:6px'>Pacemaker</label>
                     </div>
                     <div class='form-group-sm'>
                         <input id='emergStentID' type="checkbox" class='form-check-input' name='stent'  {% if member.Emerg_Stent %} checked {% endif %}  value="{{member.Emerg_Stent}}">
-                        <label for="emergStentID" class="col-sm-2 form-check-label">Stent</label>
+                        <label for="emergStentID" class="col-sm-2 form-check-label" style='margin-top:6px'>Stent</label>
                     </div>
                     <div class='form-group-sm'>
                         <input id='emergCABGID' type="checkbox" class='form-check-input' name='CABG'  {% if member.Emerg_CABG %} checked {% endif %}  value="{{member.Emerg_CABG}}">
-                        <label for="emergCABGID" class="col-sm-2 form-check-label">CABG</label>
+                        <label for="emergCABGID" class="col-sm-2 form-check-label" style='margin-top:6px'>CABG</label>
                     </div>
                     <div class='form-group-sm'>
                         <input id='emergMIID' type="checkbox" class='form-check-input' name='MI'  {% if member.Emerg_MI %} checked {% endif %}  value="{{member.Emerg_MI}}">
-                        <label for="emergMIID" class="col-sm-2 form-check-label">MI</label>
+                        <label for="emergMIID" class="col-sm-2 form-check-label" style='margin-top:6px'>MI</label>
                     </div>
                     <div class='form-group-sm'>
                         <input id='emergDiabetes1ID' type="checkbox" class='form-check-input' name='diabetes1'  {% if member.Emerg_Diabetes_Type_1 %} checked {% endif %}  value="{{member.Emerg_Diabetes_Type_1}}">
-                        <label for="emergDiabetes1ID" class="col-sm-2 form-check-label">Diabetes&nbsp1</label>
+                        <label for="emergDiabetes1ID" class="col-sm-2 form-check-label" style='margin-top:6px'>Diabetes&nbsp1</label>
                     </div>
                     <div class='form-group-sm'>
                         <input id='emergDiabetes2ID' type="checkbox" class='form-check-input' name='diabetes2'  {% if member.Emerg_Diabetes_Type_2 %} checked {% endif %}  value="{{member.Emerg_Diabetes_Type_2}}">
-                        <label for="emergDiabetes2ID" class="col-sm-2 form-check-label">Diabetes&nbsp2</label>
+                        <label for="emergDiabetes2ID" class="col-sm-2 form-check-label" style='margin-top:6px'>Diabetes&nbsp2</label>
                     </div>   
                 </div>
                 <div class='medCol2'>
-                    <div class='form-group-sm'>
-                        <label for="emergOtherDiagnosisID" class="col-sm-3 form-label">Other</label>
-                        <textarea id="emergOtherDiagnosisID" style=font-size:12px rows="2" cols="25" name='otherDiagnosis' >{{member.Emerg_Other_Diagnosis}}</textarea>
+                    <div style='display:flex;margin-top:20px'>
+                        <label for="emergOtherDiagnosisID" style='font-size:12px'>Other</label>
+                        <textarea 
+                            id="emergOtherDiagnosisID" 
+                            style='font-size:12px;margin-left:25px;' 
+                            rows="2" 
+                            cols="25" 
+                            name='otherDiagnosis' >{{member.Emerg_Other_Diagnosis if member.Emerg_Other_Diagnosis}}</textarea>
                     </div>
-                    <div class='form-group-sm'>
-                        <label for="emergDiabetesOtherID" class="col-sm-3 form-label-sm">Diabetes</label>
-                        <textarea id="emergDiabetesOtherID" style=font-size:12px rows="2" cols="25" name='diabetesOther' >{{member.Emerg_Diabetes_Other}}</textarea>
+                    <div style='display:flex; margin-top:15px'>
+                        <label for="emergDiabetesOtherID">Diabetes</label>
+                        <textarea id="emergDiabetesOtherID" style=font-size:12px;margin-left:10px rows="2" cols="25" 
+                        name='diabetesOther' >{{member.Emerg_Diabetes_Other if member.Emerg_Diabetes_Other}}</textarea>
                     </div>
-                    <div class='form-group-sm'>
-                        <label for="emergAlergiesID" class="col-sm-3 form-label">Alergies</label>
-                        <textarea id="emergAlergiesID" style=font-size:12px rows="2" cols="25" name='alergies'>{{member.Emerg_Medical_Alergies}}</textarea>
+                    <div style='display:flex; margin-top:15px'>
+                        <label for="emergAlergiesID">Allergies</label>
+                        <textarea id="emergAlergiesID" style=font-size:12px;margin-left:10px rows="2" cols="25" 
+                        name='allergies'>{{member.Emerg_Medical_Alergies if member.Emerg_Medical_Alergies}}</textarea>
                     </div>
                 </div>   
             </div> 
-            
+            <br>
             <div class='form-group-sm' style=margin-left:20px>
                 <input id='defibrillatorID' type="checkbox" class="form-check-input" name="emergDefib"   {% if member.Defibrillator_Trained%} checked {% endif %}value="{{member.Defibrillator_Trained}}">
-                <label for='defibrillatorID' class="form-check-label"> Defibrillator Trained</label>    
+                <label for='defibrillatorID' class="form-check-label" style=margin-top:6px;margin-left:15px> Defibrillator Trained</label>    
             </div>
             
             <div class="cancelSave" style=padding-left:100px>
@@ -340,7 +363,7 @@
             <div class="row form-check">
                     <input id="duesPaidID" type="checkbox" class="form-check-input" style=margin-top:10px name="duesPaid" {% if member.Dues_Paid %} checked {% endif %} value={{member.Dues_Paid}}>
                     <label class="form-check-label">Dues paid ({{lastYearPaid}})</label> 
-                    <label for='dateJoinedID' class="col-form-label" style=margin-top:-5px;margin-left:160px>Date Joined</label>
+                    <label for='dateJoinedID' class="col-form-label" style=margin-top:-5px;margin-left:120px>Date Joined</label>
                     <input id='dateJoinedID' type="date" class="form-control-md "  name="dateJoined" value="{{member.Date_Joined}}"> 
             </div> 
             
@@ -362,12 +385,12 @@
             <div class="row">
                 <input id="restrictedID" type="checkbox" class="form-check-input" style=margin-top:10px;margin-left:0px name="restricted" {% if member.Restricted_From_Shop %} checked {% endif %}value="{{member.Restricted_From_Shop}}">
                 <label class="form-check-label" style=margin-top:8px;margin-left:20px>Restricted</label>
-                <textarea name="reasonRestricted"  style=margin-left:10px;margin-top:5px id="reasonRestricted" cols="60" rows="2">{{member.Reason_For_Restricted_From_Shop}}</textarea>
+                <textarea name="reasonRestricted"  style=margin-left:7px;margin-top:5px id="reasonRestricted" cols="60" rows="2">{{member.Reason_For_Restricted_From_Shop if member.Reason_For_Restricted_From_Shop}}</textarea>
             </div>
             
-            <div class="row" style='padding-top:2em;'>
+            <div class="row" style='padding-top:4em;'>
                 <label for="memberNotesID">Member notes:</label>
-                <textarea name="memberNotes" id="memberNotesID" cols="60" rows="2" style='margin-left:3px;padding-left:2px'>{{member.Member_Notes}}</textarea>
+                <textarea name="memberNotes" id="memberNotesID" cols="60" rows="2" style='margin-left:3px;padding-left:2px'>{{member.Member_Notes if member.Member_Notes}}</textarea>
             </div>
 
             <div class='row'>
@@ -439,10 +462,21 @@
                 <div class='row'>
                     <div class='col-3'>Certified:</div>
                     <div class='col-4 RAcolumn'>
-                        <input id='RAdateCertifiedID' readonly type="date" class="form-control-md "  style="width:9em" name="certifiedRAdate" value="{{member.Certification_Training_Date}}">
+                        <input 
+                            id='RAdateCertifiedID' 
+                            readonly 
+                            type="date" 
+                            class="form-control-md "  
+                            style="width:9em" 
+                            name="certifiedRAdate"
+                            {% if member.Certification_Training_Date == '' %}
+                                value=''
+                            {% else %} 
+                                value="{{member.Certification_Training_Date}}"
+                            {% endif %}>
                     </div>
                     <div class='col-4 BWcolumn'>
-                        <input id='BWdateCertifiedID' readonly type="date" class="form-control-md "  style="width: 9em;" name="certifiedBWdate" value="{{member.Certification_Training_Date_2}}">
+                        <input id='BWdateCertifiedID' readonly type="date" class="form-control-md "  style="width: 9em;" name="certifiedBWdate" value="{{member.Certification_Training_Date_2 if member.Certification_Training_Date_2}}">
                     </div>
                 </div>
 
@@ -472,7 +506,7 @@
                         <input id='raLastMonitorTraining' type="date" class='form-control-md' style="width: 9em;" name='RAmonitorTrainingDate' value={{member.Last_Monitor_Training}}>
                     </div>
                     <div class='col-4 BWcolumn'>
-                        <input id='bwLastMonitorTraining' type="date" class='form-control-md' style="width: 9em;" name='BWmonitorTrainingDate'value={{member.Last_Monitor_Training_Shop_2}}>
+                        <input id='bwLastMonitorTraining' type="date" class='form-control-md' style="width: 9em;" name='BWmonitorTrainingDate'value="{{member.Last_Monitor_Training_Shop_2 if member.Last_Monitor_Training_Shop_2}}">
                     </div>
                 </div>
 
@@ -510,7 +544,7 @@
                 
                 <div class="row">
                     <label class="control-label col-sm-4 col-form-label-md" style=text-align:left;margin-left:0px">Monitor Exemption</label>
-                    <textarea name="waiverReason" class="col-md-6" style=margin-left:10px id="waiverReason" cols="30" rows="1">{{member.Monitor_Duty_Waiver_Reason}}</textarea>
+                    <textarea name="waiverReason" class="col-md-6" style=margin-left:10px id="waiverReason" cols="30" rows="1">{{member.Monitor_Duty_Waiver_Reason if member.Monitor_Duty_Waiver_Reason}}</textarea>
                 </div>
 
                 <div class="row">
@@ -586,7 +620,7 @@
                     <!-- FUTURE DUTY -->
                     <div class="futureDuty">
                         {% for f in futureDuty %}
-                        <div class="memberScheduleRow" style="color:red">
+                        <div class="memberScheduleRow">
                             <span class="memberScheduleCol">{{f.Shop_Name}}</span>
                             <span class="memberScheduleCol">{{f.DateScheduled}}</span>
                             <span class="memberScheduleCol">{{f.AM_PM}}</span>
@@ -607,7 +641,7 @@
                     </div>
                     <div class="pastDuty">
                         {% for p in pastDuty %}
-                        <div class="memberScheduleRow" style="color:green">
+                        <div class="memberScheduleRow">
                             <span class="memberScheduleCol">{{p.Shop_Name}}</span>
                             <span class="memberScheduleCol">{{p.DateScheduled}}</span>
                             <span class="memberScheduleCol">{{p.AM_PM}}</span>
@@ -652,7 +686,7 @@
                         name="monitorDutyNotes" 
                         readonly 
                         cols="60" rows="2"
-                        >{{member.Monitor_Duty_Notes}}</textarea>
+                        >{{member.Monitor_Duty_Notes if member.Monitor_Duty_Notes}}</textarea>
                 </div>
             </div>
             <div class="cancelSave" style=padding-left:100px;padding-top:0px;margin-top:0px;>
@@ -742,7 +776,7 @@
 <div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
-			<div class="modal-header">
+			<div class="modal-header" style="background-color: navy;color:white">
 				<h5 class="modal-title" id="modalTitle"></h5>
 				<button type="button" class="close" onclick=closeModal() aria-label="Close">
 				<span aria-hidden="true">&times;</span>
@@ -758,6 +792,33 @@
 	</div>
 </div>
 
+
+<!-- Modal for photo. -->
+<div class="modal fade" id="photo" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content" style=background-color:lightgray>
+			<div class="modal-header" style="background-color: navy;color:white">
+				<h5 class="modal-title" id="modalTitle"></h5>
+				<button type="button" class="close" onclick=closeModal() aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" id=modalBody style=text-align:center>
+                <img 
+                    id="photoImgID" 
+                    src=""
+                    alt="NO PHOTO AVAILABLE" 
+                    width="400" 
+                    height="300" 
+                    >
+			</div>
+			
+            <div class="modal-photo-footer" style=text-align:center>
+                <button type="button" class="btn btn-primary" onclick=closeModal() data-dismiss="modal">CLOSE</button>
+            </div>
+		</div>
+	</div>
+</div>
 
 {% endblock %}
 

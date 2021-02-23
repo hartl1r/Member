@@ -8,12 +8,19 @@
     --main-panel-bg-color: lightgray;  
     --main-panel-txt-color: navy;  
     --main-panel-border:1px solid navy;
+    --main-panel-readonly-color:green;
 
     --main-padding: 10px; 
     --main-bg-fade:rgba(0,0,0,0.2);
      
   }  
-
+  .form-check-input {
+      height:20px;
+      width:20px;
+  }
+  input:read-only {
+      color:var(--main-panel-readonly-color) !important;
+  }
   /* MOBILE DEVICE SETTINGS */
   .body {
       font-size:.5em;
@@ -446,11 +453,11 @@ table th {
 .monitorDuty td {
     border:1px solid black;
 } */
-.futureDuty td {
-    color:green;
-}
-.pastDuty td {
+.futureDuty span {
     color:red;
+}
+.pastDuty span {
+    color:green;
 }
 #monitorDutyNotesID {
     text-align:left;
@@ -635,9 +642,7 @@ table th {
     margin-bottom: 10px;
     margin-right:20px;
   }
-  input:read-only {
-      color: green;
-  }
+  
   /* input:disabled {
       color:green;
       background-color: yellow;

@@ -177,6 +177,40 @@ document.getElementById('defibrillatorID').onclick = function(ev) {
 document.getElementById('noEmergDataID').onclick = function(ev) {
     if (ev.target.checked) {
         document.getElementById('noEmergDataID').value='True'
+
+        pacemaker = document.getElementById('emergPacemakerID')
+        pacemaker.removeAttribute('checked','')
+        pacemaker.setAttribute('onclick',"return false")
+        pacemaker.value='False'
+
+        stent = document.getElementById('emergStentID')
+        stent.removeAttribute('checked','')
+        stent.setAttribute('onclick',"return false")
+        stent.value='False'
+
+        cabg = document.getElementById('emergCABGID')
+        cabg.removeAttribute('checked','')
+        cabg.setAttribute('onclick',"return false")
+        cabg.value='False'
+
+        mi = document.getElementById('emergMIID')
+        mi.removeAttribute('checked','')
+        mi.setAttribute('onclick',"return false")
+        mi.value='False'
+
+        diabetes1 = document.getElementById('emergDiabetes1ID')
+        diabetes1.removeAttribute('checked','')
+        diabetes1.setAttribute('onclick',"return false")
+        diabetes1.value='False'
+
+        diabetes2 = document.getElementById('emergDiabetes2ID')
+        diabetes2.removeAttribute('checked','')
+        diabetes2.setAttribute('onclick',"return false")
+        diabetes2.value='False'
+
+        document.getElementById('emergOtherDiagnosisID').value = ''
+        document.getElementById('emergDiabetesOtherID').value = ''
+        document.getElementById('emergAlergiesID').value = ''
     }
     else {
         document.getElementById('noEmergDataID').value='False' 
@@ -332,8 +366,8 @@ function memberSelectedRtn() {
     lastEight = selectedMember.slice(-8)
     currentMemberID= lastEight.slice(1,7)
     document.getElementById('selectpicker').value=''
-    imgLink = document.getElementById('memberImgID')
-    imgLink.link = "{{ url_for('static', filename='memberPhotos/" + currentMemberID + ".jpg') }}"
+    //imgLink = document.getElementById('memberImgID')
+    //imgLink.link = "{{ url_for('static', filename='memberPhotos/" + currentMemberID + ".jpg') }}"
     localStorage.setItem('currentMemberID',currentMemberID)
     
 
@@ -604,38 +638,16 @@ function updatePassword() {
     showMenu()
 }
 
-// function rolesRoutine() {
-//     // CHECK FOR EXISTING role
-//     // IF FOUND, DISPLAY IN MSG
-//     memberID = document.getElementById('memberID').value
-//     $.ajax({
-//         url : "/getRoles",
-//         type: "GET",
-//         data : {
-//             memberID:memberID,
-//             },
- 
-//         success: function(data, textStatus, jqXHR)
-//         {
-//             if (data.msg) {
-//                 memberRoles = data.memberRoles
-//             }
-//         },
-//         error: function(result){
-//             alert("Error ..."+result)
-//         }
-//     })  
-//     $('#roleModalID').modal('show')
-// }
 
-// function cancelRole() {
-//     $('#roleModalID').modal('hide')
-// }
+// function setPhotoSrc() {
+//     photo = document.getElementsByClassName('memberImgID')
+//     photo.src = "{{ url_for('static', filename='memberPhotos/" + currentMemberID + ".jpg') }}"
 
-function setPhotoSrc() {
-    photo = document.getElementsByClassName('memberImgID')
-    photo.src = "{{ url_for('static', filename='memberPhotos/" + currentMemberID + ".jpg') }}"
-}
+//     // for photo modal display if used
+//     photoModal = document.getElementById('photoImgID')
+//     photoModal.src = "{{ url_for('static', filename='memberPhotos/" + currentMemberID + ".jpg') }}"
+
+// }
 function showHidePhoto(objBtn) {
     photo = document.getElementById('memberImgID')
     memberID = document.getElementById('memberID').value
@@ -643,6 +655,11 @@ function showHidePhoto(objBtn) {
         objBtn.innerHTML = 'HIDE PHOTO'
         photo.src = "/static/memberPhotos/" + memberID + ".jpg "
         photo.style.display='inline'
+
+        photoImgModal = document.getElementById('photoImgID')
+        photoImgModal.src = "/static/memberPhotos/" + memberID + ".jpg "
+        $('#photo').modal('show')
+
     }
     else {
         objBtn.innerHTML = 'SHOW PHOTO'
@@ -675,7 +692,6 @@ function typeOfWorkRtn() {
 
 }
 function zipCodeChangeRtn() {
-    //alert("zip rtn - "+ this.value)
     newZip = this.value
     document.getElementById("zipcodeTextID").value = newZip
 }
@@ -911,3 +927,8 @@ function modalAlert(title,msg) {
 //     showPhotoBtn.innerHTML = 'NO PHOTO'
 //     //modalAlert("MEMBER PHOTO","No photo available.")
 // }
+
+	
+function closeModal() {
+	$('#photo').modal('hide')
+}

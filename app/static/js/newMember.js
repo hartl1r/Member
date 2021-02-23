@@ -7,10 +7,43 @@ $(document).ready( function() {
     dateJoined.value = todaysDateSTR;
 })
 
+// SET INITIAL VALUES FOR ZIP CODE SELECT STATEMENT
+selectZipcode = document.getElementById('zipcodeSelecterID')
+selectZipcode.value =  ''
+
+document.getElementById("zipcodeSelecterID").addEventListener("change",zipCodeChangeRtn)
+function zipCodeChangeRtn() {
+    newZip = this.value
+    document.getElementById("zipcodeTextID").value = newZip
+}
+
 membershipType = document.getElementById('membershipType')
 membershipType.addEventListener('change',displayTotalFee);
+document.getElementById('memberID').addEventListener('change',checkVillageID)
 
+function checkVillageID() {
+    var memberID = document.getElementById('memberID').value
+    $.ajax({
+        url : "/checkVillageID",
+        type: "GET",
+        data : {
+            memberID:memberID
+        },
+        success: function(data, textStatus, jqXHR)
+        {
+            if (data.msg != 'NOT FOUND'){
+                msg = data.msg
+                console.log('msg - '+ msg)
+                modalAlert("NEW MEMBER",msg)
+            }
+            
+        },
+        error: function(result){
+            alert("Error ..."+result)
+        }
+    }) 
 
+}
 function displayTotalFee() {
     singleInitiationFee = document.getElementById('singleInitiationFee').value
     singleTotalFee = document.getElementById('singleTotalFee').value
@@ -35,3 +68,20 @@ function displayTotalFee() {
     saveBtn.style.display='inline'
 
 }
+
+function modalAlert(title,msg) {
+    console.log('title - '+title)
+    console.log('msg - '+ msg)
+	document.getElementById("modalTitle").innerHTML = title
+	document.getElementById("modalBody").innerHTML= msg
+	$('#myModalMsg').modal('show')
+	}
+	
+function closeModal() {
+	$('#myModalMsg').modal('hide')
+}
+
+
+$('.phones').usPhoneFormat({
+    format: '(xxx) xxx-xxxx',
+});

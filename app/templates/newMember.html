@@ -3,6 +3,7 @@
 {% block styles %}
     {{super()}}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/newMember.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
 {% endblock %}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">   
 
@@ -18,7 +19,7 @@
         <div class="demographic">
             <div class="form-group-md">
                 <label for=memberID class='col-md-4 form-label-md'>Village ID</label>
-                <input id='memberID' type="text" required class="form-control-md" style="width:60px" name="memberID">
+                <input id='memberID' type="text" required class="form-control-md" style="width:65px" name="memberID">
                 <label for=expireDate class="col-md-3 form-label-md" >Expiration date</label>
                 <input type="date" datepicker class="form-control-md" name='expireDate'>
             </div>
@@ -49,20 +50,26 @@
                 </div>
                 <div class='form-group-md'>
                     <label for="city" class="col-md-4 form-label-md"></label>
-                    <input id="city"type='text' class='form-control-md' name='city' placeholder="City">
-                    <input id="state"type='text' class='form-control-md' style=width:25px name='state' value='FL'>
-                    <input id="zip"type='text' class='form-control-md' style=width:95px name='zip' placeholder="Zip">
+                    <input id="city"type='text' class='form-control-md' name='city' readonly value='The Villages'>
+                    <input id="state"type='text' class='form-control-md' style=width:25px name='state' readonly value='FL'>
+                    <!-- <input id="zip"type='text' class='form-control-md' style=width:95px name='zip' placeholder="Zip"> -->
+                    <input type="hidden" id="zipCodeTextID" name="zip" style=width:50px; value=''>
+                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:90px;color:navy;font-family:inherit>
+                        {% for z in zipCodes %}
+                            <option value="{{z.Zipcode}}" class="optZipcode" style=color:navy >{{z.Zipcode}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
             <hr>   
             <div class='phones'>
                 <div class='form-group-md'>
                     <label for="cellPhone" class="col-md-4 form-label-md">Cell phone</label>
-                    <input id="cellPhone"type='text' class='form-control-md' name='cellPhone' >
+                    <input id="cellPhone"type='text' class='phones form-control-md' style=width:130px name='cellPhone' >
                 </div>
                 <div class='form-group-md'>
                     <label for="homePhone" class="col-md-4 form-label-md">Home phone</label>
-                    <input id="homePhone"type='text' class='form-control-md' name='homePhone' >
+                    <input id="homePhone"type='text' class='phones form-control-md' style=width:130px name='homePhone' >
                 </div>
             </div> 
             <div class='email'>
@@ -105,6 +112,10 @@
                 </select>
             </div> 
 
+            <div class="form-group-md">
+                <label class='col-md-4 form-label-md' style=margin-left:50px;>Villages Waiver</label> 
+                <input id='villagesWaiverID' class='largerCheckbox form-control-md' type="checkbox" style=margin-top:3px;margin-left:5px name="villagesWaiverSigned" required>
+            </div>   
             <br>
             <br>
 
@@ -116,13 +127,13 @@
             
             <div class='form-group-md'>
                 <label class="col-md-5 form-label-md">Certification Training Date</label>
-                <select name="crtDtRA" id="crtDtRA" class='form-control-md'style=width:120px name='certDtRA'>
+                <select name="certifyDateRA" id="crtDtRA" class='form-control-md'style=width:120px name='certDtRA'>
                     <option class="optName" value="">Select one -</option>
                     {% for dt in RAclassArray %}
                         <option  class="optName" value='{{dt}}'>{{ dt }}</option>
                     {% endfor %}
                 </select>
-                <select name="crtDtBW" id="crtDtBW" class='form-control-md' style=width:120px;margin-left:80px ='certDtBW'>
+                <select name="certifyDateBW" id="crtDtBW" class='form-control-md' style=width:120px;margin-left:80px ='certDtBW'>
                     <option class="optName" value="">Select one -</option>
                     {% for dt in BWclassArray %}
                         <option  class="optName" value='{{dt}}'>{{ dt }}</option>
@@ -177,6 +188,28 @@
     
     </div> <!-- END OF PARENT -->
 </form> <!-- END OF FORM -->
+
+<!-- Modal for error messages. -->
+<div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalTitle"></h5>
+				<button type="button" class="close" onclick=closeModal() aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" id=modalBody style=text-align:center>
+			</div>
+			
+				<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick=closeModal() data-dismiss="modal">CLOSE</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
 {% endblock %}
 
 {% block scripts %}

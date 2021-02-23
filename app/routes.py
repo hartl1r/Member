@@ -262,6 +262,8 @@ def saveAddress():
     else:
         hasTemporaryVillageID = False
 
+    lightspeedID = request.form.get('lightspeedID')
+
     tempIDexpirationDate = request.form.get('expireDt')
     staffID = request.form['staffID']
     
@@ -336,7 +338,12 @@ def saveAddress():
             member.Temporary_ID_Expiration_Date = None
             member.Temporary_Village_ID = False
             fieldsChanged += 1
-   
+     
+    if member.LightspeedID != lightspeedID :
+        logChange('LightspeedID',memberID,lightspeedID,member.LightspeedID)
+        member.LightspeedID = lightspeedID
+        fieldsChanged += 1
+
     if fieldsChanged > 0:
         try:
             db.session.commit()
@@ -464,7 +471,7 @@ def saveEmergency():
 
     otherDiagnosis = request.form['otherDiagnosis']
     diabetesOther = request.form['diabetesOther']
-    alergies = request.form['alergies']
+    allergies = request.form['allergies']
 
      # GET MEMBER RECORD 
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
@@ -528,9 +535,9 @@ def saveEmergency():
         member.Emerg_Diabetes_Other = diabetesOther
         fieldsChanged += 1
 
-    if alergies != member.Emerg_Medical_Alergies:
-        logChange('alergies',memberID,alergies,member.Emerg_Medical_Alergies)
-        member.Emerg_Medical_Alergies = alergies
+    if allergies != member.Emerg_Medical_Alergies:
+        logChange('allergies',memberID,allergies,member.Emerg_Medical_Alergies)
+        member.Emerg_Medical_Alergies = allergies
         fieldsChanged += 1
 
     # IF ANY FIELDS CHANGED, SAVE CHANGES
@@ -640,6 +647,8 @@ def saveMemberStatus():
             member.Inactive = inactive
             fieldsChanged += 1   
 
+    print('inactiveDate - ',inactiveDate)
+    print('member.Inactive_Date - ',member.Inactive_Date)
     if inactiveDate != None:
         if inactiveDate != member.Inactive_Date:
             logChange('Inactive Date',memberID,inactiveDate,member.Inactive_Date)
@@ -1131,6 +1140,9 @@ def newMemberApplication():
        
         RAavailableDates = len(RAclassArray)
 
+        # GET ZIPCODES
+        zipCodes = db.session.query(ZipCode).order_by(ZipCode.Zipcode).all()
+   
         # PREPARE LIST OF AVAILABLE CERTIFICATION DATES FOR BROWNWOOD
         sqlSelect = "SELECT trainingDate, classLimit FROM tblTrainingDates "
         sqlSelect += "WHERE shopNumber = 2 "
@@ -1161,7 +1173,7 @@ def newMemberApplication():
         RAavailableDates=RAavailableDates,BWavailableDates=BWavailableDates,\
         singleInitiationFeeCUR=singleInitiationFeeCUR,familyInitiationFeeCUR=familyInitiationFeeCUR,\
         annualFeeCUR=annualFeeCUR,currentDuesYear=currentDuesYear,dateJoined=todaySTR,\
-        singleTotalFeeCUR=singleTotalFeeCUR,familyTotalFeeCUR=familyTotalFeeCUR)
+        singleTotalFeeCUR=singleTotalFeeCUR,familyTotalFeeCUR=familyTotalFeeCUR,zipCodes=zipCodes)
 
     # POST REQUEST; PROCESS FORM DATA; IF OK SEND PAYMENT DATA, ADD TO MEMBER_DATA, INSERT TRANSACTION ('ADD'), DISPLAY MEMBER FORM
     
@@ -1190,8 +1202,8 @@ def newMemberApplication():
     lastName = request.form.get('lastName')
     nickname = request.form.get('nickname')
     street = request.form.get('street')
-    city = request.form.get('city')
-    state = request.form.get('state')
+    #city = request.form.get('city')
+    #state = request.form.get('state')
     zip = request.form.get('zip')
     
     cellPhone = request.form.get('cellPhone')
@@ -1201,6 +1213,10 @@ def newMemberApplication():
     typeOfWork = request.form.get('typeOfWork')
     
     skillLevel = request.form.get('skillLevel')
+
+    certifyDateRA = request.form.get('certifyDateRA')
+    certifyDateBW = request.form.get('certifyDateBW')
+
     membershipType = request.form.get('membershipType')
     if membershipType == 'single' :
         initiationFee = memberInitiationFee
@@ -1221,8 +1237,8 @@ def newMemberApplication():
         Last_Name = lastName,
         Nickname = nickname,
         Address = street,
-        City = city,
-        State = state,
+        City = 'The Villages',
+        State = 'FL',
         Zip = zip,
         Cell_Phone = cellPhone,
         Home_Phone = homePhone,
@@ -1230,7 +1246,23 @@ def newMemberApplication():
         Date_Joined = dateJoined,
         Default_Type_Of_Work = typeOfWork,
         Skill_Level = skillLevel,
-        Dues_Paid = 1
+        Certification_Training_Date = certifyDateRA,
+        Certification_Training_Date_2 = certifyDateBW,
+        Dues_Paid = 1,
+        Jan_resident = 1,
+        Feb_resident = 1,
+        Mar_resident = 1,
+        Apr_resident = 1,
+        May_resident = 1,
+        Jun_resident = 1,
+        Jul_resident = 1,
+        Aug_resident = 1,
+        Sep_resident = 1,
+        Oct_resident = 1,
+        Nov_resident = 1,
+        Dec_resident = 1,
+        Villages_Waiver_Signed = 1,
+        Villages_Waiver_Date_Signed = todays_date
     ) 
     # ADD RECORD TO tblDues_Years_Paid TABLE
     # GET UTC TIME
@@ -1951,3 +1983,12 @@ def savePhoto():
 
     return redirect(url_for('index') )   
     
+@app.route("/checkVillageID")
+def checkVillageID():
+    memberID=request.args.get('memberID')   
+    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+    if (member == None):
+        msg = "NOT FOUND"
+    else:
+        msg = "Member ID " + memberID + " belongs to " + member.First_Name + ' ' + member.Last_Name
+    return jsonify(msg=msg)
