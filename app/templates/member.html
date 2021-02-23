@@ -50,13 +50,14 @@
                 <div id="myDropdown" class="dropdown-content"style=text-align:left>
                     <button id='clearScreenBtnID' class='dropdown-item' disabled onclick='clearScreen()'>Clear Screen</button>
                     <hr>
-                    <button id='mntrSchedBtnID' class='dropdown-item' disabled onclick="window.location.href='/printMemberSchedule/?villageID={{member.Member_ID}}'">Print Schedule</button>
+                    <button id='monitorSchedulingBtnID' class='dropdown-item' disabled onclick='linkToMonitorSchedule()'>Schedule Monitor Duty</button>
+                    <button id='mntrSchedBtnID' class='dropdown-item' disabled onclick="window.location.href='/printMemberSchedule/?villageID={{member.Member_ID}}'">Print Monitor Schedule</button>
                     <button id='noteBtnID' class='dropdown-item' disabled onclick='noteRoutine()'>Note to Member</button>                   
                     <button id='classSignUpBtnID' class='dropdown-item' disabled onclick='classSignUp()'>Class Signup</button>
                     <button id='rolesBtnID' class='dropdown-item' disabled onclick="window.location.href='/roles/?villageID={{member.Member_ID}}'">Roles</button>
                     <button id="editNameBtnID" class='dropdown-item' disabled onclick="window.location.href='/editName/?villageID={{member.Member_ID}}'">Edit name</button>
                     <button id="chgVillageID" class='dropdown-item' disabled onclick="window.location.href='/changeVillageID/?villageID={{member.Member_ID}}'">Edit Village ID</button>
-                    <button id='monitorSchedulingBtnID' class='dropdown-item' disabled onclick='linkToMonitorSchedule()'>Schedule Monitor Duty</button>
+                    
                     <hr>
                     <button id='showCheckInsID' class="dropdown-item" disabled style=display:none onclick="window.location.href='/checkIns/?villageID={{member.Member_ID}}'">Show check-ins</button>
                     <button id='passwordBtnID' class='dropdown-item' disabled style=display:none onclick='passwordRoutine()'>Change password</button>                   
