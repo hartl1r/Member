@@ -54,7 +54,7 @@ class Member(db.Model):
     Initials = db.Column(db.String(3))
     Date_Joined = db.Column(db.Date)
     Certified = db.Column(db.Boolean)
-    Certification_Training_Date = db.Column(db.Date,nullable=True, default='')
+    Certification_Training_Date = db.Column(db.Date,nullable=True)
     Certified_2 = db.Column(db.Boolean)
     Certification_Training_Date_2 = db.Column(db.Date)
     Address = db.Column(db.String(30))

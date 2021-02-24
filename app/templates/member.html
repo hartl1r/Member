@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Feb 23, 2021</h6>
+            <h6>ver. Feb 24, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -84,12 +84,12 @@
                 <div class="col-9">
                     <input id='memberID' type="text" maxlength=6 size=6 style="width:70px" readonly name="memberID" value="{{member.Member_ID}}">
                     <label for="lightspeedID" style="margin-left:20px">Lightspeed ID:</label>
-                    <input id="lightspeedID" name='lightspeedID' type="text" maxlength=6 size=6 style="width:80px" class="lightspeedID" value="{{ member.LightspeedID }}">
+                    <input id="lightspeedID" name='lightspeedID' type="text" maxlength=6 size=6 style="width:80px" class="lightspeedID" value="{{ member.LightspeedID if member.LightspeedID }}">
                 </div>
             </div>
 
             <div class="row">
-                <label class="col-3">Temp ID</label>
+                <label class="col-3" style=margin-top:5px>Temp ID</label>
                 <div class="col-9">
                     <input 
                         id='hasTempVillageID' 
@@ -112,7 +112,7 @@
             <div class="row">
                 <label class="col-3" for="street">Street</label>
                 <div class="col-9">
-                    <input id='streetID' type="text" style="width:250px" name="street" value="{{member.Address}}">
+                    <input id='streetID' type="text" style="width:250px" name="street" placeholder="Street" value="{{member.Address}}">
                 </div>
             </div>
 
@@ -121,8 +121,9 @@
                 <div id='cityStateZip' class="cityStateZip col-9">
                     <input type="text" name="city" style=width:100px; readonly value='The Villages'>
                     <input type="text" style=width:30px id="state" name="state" readonly value='{{member.State}}'>
-                    <input type="hidden" id="zipcodeTextID" name="zip" style=width:50px; value='{{member.Zip}}'>
-                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:90px;color:navy;font-family:inherit>
+                    <input type="hidden" id="zipcodeTextID" name="zip" style=width:50px;  value='{{member.Zip}}'>
+                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:95px;color:navy;font-family:inherit placeholder="Zipcode">
+                        <option disabled selected value="">Select ..</option>
                         {% for z in zipCodes %}
                             <option value="{{z.Zipcode}}" class="optZipcode" style=color:navy >{{z.Zipcode}}</option>
                         {% endfor %}
@@ -135,6 +136,7 @@
                 <div class="villageData col-6">
                     <input id=villageTextID type="hidden" name="village" value="{{member.Village}}">
                     <select id="villageSelecterID" style="padding-bottom:3px; width:300px; color:navy;font-family:inherit" name="villageSelecterName">
+                        <option value="" disabled selected>Select a village ...</option>
                         {% for village in villages %}
                             <option  class="optVillage" value ="{{village.Village_Name}}">{{village.Village_Name}}</option>
                         {% endfor %}
@@ -151,6 +153,7 @@
                         style=width:130px 
                         id="homePhone" 
                         name="homePhone"
+                        placeholder="Home phone"
                         value="{{ member.Home_Phone }}">
                 </div>
             </div>
@@ -163,13 +166,14 @@
                     style=width:130px 
                     id="cellPhone" 
                     name="cellPhone"
+                    placeholder="Cell phone"
                     value="{{ member.Cell_Phone }}">
                 </div>
             </div>
             <div class="row">
                 <label class="col-3" for="eMail">E-Mail</label>
                 <div class="col-9">
-                    <input type="email" style=width:250px id="eMailID" name="eMail"value="{{ member.eMail }}">
+                    <input type="email" style=width:250px id="eMailID" name="eMail" placeholder="Email" value="{{ member.eMail }}">
                 </div>
             </div>
             
@@ -193,30 +197,30 @@
             <div class="row">
                 <label class="control-label col-md-3 col-form-label-md" for="altStreet">Street</label>
                 <div class="col-md-9">
-                    <input type="text" class="form-control-md" style="width:250px" id="altStreet" name="altStreet" value="{{member.Alt_Street if member.Alt_Street}}">
+                    <input type="text" class="form-control-md" style="width:250px" id="altStreet" name="altStreet" placeholder='Street' value="{{member.Alt_Street if member.Alt_Street}}">
                 </div>
             </div>
 
             <div class="row">
                 <label class="control-label col-md-3 col-form-label-md">City/State</label>   
                 <div class="col-md-5">
-                    <input type="text" class="form-control-md" style="width:200px"id="altCity" name="altCity" value='{{member.Alt_City if member.Alt_City}}'>
+                    <input type="text" class="form-control-md" style="width:200px"id="altCity" name="altCity" placeholder="City" value='{{member.Alt_City if member.Alt_City}}'>
                 </div>
                 <div class="col-md-1">
-                    <input type="text" class="form-control-md" style=width:30px;margin-left:20px name="altState" value='{{member.Alt_State if member.Alt_State}}'>
+                    <input type="text" class="form-control-md" style=width:30px;margin-left:20px name="altState" placeholder="St" value='{{member.Alt_State if member.Alt_State}}'>
                 </div>
             </div>
             <div class="row">
                 <label class="control-label col-md-3 col-form-label-md" >Zip</label>   
                 <div class="col-md-2">
-                    <input type="text" class="form-control-md" style=width:150px name="altZip" value='{{ member.Alt_Zip if member.Alt_Zip }}'>
+                    <input type="text" class="form-control-md" style=width:90px name="altZip" placeholder="Zipcode" value='{{ member.Alt_Zip if member.Alt_Zip }}'>
                 </div>
             </div>
 
             <div class="row">
                 <label class="control-label col-md-3 col-form-label-md" >Country</label>
                 <div class="col-md-4">
-                    <input type="text" class="form-control-md" name="altCountry" 
+                    <input type="text" class="form-control-md" placeholder="Country" name="altCountry" 
                     {{ member.Alt_Country if member.Alt_Country }}>
                 </div>
             </div>
@@ -229,6 +233,7 @@
                         class="phones form-control-md" 
                         style=width:130px  
                         name="altPhone"
+                        placeholder="Phone"
                         value="{{ member.Alt_Phone if member.Alt_Phone}}">
                 </div>
             </div>
@@ -356,42 +361,53 @@
             <input id=currentDuesYearID type="hidden" value={{currentDuesYear}}>
 
             <div class="row form-check">
-                <input id='villagesWaiverID' type="checkbox" class="form-check-input" style=margin-top:10px name="villagesWaiverSigned"   {% if member.Villages_Waiver_Signed %} checked {% endif %}value="True">
-                <label for='villagesWaiverID' class="form-check-label" >Villages Waiver</label>    
-                <input id="villagesWaiverDateSigned" class="form-control-md" type="date" name="villagesWaiverDateSigned" value={{member.Villages_Waiver_Date_Signed}}> 
+                <input id='villagesWaiverID' type="checkbox" class="form-check-input" style=margin-top:5px; name="villagesWaiverSigned"   {% if member.Villages_Waiver_Signed %} checked {% endif %}value="True">
+                <label for="villagesWaiverID" class="col-sm-3 form-check-label" >Village Waiver</label>    
+                <input id="villagesWaiverDateSigned" class="form-control-md" type="date" name="villagesWaiverDateSigned"  value={{member.Villages_Waiver_Date_Signed}}> 
             </div>
 
             <div class="row form-check">
-                    <input id="duesPaidID" type="checkbox" class="form-check-input" style=margin-top:10px name="duesPaid" {% if member.Dues_Paid %} checked {% endif %} value={{member.Dues_Paid}}>
-                    <label class="form-check-label">Dues paid ({{lastYearPaid}})</label> 
-                    <label for='dateJoinedID' class="col-form-label" style=margin-top:-5px;margin-left:120px>Date Joined</label>
+                    <input id="duesPaidID" type="checkbox" class="form-check-input" style=margin-top:5px name="duesPaid" {% if member.Dues_Paid %} checked {% endif %} value={{member.Dues_Paid}}>
+                    <label class="col-sm-4 form-check-label">Dues paid ({{lastYearPaid}})</label> 
+                    <label for='dateJoinedID' class="col-form-label" style=margin-top:-5px;margin-left:0px>Date Joined</label>
                     <input id='dateJoinedID' type="date" class="form-control-md "  name="dateJoined" value="{{member.Date_Joined}}"> 
             </div> 
             
             <div class="row form-check">
                 <input id="volunteerID" type="checkbox" class="form-check-input" style=margin-top:5px name="volunteer" {% if member.NonMember_Volunteer %} checked {% endif %} value="{{member.NonMember_Volunteer}}">
-                <label for='volunteerID' class="form-check-label">Volunteer</label>
+                <label for='volunteerID' class="col-sm-4 form-check-label" style=margin-top:5px>Volunteer</label>
             </div>
             
-            <div class="row form-check" style='margin-top:10px;'>
+            <div class="row form-check" style='margin-top:0px;'>
                 <div>
                     <input id="inactiveID" type="checkbox" class="form-check-input" style=margin-top:8px name="inactive" {% if member.Inactive %} checked {% endif %}value="{{member.Inactive}}">
-                    <label for='inactiveID' class="form-check-label" style=margin-top:0px>Inactive</label>
-                    <input id="inactiveDateID" type="date" class="form-control-md" style=margin-left:20px name="inactiveDate" placeholder="inactive" value="{{member.Inactive_Date}}">
-                    <input id="deceasedID" type="checkbox" class="form-check-input" style=margin-top:8px;margin-left:60px; name="deceased" {% if member.Deceased %} checked {% endif %}value="{{member.Deceased}}">
-                    <label for='deceasedID' class="form-check-label"style=margin-top:0px;margin-left:80px>Deceased</label>
+                    <label for='inactiveID' class="col-sm-3 form-check-label" style=margin-top:5px>Inactive</label>
+                    <input id="inactiveDateID" type="date" class="form-control-md" style=margin-left:0px name="inactiveDate" placeholder="inactive" value="{{member.Inactive_Date}}">
+                    <input id="deceasedID" type="checkbox" class="col-sm-4 form-check-input" style=margin-top:8px;margin-left:20px; name="deceased" {% if member.Deceased %} checked {% endif %}value="{{member.Deceased}}">
+                    <label for='deceasedID' class="col-sm-2 form-check-label"style=margin-top:10px;margin-left:30px>Deceased</label>
                 </div>
             </div>
 
             <div class="row">
                 <input id="restrictedID" type="checkbox" class="form-check-input" style=margin-top:10px;margin-left:0px name="restricted" {% if member.Restricted_From_Shop %} checked {% endif %}value="{{member.Restricted_From_Shop}}">
-                <label class="form-check-label" style=margin-top:8px;margin-left:20px>Restricted</label>
-                <textarea name="reasonRestricted"  style=margin-left:7px;margin-top:5px id="reasonRestricted" cols="60" rows="2">{{member.Reason_For_Restricted_From_Shop if member.Reason_For_Restricted_From_Shop}}</textarea>
+                <label class="col-sm-4 form-check-label" style=margin-top:11px;margin-left:20px>Restricted</label>
+                <textarea name="reasonRestricted"  
+                    style=margin-left:5px;margin-top:5px 
+                    id="reasonRestricted"
+                    placeholder="Reason for restriction" 
+                    cols="60" 
+                    rows="2">{{member.Reason_For_Restricted_From_Shop if member.Reason_For_Restricted_From_Shop}}</textarea>
             </div>
             
             <div class="row" style='padding-top:4em;'>
-                <label for="memberNotesID">Member notes:</label>
-                <textarea name="memberNotes" id="memberNotesID" cols="60" rows="2" style='margin-left:3px;padding-left:2px'>{{member.Member_Notes if member.Member_Notes}}</textarea>
+                <!-- <label for="memberNotesID">Member notes:</label> -->
+                <textarea 
+                    name="memberNotes" 
+                    id="memberNotesID" 
+                    placeholder="Member notes"
+                    cols="60" 
+                    rows="2" 
+                    style='margin-left:3px;padding-left:2px'>{{member.Member_Notes if member.Member_Notes}}</textarea>
             </div>
 
             <div class='row'>

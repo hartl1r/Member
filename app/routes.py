@@ -1202,8 +1202,6 @@ def newMemberApplication():
     lastName = request.form.get('lastName')
     nickname = request.form.get('nickname')
     street = request.form.get('street')
-    #city = request.form.get('city')
-    #state = request.form.get('state')
     zip = request.form.get('zip')
     
     cellPhone = request.form.get('cellPhone')
@@ -1854,7 +1852,9 @@ def newVolunteerApplication():
     
     # DISPLAY BLANK NEW VOLUNTEER FORM
     if request.method != 'POST':
-        return render_template("newVolunteer.html")
+        # GET ZIPCODES
+        zipCodes = db.session.query(ZipCode).order_by(ZipCode.Zipcode).all()
+        return render_template("newVolunteer.html",zipCodes=zipCodes)
 
     # DID USER CANCEL?
     if request.form.get('volunteerCancelBtn') == 'CANCEL':
@@ -1868,6 +1868,13 @@ def newVolunteerApplication():
         return redirect(url_for('index',villageID=villageID,todaysDate=todaySTR))
 
     # PROCESS NEW VOLUNTEER
+
+    expireDate = request.form.get('expireDate')
+    if expireDate:
+        hasTempID = 1
+    else:
+        hasTempID = 0
+
     firstName = request.form.get('firstName')
     middleName = request.form.get('middleName')
     lastName = request.form.get('lastName')
@@ -1880,10 +1887,13 @@ def newVolunteerApplication():
     cellPhone = request.form.get('cellPhone')
     homePhone = request.form.get('homePhone')
     eMail = request.form.get('eMail')
+    dateJoined = request.form.get('dateJoined')
     typeOfWork = request.form.get('typeOfWork')
 
     newVolunteer = Member(
         Member_ID = villageID,
+        Temporary_ID_Expiration_Date = expireDate,
+        Temporary_Village_ID = hasTempID,
         First_Name = firstName,
         Middle_Name = middleName,
         Last_Name = lastName,
@@ -1895,7 +1905,9 @@ def newVolunteerApplication():
         Cell_Phone = cellPhone,
         Home_Phone = homePhone,
         eMail = eMail,
-        Default_Type_Of_Work = typeOfWork
+        Date_Joined = dateJoined,
+        Default_Type_Of_Work = typeOfWork,
+        NonMember_Volunteer = 1
     ) 
 
     # GET UTC TIME
@@ -1990,5 +2002,5 @@ def checkVillageID():
     if (member == None):
         msg = "NOT FOUND"
     else:
-        msg = "Member ID " + memberID + " belongs to " + member.First_Name + ' ' + member.Last_Name
+        msg = "Village ID " + memberID + " belongs to " + member.First_Name + ' ' + member.Last_Name
     return jsonify(msg=msg)

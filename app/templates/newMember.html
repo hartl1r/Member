@@ -3,7 +3,7 @@
 {% block styles %}
     {{super()}}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/newMember.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/village.css') }}">
 {% endblock %}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">   
 
@@ -19,7 +19,7 @@
         <div class="demographic">
             <div class="form-group-md">
                 <label for=memberID class='col-md-4 form-label-md'>Village ID</label>
-                <input id='memberID' type="text" required class="form-control-md" style="width:65px" name="memberID">
+                <input id='memberID' type="text" required class="form-control-md" style="width:65px" name="memberID"  placeholder="ID">
                 <label for=expireDate class="col-md-3 form-label-md" >Expiration date</label>
                 <input type="date" datepicker class="form-control-md" name='expireDate'>
             </div>
@@ -52,9 +52,9 @@
                     <label for="city" class="col-md-4 form-label-md"></label>
                     <input id="city"type='text' class='form-control-md' name='city' readonly value='The Villages'>
                     <input id="state"type='text' class='form-control-md' style=width:25px name='state' readonly value='FL'>
-                    <!-- <input id="zip"type='text' class='form-control-md' style=width:95px name='zip' placeholder="Zip"> -->
                     <input type="hidden" id="zipCodeTextID" name="zip" style=width:50px; value=''>
-                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:90px;color:navy;font-family:inherit>
+                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:95px;color:navy;font-family:inherit>
+                        <option value="">Zipcode</option>
                         {% for z in zipCodes %}
                             <option value="{{z.Zipcode}}" class="optZipcode" style=color:navy >{{z.Zipcode}}</option>
                         {% endfor %}
@@ -65,17 +65,17 @@
             <div class='phones'>
                 <div class='form-group-md'>
                     <label for="cellPhone" class="col-md-4 form-label-md">Cell phone</label>
-                    <input id="cellPhone"type='text' class='phones form-control-md' style=width:130px name='cellPhone' >
+                    <input id="cellPhone"type='text' class='phones form-control-md' placeholder="Cell phone" style=width:130px name='cellPhone' >
                 </div>
                 <div class='form-group-md'>
                     <label for="homePhone" class="col-md-4 form-label-md">Home phone</label>
-                    <input id="homePhone"type='text' class='phones form-control-md' style=width:130px name='homePhone' >
+                    <input id="homePhone"type='text' class='phones form-control-md' style=width:130px placeholder="Home phone" name='homePhone' >
                 </div>
             </div> 
             <div class='email'>
                 <div class='form-group-md'>
                     <label for="eMail" class="col-md-4 form-label-md">Email</label>
-                    <input id="eMail"type='email' required class='form-control-md' name='eMail' >
+                    <input id="eMail"type='email' required class='form-control-md' name='eMail' placeholder="Email" >
                 </div>   
             </div>
         </div> <!-- END OF demographic-->
@@ -83,7 +83,7 @@
         <div class='column2'>
             <div class='form-group-md' style=margin-top:20px>
                 <label for="dateJoined" class="col-md-5 form-label-md">Date joined</label>
-                <input id="dateJoined"type='date' datepicker class='dateJoined form-control-md' name='dateJoined' value={{dateJoined}}>
+                <input id="dateJoined"type='date' datepicker class='dateJoined form-control-md' name='dateJoined' readonly>
             </div>  
 
             <div class='form-group-md'>
@@ -178,10 +178,9 @@
 
         <div class='footerBtns'>
             <div class="cancelSave" >
-                <label class='col-5'></label>
+                <label class='col-9'></label>
                 <button id="cancelBtn" type="submit" formnovalidate name="newMember" class="btn-default" value="CANCEL">CANCEL</button>
                 <button id="saveBtn" type="submit" name="newMember" class=" saveBtn btn-primary" style=display:none value="SAVE">SAVE</button>  
-                <label class='col-4'></label>
             </div>
         </div>
         

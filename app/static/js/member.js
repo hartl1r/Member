@@ -48,14 +48,27 @@ var currentMemberID = ''
 
 // SET INITIAL VALUES FOR SELECT STATEMENTS
 curZipcode = document.getElementById('zipcodeTextID').value
-selectZipcode = document.getElementById('zipcodeSelecterID')
-selectZipcode.value =  curZipcode
 //alert('curZipcode - '+curZipcode)
-//alert('selectZipcode - '+selectZipcode.value )
+selectZipcode = document.getElementById('zipcodeSelecterID')
+if (curZipcode != '') {
+    selectZipcode.value =  curZipcode
+}
+else{
+    selectZipcode.value = ''
+}
 
 curVillage = document.getElementById('villageTextID').value
+//alert('curVillage - '+ curVillage)
 selectVillage = document.getElementById('villageSelecterID')
-selectVillage.value =  curVillage
+if (curVillage) {
+    if (curVillage != '') { 
+        selectVillage.value = curVillage
+    }
+}
+else {
+    selectVillage.value = ''
+} 
+
 
 // SHOW 'ACCEPT DUES ...' BUTTON IF TIME TO COLLECT DUES AND MEMBER HAS NOT PAID
 acceptDuesDate = document.getElementById('acceptDuesDateID').value

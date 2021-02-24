@@ -55,3 +55,19 @@ form {
 #volunteerSaveBtn:disabled {
     background-color: gray;
 }
+
+:required {
+    border:1px solid red;
+    background-color:rgb(235, 213, 213);
+}
+input:read-only {
+    color:green;
+}
+
+.memberName {
+    padding-bottom:.25em;
+}
+input.largerCheckbox { 
+    width: 30px; 
+    height: 30px; 
+} 

@@ -19,6 +19,8 @@
             <div class="form-group-md">
                 <label for=villageID class='col-md-4 form-label-md'>Village ID</label>
                 <input id='villageID' type="text" required class="form-control-md" style="width:60px" name="villageID">
+                <label for=expireDate class="col-md-3 form-label-md" >Expiration date</label>
+                <input type="date" datepicker class="form-control-md" name='expireDate'>
             </div>
             
             
@@ -47,20 +49,26 @@
                 </div>
                 <div class='form-group-md'>
                     <label for="city" class="col-md-4 form-label-md"></label>
-                    <input id="city"type='text' class='form-control-md' name='city' placeholder="City">
-                    <input id="state"type='text' class='form-control-md' style=width:25px name='state' value='FL'>
-                    <input id="zip"type='text' class='form-control-md' style=width:95px name='zip' placeholder="Zip">
+                    <input id="city"type='text' class='form-control-md' name='city' readonly value="The Villages">
+                    <input id="state"type='text' class='form-control-md' style=width:25px name='state' readonly value='FL'>
+                    <input type="hidden" id="zipCodeTextID" name="zip" style=width:50px; value=''>
+                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:95px;color:navy;font-family:inherit>
+                        <option value="">Zipcode</option>
+                        {% for z in zipCodes %}
+                            <option value="{{z.Zipcode}}" class="optZipcode" style=color:navy >{{z.Zipcode}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
             <hr>   
             <div class='phones'>
                 <div class='form-group-md'>
                     <label for="cellPhone" class="col-md-4 form-label-md">Cell phone</label>
-                    <input id="cellPhone"type='text' class='form-control-md' name='cellPhone' >
+                    <input id="cellPhone"type='text' class='phones form-control-md' style=width:130px name='cellPhone' placeholder="Cell phone" >
                 </div>
                 <div class='form-group-md'>
                     <label for="homePhone" class="col-md-4 form-label-md">Home phone</label>
-                    <input id="homePhone"type='text' class='form-control-md' name='homePhone' >
+                    <input id="homePhone"type='text' class='phones form-control-md' style=width:130px name='homePhone' placeholder="Home phone">
                 </div>
             </div> 
             <div class='email'>
@@ -69,6 +77,12 @@
                     <input id="eMail"type='email' required class='form-control-md' name='eMail' >
                 </div>   
             </div>
+
+            <div class='form-group-md' style=margin-top:20px>
+                <label for="dateJoined" class="col-md-4 form-label-md">Date joined</label>
+                <input id="dateJoined"type='date' datepicker class='dateJoined form-control-md' name='dateJoined' readonly>
+            </div> 
+
         </div> <!-- END OF demographic-->
         <div class='footerBtns'>
             <div class="cancelSave" >
@@ -82,6 +96,28 @@
     
     </div> <!-- END OF PARENT -->
 </form> <!-- END OF FORM -->
+
+
+<!-- Modal for error messages. -->
+<div class="modal fade" id="myModalMsg" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalTitle"></h5>
+				<button type="button" class="close" onclick=closeModal() aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" id=modalBody style=text-align:center>
+			</div>
+			
+				<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick=closeModal() data-dismiss="modal">CLOSE</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
