@@ -378,9 +378,9 @@ def saveAltAddress():
     except Exception as e:
         errorMsg = 'ERROR - could not read record for member # ',memberID + '\n'+e
         flash(errorMsg,'danger')
-    if member.Alt_Adddress != street :
-        logChange('Alt Street',memberID,street,member.Alt_Adddress)
-        member.Alt_Adddress = street
+    if member.Alt_Street != street :
+        logChange('Alt Street',memberID,street,member.Alt_Street)
+        member.Alt_Street = street
         fieldsChanged += 1
 
     if member.Alt_City != city :
@@ -647,8 +647,7 @@ def saveMemberStatus():
             member.Inactive = inactive
             fieldsChanged += 1   
 
-    print('inactiveDate - ',inactiveDate)
-    print('member.Inactive_Date - ',member.Inactive_Date)
+    
     if inactiveDate != None:
         if inactiveDate != member.Inactive_Date:
             logChange('Inactive Date',memberID,inactiveDate,member.Inactive_Date)
@@ -1140,6 +1139,17 @@ def newMemberApplication():
        
         RAavailableDates = len(RAclassArray)
 
+
+
+        # PREPARE LIST OF VILLAGES
+        sqlSelect = "SELECT Village_Name FROM tblValid_Village_Names "
+        sqlSelect += "ORDER BY Village_Name"
+        try:
+            villages = db.engine.execute(sqlSelect)
+        except Exception as e:
+            flash("Could not retrieve village name list.","danger")
+            return 'ERROR in index village function.'
+
         # GET ZIPCODES
         zipCodes = db.session.query(ZipCode).order_by(ZipCode.Zipcode).all()
    
@@ -1173,7 +1183,7 @@ def newMemberApplication():
         RAavailableDates=RAavailableDates,BWavailableDates=BWavailableDates,\
         singleInitiationFeeCUR=singleInitiationFeeCUR,familyInitiationFeeCUR=familyInitiationFeeCUR,\
         annualFeeCUR=annualFeeCUR,currentDuesYear=currentDuesYear,dateJoined=todaySTR,\
-        singleTotalFeeCUR=singleTotalFeeCUR,familyTotalFeeCUR=familyTotalFeeCUR,zipCodes=zipCodes)
+        singleTotalFeeCUR=singleTotalFeeCUR,familyTotalFeeCUR=familyTotalFeeCUR,zipCodes=zipCodes,villages=villages)
 
     # POST REQUEST; PROCESS FORM DATA; IF OK SEND PAYMENT DATA, ADD TO MEMBER_DATA, INSERT TRANSACTION ('ADD'), DISPLAY MEMBER FORM
     
@@ -1201,8 +1211,30 @@ def newMemberApplication():
     middleName = request.form.get('middleName')
     lastName = request.form.get('lastName')
     nickname = request.form.get('nickname')
+
+    # CONSTRUCT NAMES   
+    LFM_Name = lastName + ', ' + firstName + ' ' + middleName
+    FML_Name = firstName
+    if middleName != '':
+        FML_Name += ' ' + middleName
+    FML_Name += ' ' + lastName 
+    LF_Name = lastName + ', ' + firstName
+    LFN_Name = lastName + ', ' + firstName 
+    if nickname != '':
+        LFN_Name += ' (' + nickname + ')'
+    FNL_Name = firstName 
+    if nickname != '':
+        FNL_Name += ' (' + nickname + ')'
+    FNL_Name += ' ' + lastName
+    Initials = firstName[0].lower()
+    if middleName != '':
+        Initials += middleName[0].lower()
+    Initials += lastName[0].lower()
+
+    
     street = request.form.get('street')
     zip = request.form.get('zip')
+    village = request.form.get('village')
     
     cellPhone = request.form.get('cellPhone')
     homePhone = request.form.get('homePhone')
@@ -1234,10 +1266,17 @@ def newMemberApplication():
         Middle_Name = middleName,
         Last_Name = lastName,
         Nickname = nickname,
+        LFM_Name = LFM_Name,
+        FML_Name = FML_Name,
+        LF_Name = LF_Name,
+        LFN_Name = LFN_Name,
+        FNL_Name = FNL_Name,
+        Initials = Initials,
         Address = street,
         City = 'The Villages',
         State = 'FL',
         Zip = zip,
+        Village = village,
         Cell_Phone = cellPhone,
         Home_Phone = homePhone,
         eMail = eMail,
@@ -1840,7 +1879,6 @@ def saveVillageID():
 @app.route("/takePhoto/")
 def takePhoto():
     villageID = request.args.get('villageID')
-    print('take photo of villageID - ',villageID)
     return render_template("photo.html",memberID=villageID)
 
 @app.route("/newVolunteerApplication",methods=('GET', 'POST'))

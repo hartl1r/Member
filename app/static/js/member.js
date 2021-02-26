@@ -57,6 +57,7 @@ else{
     selectZipcode.value = ''
 }
 
+
 curVillage = document.getElementById('villageTextID').value
 //alert('curVillage - '+ curVillage)
 selectVillage = document.getElementById('villageSelecterID')
@@ -707,6 +708,7 @@ function typeOfWorkRtn() {
 function zipCodeChangeRtn() {
     newZip = this.value
     document.getElementById("zipcodeTextID").value = newZip
+    alert('newZip - '+ newZip)
 }
 
 function villageChangeRtn() {

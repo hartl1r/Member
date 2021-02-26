@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Feb 24, 2021</h6>
+            <h6>ver. Feb 26, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -221,7 +221,7 @@
                 <label class="control-label col-md-3 col-form-label-md" >Country</label>
                 <div class="col-md-4">
                     <input type="text" class="form-control-md" placeholder="Country" name="altCountry" 
-                    {{ member.Alt_Country if member.Alt_Country }}>
+                    value="{{ member.Alt_Country if member.Alt_Country }}">
                 </div>
             </div>
             <br>
@@ -409,16 +409,13 @@
                     rows="2" 
                     style='margin-left:3px;padding-left:2px'>{{member.Member_Notes if member.Member_Notes}}</textarea>
             </div>
-
+            <br>
             <div class='row'>
-                <div class="col" style=margin-top:35px;margin-left:75px>
+                <div class="col-4" style=margin-top:35px;>
                     <label style='color:red'>{{hasKeys}}</label>
                 </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12 acceptDuesBtn">
-                    <input id='acceptDuesID' type='text' onclick="acceptDues()" class="btn btn-primary btn-md" style=color:white;width:15em value="ACCEPT DUES FOR {{currentDuesYear}}">    
+                <div class="col acceptDuesBtn">
+                    <input id='acceptDuesID' type='text' onclick="acceptDues()" class="btn btn-primary btn-sm" style=color:white;width:250px;height:30px value="ACCEPT DUES FOR {{currentDuesYear}}"</button>    
                 </div>
             </div>
 
@@ -427,7 +424,7 @@
                 <input type="hidden" class='clientLocation' name='clientLocation'>
                 <input type="hidden" class="memberID" name="memberID" value={{member.Member_ID}}>
                 <button id="memberCancelBtn" type="submit" name="memberAction" class="btn-default" style=display:none value="CANCEL">CANCEL</button>
-                <button id="memberSaveBtn" type="submit" name="memberAction" class="btn-primary" style=display:none value="SAVE">SAVE</button>   
+                <button id="memberSaveBtn" type="submit" name="memberAction" class="btn-primary " style=display:none value="SAVE">SAVE</button>   
             </div>
         </form>
         

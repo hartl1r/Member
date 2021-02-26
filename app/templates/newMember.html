@@ -19,7 +19,7 @@
         <div class="demographic">
             <div class="form-group-md">
                 <label for=memberID class='col-md-4 form-label-md'>Village ID</label>
-                <input id='memberID' type="text" required class="form-control-md" style="width:65px" name="memberID"  placeholder="ID">
+                <input id='memberID' type="text" required class="form-control-md" style="width:65px" name="memberID" autofocus placeholder="ID">
                 <label for=expireDate class="col-md-3 form-label-md" >Expiration date</label>
                 <input type="date" datepicker class="form-control-md" name='expireDate'>
             </div>
@@ -52,13 +52,25 @@
                     <label for="city" class="col-md-4 form-label-md"></label>
                     <input id="city"type='text' class='form-control-md' name='city' readonly value='The Villages'>
                     <input id="state"type='text' class='form-control-md' style=width:25px name='state' readonly value='FL'>
-                    <input type="hidden" id="zipCodeTextID" name="zip" style=width:50px; value=''>
-                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:95px;color:navy;font-family:inherit>
+                    <input type="hidden" id="zipcodeTextID" name="zip" style=width:50px; value=''>
+                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:95px;color:navy;font-family:inherit placeholder="Zipcode">
                         <option value="">Zipcode</option>
                         {% for z in zipCodes %}
                             <option value="{{z.Zipcode}}" class="optZipcode" style=color:navy >{{z.Zipcode}}</option>
                         {% endfor %}
                     </select>
+                    <div class="row">
+                        <label class="col-3" for="village">Village</label>
+                        <div class="villageData col-6">
+                            <input id=villageTextID type="hidden" name="village" value="">
+                            <select id="villageSelecterID" style="padding-bottom:3px; width:300px; color:navy;font-family:inherit" name="villageSelecterName">
+                                <option value="" disabled selected>Select a village ...</option>
+                                {% for village in villages %}
+                                    <option  class="optVillage" value ="{{village.Village_Name}}">{{village.Village_Name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <hr>   
@@ -112,9 +124,15 @@
                 </select>
             </div> 
 
-            <div class="form-group-md">
-                <label class='col-md-4 form-label-md' style=margin-left:50px;>Villages Waiver</label> 
-                <input id='villagesWaiverID' class='largerCheckbox form-control-md' type="checkbox" style=margin-top:3px;margin-left:5px name="villagesWaiverSigned" required>
+            <div class="form-group-md" style="border:1px solid red">
+                <label class='col-md-4 form-label-md' style="margin-left:50px;">Villages Waiver</label> 
+                <input 
+                    id='villagesWaiverID' 
+                    class='col-md-1 largerCheckbox form-control-md' 
+                    type="checkbox" 
+                    style=margin-left:5px; 
+                    name="villagesWaiverSigned" required
+                    oninvalid="this.setCustomValidity('Check this box if The Villages Waiver has been signed.')">
             </div>   
             <br>
             <br>

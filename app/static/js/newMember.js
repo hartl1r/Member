@@ -5,16 +5,29 @@ $(document).ready( function() {
     todaysDate = new Date();
     var todaysDateSTR =  (todaysDate.getFullYear() + "-" + ("0"+(todaysDate.getMonth()+1)).slice(-2) + "-" + ("0" + todaysDate.getDate()).slice(-2))
     dateJoined.value = todaysDateSTR;
-})
+}) 
 
 // SET INITIAL VALUES FOR ZIP CODE SELECT STATEMENT
 selectZipcode = document.getElementById('zipcodeSelecterID')
 selectZipcode.value =  ''
 
 document.getElementById("zipcodeSelecterID").addEventListener("change",zipCodeChangeRtn)
+document.getElementById("villageSelecterID").addEventListener("change",villageChangeRtn)
+
+
+
+function villageChangeRtn() {
+    //alert("village rtn - "+ this.value)
+    newVillage = this.value
+    document.getElementById("villageTextID").value = newVillage
+}
+
+
 function zipCodeChangeRtn() {
+    console.log('zip code change')
     newZip = this.value
     document.getElementById("zipcodeTextID").value = newZip
+    alert('newZip - '+newZip)
 }
 
 membershipType = document.getElementById('membershipType')
