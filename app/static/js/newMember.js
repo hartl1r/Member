@@ -17,17 +17,14 @@ document.getElementById("villageSelecterID").addEventListener("change",villageCh
 
 
 function villageChangeRtn() {
-    //alert("village rtn - "+ this.value)
     newVillage = this.value
     document.getElementById("villageTextID").value = newVillage
 }
 
 
 function zipCodeChangeRtn() {
-    console.log('zip code change')
     newZip = this.value
     document.getElementById("zipcodeTextID").value = newZip
-    alert('newZip - '+newZip)
 }
 
 membershipType = document.getElementById('membershipType')
@@ -46,7 +43,6 @@ function checkVillageID() {
         {
             if (data.msg != 'NOT FOUND'){
                 msg = data.msg
-                console.log('msg - '+ msg)
                 modalAlert("NEW MEMBER",msg)
             }
             
@@ -74,7 +70,6 @@ function displayTotalFee() {
         totalFee = familyTotalFee
     }
     // format to currency
-    console.log('totalFee - ' + totalFee)
     document.getElementById('totalAmt').value = totalFee;
     
     // SHOW SAVE BUTTON
@@ -83,8 +78,6 @@ function displayTotalFee() {
 }
 
 function modalAlert(title,msg) {
-    console.log('title - '+title)
-    console.log('msg - '+ msg)
 	document.getElementById("modalTitle").innerHTML = title
 	document.getElementById("modalBody").innerHTML= msg
 	$('#myModalMsg').modal('show')

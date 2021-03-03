@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Feb 26, 2021</h6>
+            <h6>ver. Mar 4, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -112,7 +112,7 @@
             <div class="row">
                 <label class="col-3" for="street">Street</label>
                 <div class="col-9">
-                    <input id='streetID' type="text" style="width:250px" name="street" placeholder="Street" value="{{member.Address}}">
+                    <input id='streetID' type="text" style="width:250px" name="street" placeholder="Street" required value="{{member.Address}}">
                 </div>
             </div>
 
@@ -122,7 +122,7 @@
                     <input type="text" name="city" style=width:100px; readonly value='The Villages'>
                     <input type="text" style=width:30px id="state" name="state" readonly value='{{member.State}}'>
                     <input type="hidden" id="zipcodeTextID" name="zip" style=width:50px;  value='{{member.Zip}}'>
-                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:95px;color:navy;font-family:inherit placeholder="Zipcode">
+                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:95px;color:navy;font-family:inherit required placeholder="Zipcode">
                         <option disabled selected value="">Select ..</option>
                         {% for z in zipCodes %}
                             <option value="{{z.Zipcode}}" class="optZipcode" style=color:navy >{{z.Zipcode}}</option>
@@ -135,7 +135,7 @@
                 <label class="col-3" for="village">Village</label>
                 <div class="villageData col-6">
                     <input id=villageTextID type="hidden" name="village" value="{{member.Village}}">
-                    <select id="villageSelecterID" style="padding-bottom:3px; width:300px; color:navy;font-family:inherit" name="villageSelecterName">
+                    <select id="villageSelecterID" style="padding-bottom:3px; width:300px; color:navy;font-family:inherit" required name="villageSelecterName">
                         <option value="" disabled selected>Select a village ...</option>
                         {% for village in villages %}
                             <option  class="optVillage" value ="{{village.Village_Name}}">{{village.Village_Name}}</option>

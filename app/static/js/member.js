@@ -134,7 +134,6 @@ document.getElementById("villageSelecterID").addEventListener("change",villageCh
 // }
 
 document.getElementById("needsToolCribID").onclick = function(ev) {
-    console.log('ev.id - '+ev.id)
     if (ev.checked) {
         document.getElementById("needsToolCribID").value = 'True'
     }
@@ -708,7 +707,6 @@ function typeOfWorkRtn() {
 function zipCodeChangeRtn() {
     newZip = this.value
     document.getElementById("zipcodeTextID").value = newZip
-    alert('newZip - '+ newZip)
 }
 
 function villageChangeRtn() {
@@ -855,7 +853,7 @@ $('input[type="tel"]')
 			var val = $phone.val();
 			$phone.val('').val(val); // Ensure cursor remains at the end
         }
-        console.log('click - ' + $phone.val() + $phone.val().length)
+    
 	})
 
     
@@ -911,7 +909,6 @@ function setManagerPermissions() {
 
 }
 document.querySelector('#monthCheckboxesID').onclick = function(ev) {
-    console.log('checkbox clicked - '+ev.target.id)
     inputID = ev.target.id
     if (ev.target.checked) {
         document.getElementById(inputID).value='True'
