@@ -39,7 +39,8 @@ class ControlVariables(db.Model):
     Dues_Account = db.Column(db.String(10))
     Initiation_Fee_Account = db.Column(db.String(10))
     WaitingListApplicantNote = db.Column(db.String(255))
-
+    Message_Board = db.Column(db.String(max))
+    
 class Member(db.Model):
     __tablename__ = 'tblMember_Data'
     __table_args__ = {"schema": "dbo"}

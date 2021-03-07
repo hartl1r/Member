@@ -14,7 +14,7 @@
         <!-- HIDDEN VALUES -->
         <input id="isManager" type="hidden" value={{isManager}}>
         <input id="isDBA" type="hidden" value={{isDBA}}>
-        
+        <input id="isCoordinator" type="hidden" value={{isCoordinator}}>
         <!-- ------------------------------------------------------ -->    
         <div class="hdgSearch" style=margin-left:20px>
             <div id="memberList">
@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Mar 3, 2021</h6>
+            <h6>ver. Mar 7, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -54,17 +54,18 @@
                     <button id='mntrSchedBtnID' class='dropdown-item' disabled onclick="window.location.href='/printMemberSchedule/?villageID={{member.Member_ID}}'">Print Monitor Schedule</button>
                     <button id='noteBtnID' class='dropdown-item' disabled onclick='noteRoutine()'>Note to Member</button>                   
                     <button id='classSignUpBtnID' class='dropdown-item' disabled onclick='classSignUp()'>Class Signup</button>
-                    <button id='rolesBtnID' class='dropdown-item' disabled onclick="window.location.href='/roles/?villageID={{member.Member_ID}}'">Roles</button>
                     <button id="editNameBtnID" class='dropdown-item' disabled onclick="window.location.href='/editName/?villageID={{member.Member_ID}}'">Edit name</button>
                     <button id="chgVillageID" class='dropdown-item' disabled onclick="window.location.href='/changeVillageID/?villageID={{member.Member_ID}}'">Edit Village ID</button>
                     
                     <hr>
+                    <button id='rolesBtnID' class='dropdown-item' disabled style=display:none onclick="window.location.href='/roles/?villageID={{member.Member_ID}}'">Roles</button>
                     <button id='showCheckInsID' class="dropdown-item" disabled style=display:none onclick="window.location.href='/checkIns/?villageID={{member.Member_ID}}'">Show check-ins</button>
                     <button id='passwordBtnID' class='dropdown-item' disabled style=display:none onclick='passwordRoutine()'>Change password</button>                   
                     <hr>
                     <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication'">New Member Application</button>
                     <button id='newVolunteerBtnID' class='dropdown-item' onclick="window.location.href='/newVolunteerApplication'">New Volunteer Application</button>
-                    <button id='shiftChangeBtnID' class='dropdown-item' disabled onclick='shiftChange()'>Temporary Login</button>
+                    <button id='staffNoteBtnID' class='dropdown-item' style=display:None onclick='getStaffNoteRtn()'>Edit Note to Staff</button>                   
+                    <!-- <button id='shiftChangeBtnID' class='dropdown-item' disabled onclick='shiftChange()'>Temporary Login</button> -->
                 </div>
                 <button id='showPhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick='showHidePhoto(this)''>SHOW PHOTO</button>
                 <button id='takePhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick="window.location.href='/takePhoto/?villageID={{member.Member_ID}}'">TAKE PHOTO</button>
@@ -699,6 +700,7 @@
                         id="monitorDutyNotesID"
                         name="monitorDutyNotes" 
                         readonly 
+                        style=display:none
                         cols="60" rows="2"
                         >{{member.Monitor_Duty_Notes if member.Monitor_Duty_Notes}}</textarea>
                 </div>
@@ -738,6 +740,32 @@
                     <div class='footer-right-col'> 
                         <button id='cancelNoteID' type='button' class='btn btn-secondary btn-sm'>Cancel</button>
                         <button id='processMsgID' type="button" class="btn btn-primary btn-sm">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FORM FOR NOTE TO STAFF  -->
+<div id="staffNoteModalID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle" >Message to Staff</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" >&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span>Message:</span><br>
+                <textarea id="staffMsgID" style=font-size:14px rows="20"" cols="90" >test data</textarea>
+                <br><br>
+                
+                <div class="modal-footer">
+                    <div class='footer-right-col'> 
+                        <button id='cancelStaffMsgID' type='button' class='btn btn-secondary btn-sm'>Cancel</button>
+                        <button id='saveStaffMsgID' type="button" class="btn btn-primary btn-sm">Save</button>
                     </div>
                 </div>
             </div>

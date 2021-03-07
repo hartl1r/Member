@@ -35,10 +35,14 @@ var todaysDateSTR =  (todaysDate.getFullYear() + "-" + ("0"+(todaysDate.getMonth
 
 var isDBA = document.getElementById('isDBA').value
 var isManager = document.getElementById('isManager').value
+var isCoordinator = document.getElementById('isCoordinator').value
 if (isDBA == 'True' | isManager == 'True') {
     setManagerPermissions()
 }
-
+if (isCoordinator == 'True') {
+    document.getElementById('monitorDutyNotesID').removeAttribute('readonly')
+    document.getElementById('monitorDutyNotesID').style=display='block'
+}
 
 var currentMemberID = ''
 
@@ -111,6 +115,9 @@ monitorDutyInfo.addEventListener('click',monitorDutyDataChanged);
 // MODAL EVENT LISTENERS
 document.getElementById("cancelNoteID").addEventListener("click",cancelNote)
 document.getElementById("processMsgID").addEventListener("click",processNote)
+
+document.getElementById("cancelStaffMsgID").addEventListener("click",cancelStaffMsg)
+document.getElementById("saveStaffMsgID").addEventListener("click",saveStaffMsg)
 
 document.getElementById("cancelPasswordID").addEventListener("click",cancelPassword)
 document.getElementById("updatePasswordID").addEventListener("click",updatePassword)
@@ -548,8 +555,37 @@ function noteRoutine() {
     $('#noteModalID').modal('show')
 }
 
+
+function getStaffNoteRtn() {
+    // GET CURRENT STAFF NOTE
+    $.ajax({
+        url : "/getNoteToStaff",
+        type: "GET",
+        data : {
+            
+            },
+ 
+        success: function(data, textStatus, jqXHR)
+        {
+            if (data.msg) {
+                msg = data.msg
+                msgElement = document.getElementById('staffMsgID')
+                msgElement.value = msg
+            }
+        },
+        error: function(result){
+            alert("Error ..."+result)
+        }
+    })    
+    $('#staffNoteModalID').modal('show')
+}
+
 function cancelNote() {
     $('#noteModalID').modal('hide')
+}
+
+function cancelStaffMsg() {
+    $('#staffNoteModalID').modal('hide')
 }
 
 function processNote() {
@@ -592,6 +628,27 @@ function processNote() {
     }) 
     
     $('#noteModalID').modal('hide')
+    showMenu()
+}
+
+function saveStaffMsg() {
+    msg = document.getElementById('staffMsgID').value
+    $.ajax({
+        url : "/saveStaffMsg",
+        type: "GET",
+        data : {
+            msg:msg},
+
+        success: function(data, textStatus, jqXHR)
+        {
+            alert(data)
+        },
+        error: function(result){
+            alert("Error ..."+result)
+        }
+    }) 
+    
+    $('#staffNoteModalID').modal('hide')
     showMenu()
 }
 
@@ -902,12 +959,14 @@ function setManagerPermissions() {
     document.getElementById('RAdateCertifiedID').removeAttribute('readonly')
     document.getElementById('BWdateCertifiedID').removeAttribute('readonly')
     document.getElementById('monitorDutyNotesID').removeAttribute('readonly')
-
+    document.getElementById('monitorDutyNotesID').style=display='block'
+    document.getElementById('rolesBtnID').style.display='block'
     document.getElementById('showCheckInsID').style.display='block'
     document.getElementById('passwordBtnID').style.display='block'
-    // REMOVE DISABLED FROM SPECIFIC BUTTONS
-
+    document.getElementById('staffNoteBtnID').style.display='block'
 }
+
+
 document.querySelector('#monthCheckboxesID').onclick = function(ev) {
     inputID = ev.target.id
     if (ev.target.checked) {

@@ -34,13 +34,9 @@ def index():
     villageID = request.args.get('villageID')
     
     # GET SESSION VARIABLES
-    # print(session.keys())
-    # print(session.items())
-
     staffID = getStaffID()
     shopID = getShopID()
 
-    # staffID
     try:
         staffID = session['staffID']
     except:
@@ -79,6 +75,11 @@ def index():
     else:
         isStaff = 'False'
     
+    if (staffMember.Monitor_Coordinator):
+        isCoordinator = 'True'
+    else:
+        isCoordinator = 'False'
+
     if (isDBA == 'False' and isManager == 'False' and isStaff == 'False') :
         msg = "This user is not authorized for this application."
         flash (msg,'danger')
@@ -147,7 +148,7 @@ def index():
     if (villageID == None):
         return render_template("member.html",member="",nameArray=nameArray,waitListCnt=waitListCnt,
         currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,staffName=staffName,
-        isManager=isManager,isDBA=isDBA,villages=villages,zipCodes=zipCodes)
+        isManager=isManager,isDBA=isDBA,isCoordinator=isCoordinator,villages=villages,zipCodes=zipCodes)
 
 
     # IF A VILLAGE ID WAS PASSED IN ...
@@ -996,6 +997,16 @@ def getNoteToMember():
     
     return jsonify(msg=msg)
 
+
+@app.route("/getNoteToStaff")
+def getNoteToStaff():
+    staffNote = db.session.query(ControlVariables.Message_Board).filter(ControlVariables.Shop_Number == 1).scalar()
+    if (staffNote):
+        msg = staffNote
+    else:
+        msg = ''
+    return jsonify(msg=msg)
+
 @app.route("/processNoteToMember")
 def processNoteToMember():
     todays_date = datetime.today()
@@ -1044,6 +1055,31 @@ def processNoteToMember():
 
     return make_response (f"{response}")
 
+
+
+@app.route("/saveStaffMsg")
+def saveStaffMsg():
+    todays_date = datetime.today()
+    todaySTR = todays_date.strftime('%m-%d-%Y')
+    msg = request.args.get('msg')
+    response = ""
+
+    # SAVE UPDATED STAFF NOTE
+    ctrlVar = db.session.query(ControlVariables).filter(ControlVariables.Shop_Number == 1).first()
+    if (ctrlVar != None):
+        try:
+            ctrlVar.Message_Board = msg
+            db.session.commit()
+            response = "Staff note successfully updated!"
+            
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return make_response(f"ERROR - Could not add a new note.")
+
+        return make_response (f"{response}")
+    else:
+        response = 'ERROR - could not update.'
+        return make_response (f"{response}")
 
 @app.route("/getPassword")
 def getPassword():
@@ -2017,9 +2053,7 @@ def getShopID():
 
 @app.route("/savePhoto", methods=['GET','POST'])
 def savePhoto():
-    #print('savePhoto ...')
     memberID = request.form['memberID']
-    #print('MEMBER ID - ',memberID)
     img = request.form['imgBase64']
     # DOES IMAGE EXIST?
     photo = db.session.query(MemberPhoto).filter(MemberPhoto.memberID == memberID).first()
