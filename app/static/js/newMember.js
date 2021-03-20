@@ -1,4 +1,14 @@
-
+$(window).ready(function() { 
+    $("#newMemberFormID").on("keypress", function (event) { 
+        console.log("aaya"); 
+        var keyPressed = event.keyCode || event.which; 
+        if (keyPressed === 13) { 
+            alert("You pressed the Enter key!!"); 
+            event.preventDefault(); 
+            return false; 
+        } 
+    }); 
+    }); 
 
 $(document).ready( function() { 
     dateJoined = document.getElementById('dateJoined')

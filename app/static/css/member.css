@@ -21,6 +21,26 @@
   input:read-only {
       color:var(--main-panel-readonly-color) !important;
   }
+  #schedulePeriod {
+      text-align: center;
+  }
+  #schedulePeriod span {
+      font-size:1rem;
+  }
+  .periodBtn {
+    border: 1px solid black;
+    height:25px;
+    width:40px;
+    outline: none;
+    padding: 5px 5px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    font-size: 10px; 
+  }
+  .active, .btn:hover {
+    background-color: #666;
+    color: white;
+  }
   /* MOBILE DEVICE SETTINGS */
   .body {
       font-size:.5em;
@@ -50,7 +70,7 @@
     grid-template-columns:1.25fr .75fr;
     grid-template-areas:    "searchArea     searchArea"
                             "memberNameArea memberNameArea"
-                            "staffNameArea  versionArea "
+                            "versionArea    versionArea "
                             "menuArea       menuArea"
                             ;
     background-color: var(--main-hdg-bg-color); 
@@ -79,14 +99,14 @@
     border-radius:5px;
     
 }
-
+/* 
 .staffName {
     grid-area:staffNameArea;
     align-items:center;
     text-align:left;
     padding-top:1.5rem;
     margin-left:.5em;
-}
+} */
 
 .hdgVersion {
     grid-area:versionArea;
@@ -460,6 +480,7 @@ table th {
     color:green;
 }
 #monitorDutyNotesID {
+    margin-left:1em;
     text-align:left;
 }
 /* .center {
@@ -703,8 +724,9 @@ table th {
         grid-template-columns:1fr 1fr;
         grid-template-areas: " searchArea searchArea",
                                 "memberNameArea memberNameArea",
-                                "versionArea staffNameArea",
-                                ".  menuArea";
+                                ".  menuArea",
+                                "versionArea versionArea";
+                                
         height:4rem;
         background-color: var(--main-hdg-bg-color); 
         color:var(--main-hdg-txt-color);
@@ -743,10 +765,10 @@ table th {
         width:100%;
         height:60px;
         
-        grid-template-areas:    "searchArea memberNameArea versionArea   menuArea"
-                                "searchArea memberNameArea staffNameArea menuArea";
+        grid-template-areas:    "searchArea memberNameArea menuArea versionArea"
+                                "searchArea memberNameArea menuArea versionArea";
         grid-template-rows: 25px 25px;
-        grid-template-columns:1fr 2fr .5fr 2fr;
+        grid-template-columns:1fr 2fr 2fr .75fr;
         gap:1em;
         background-color: var(--main-hdg-bg-color); 
         color:var(--main-hdg-txt-color);
@@ -757,12 +779,12 @@ table th {
         grid-area:versionArea;
         align-items: left;
         text-align:left;
-        padding-top:0rem;
-        margin-right:0;
+        padding-top:1em;
+        margin-right:5px;
         margin-left:0px;
 
     }
-    
+/*     
     .staffName {
         grid-area:staffNameArea;
         width:200px;
@@ -771,7 +793,7 @@ table th {
         padding-top:0rem;
         margin-left:0px;
         
-    }
+    } */
     
     .memberMenu {
         grid-area:menuArea;

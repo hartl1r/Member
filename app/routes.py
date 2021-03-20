@@ -2,12 +2,9 @@
 from flask import session, render_template, flash, redirect, url_for, request, jsonify, json, make_response, after_this_request
 from sqlalchemy.sql.expression import false, true
 from flask_wtf import FlaskForm
-#from wtforms import StringField, PasswordField, TextAreaField, SubmitField, DateField, SelectField
-#from wtforms.validators import ValidationError, DataRequired, Length, Email, EqualTo
 
 from app.forms import LocalAddressPhone, NewMember
 from flask_bootstrap import Bootstrap
-#Bootstrap(app)
 
 from werkzeug.urls import url_parse
 from app.models import ShopName, Member, MemberActivity, MonitorSchedule, MonitorScheduleTransaction,\
@@ -33,27 +30,18 @@ def index():
     # GET VILLAGE ID FROM QUERY STRING IN URL, ?villageID=123456
     villageID = request.args.get('villageID')
     
-    # GET SESSION VARIABLES
+    # GET SESSION VARIABLES THAT WERE SET AT LOGIN
     staffID = getStaffID()
     shopID = getShopID()
+    staffName = getStaffName()
 
-    try:
-        staffID = session['staffID']
-    except:
-        # SET staffID and session variables (only for testing)
-        session['staffID'] = '604875'
-        staffID = '604875'
+    print('staffID - ',staffID)
+    print('shopID - ',shopID)
+    print('staffName - ',staffName)
     
-    
-    # staffName
-    # GET STAFF MEMBER NAME AND PRIVILEDGES (staffName is also available as session variable)
+    # GET STAFF PRIVILEDGES (staffName is available as session variable from login.)
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
-    if staffMember != None:
-        staffName = staffMember.First_Name
-        if staffMember.Nickname != None:
-            staffName += ' (' + staffMember.Nickname + ')'
-        staffName += ' ' +  staffMember.Last_Name
-    else:
+    if staffMember == None:
         msg = "No match for staffID " + villageID + "; cannot continue."
         flash(msg,"danger")
         return msg
@@ -80,13 +68,9 @@ def index():
     else:
         isCoordinator = 'False'
 
-    if (isDBA == 'False' and isManager == 'False' and isStaff == 'False') :
-        msg = "This user is not authorized for this application."
-        flash (msg,'danger')
-        return msg               
-    
-
-
+    if (isDBA == 'False' and isManager == 'False' and isStaff == 'False') :          
+        return render_template('notAuthorized.html',staffName=staffName)
+        
     # BUILD ARRAY OF NAMES & ID's FOR DROPDOWN LIST OF MEMBERS
     nameArray=[]
     sqlSelect = "SELECT Last_Name, First_Name, Member_ID FROM tblMember_Data "
@@ -191,7 +175,7 @@ def index():
     sqlFutureDuty = "SELECT format(Date_Scheduled,'ddd M/d/y') as DateScheduled, AM_PM, Duty, Shop_Abbr, Shop_Name FROM tblMonitor_Schedule "
     sqlFutureDuty += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
     sqlFutureDuty += "WHERE Member_ID = '" + villageID + "' and Date_Scheduled >='" + todaySTR + "' "
-    sqlFutureDuty += "ORDER BY Date_Scheduled DESC"
+    sqlFutureDuty += "ORDER BY Date_Scheduled"
     futureDuty = db.engine.execute(sqlFutureDuty)
     
     # PAST MONITOR DUTY
@@ -199,7 +183,7 @@ def index():
     sqlPastDuty += " FROM tblMonitor_Schedule "
     sqlPastDuty += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
     sqlPastDuty += "WHERE Member_ID = '" + villageID + "' and Date_Scheduled BETWEEN '" + beginDateSTR + "' and '" + todaySTR + "' "
-    sqlPastDuty += "ORDER BY Date_Scheduled DESC"
+    sqlPastDuty += "ORDER BY Date_Scheduled"
     pastDuty = db.engine.execute(sqlPastDuty)
    
     
@@ -2026,30 +2010,26 @@ def getStaffID():
     if 'staffID' in session:
         staffID = session['staffID']
     else:
-        staffID = '604875'
+        flash('Login ID is missing, will use 604875','danger')
+        staffID = '757856'
     return staffID
 
 def getShopID():
-    
     if 'shopID' in session:
         shopID = session['shopID']
     else:
         # SET RA FOR TESTING; SEND FLASH ERROR MESSAGE FOR PRODUCTION
         shopID = 'RA'
         msg = "Missing location information; Rolling Acres assumed."
-        #flash(msg,"danger")
-    if shopID =='RA':
-        shopNumber = 1
-    else:
-        if shopID == 'BW':
-            shopNumber = 2
-        else:
-            msg = "The shopID of " + shopID + "is invalid, 'RA' assumed"
-            #flash (msg,'danger')
-            shopID == 'RA'
-            shopNumber = 1
+        flash(msg,"danger")
     return shopID    
 
+def getStaffName():
+    if 'staffname' in session:
+        staffName = session['staffname']
+    else:
+        staffName = 'No name.'
+    return staffName
 
 @app.route("/savePhoto", methods=['GET','POST'])
 def savePhoto():

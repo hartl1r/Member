@@ -85,8 +85,16 @@ input:read-only {
 .memberName {
     padding-bottom:.25em;
 }
-input.largerCheckbox { 
+.waiverSection {
+    display:flex;
+    background-color: lightgray;
+}
+.waiverLabel {
     margin-top:10px;
+    margin-left:55px;
+}
+input.largerCheckbox { 
+    margin-top:5px;
     width: 30px; 
     height: 30px; 
 }

@@ -22,13 +22,6 @@ const colors = {
     fg_PastDate:"#FFFFFF"   // White (#FFFFFF)
 };
 
-
-// SET STAFF ID IN EACH PANEL
-// var staffIDelements = document.getElementsByClassName('staffID')
-// for (var i = 0; i > staffIDelements.length; i++) {
-//     staffIDelements[i].setAttribute("value", staffID);
-// }
-
 // DECLARE GLOBAL VARIABLES
 var todaysDate = new Date();
 var todaysDateSTR =  (todaysDate.getFullYear() + "-" + ("0"+(todaysDate.getMonth()+1)).slice(-2) + "-" + ("0" + todaysDate.getDate()).slice(-2))
@@ -958,12 +951,15 @@ function setManagerPermissions() {
     document.getElementById('BWcertifiedID').disabled=false
     document.getElementById('RAdateCertifiedID').removeAttribute('readonly')
     document.getElementById('BWdateCertifiedID').removeAttribute('readonly')
-    document.getElementById('monitorDutyNotesID').removeAttribute('readonly')
     document.getElementById('monitorDutyNotesID').style=display='block'
     document.getElementById('rolesBtnID').style.display='block'
     document.getElementById('showCheckInsID').style.display='block'
     document.getElementById('passwordBtnID').style.display='block'
     document.getElementById('staffNoteBtnID').style.display='block'
+    document.getElementById('inactiveID').removeAttribute('readonly')
+    document.getElementById('inactiveDateID').removeAttribute('readonly')
+    document.getElementById('restrictedID').removeAttribute('readonly')
+    document.getElementById('reasonRestricted').removeAttribute('readonly')
 }
 
 
@@ -1002,4 +998,14 @@ function modalAlert(title,msg) {
 	
 function closeModal() {
 	$('#photo').modal('hide')
+}
+// Add active class to the current button (highlight it)
+var header = document.getElementById("schedulePeriod");
+var btns = header.getElementsByClassName("btn");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function() {
+  var current = document.getElementsByClassName("active");
+  current[0].className = current[0].className.replace(" active", "");
+  this.className += " active";
+  });
 }

@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">   
 
 {% block content %}
-<form class='newMemberForm' method='POST' action="/newMemberApplication">
+<form id='newMemberFormID' class='newMemberForm' method='POST' action="/newMemberApplication">
     <div class="parent">
         <div class="hdg">
             <div class="hdgTitle">
@@ -127,8 +127,8 @@
                 </select>
             </div> 
 
-            <div class="form-group-md" style="border:1px solid red">
-                <label class='col-md-4 form-label-md' style="margin-left:50px;">Villages Waiver</label> 
+            <div class="waiverSection" style="border:1px solid red">
+                <label class='col-md-4 waiverLabel'>Villages Waiver</label> 
                 <input 
                     id='villagesWaiverID' 
                     class='col-md-1 largerCheckbox' 
