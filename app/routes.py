@@ -27,9 +27,19 @@ import pyodbc
 @app.route('/')
 @app.route('/index/')
 def index():
+    # GET CURRENT SCHEDULE YEAR
+    currentScheduleYear = db.session.query(ControlVariables.Year_To_Print).filter(ControlVariables.Shop_Number==1).scalar()
+    lastYear = str(int(currentScheduleYear)-1)
+    print('currentScheduleYear - ',currentScheduleYear)
+    print('lastYear - ',lastYear)
+
     # GET VILLAGE ID FROM QUERY STRING IN URL, ?villageID=123456
     villageID = request.args.get('villageID')
-    
+    scheduleYear = request.args.get('scheduleYear')
+    if scheduleYear == None:
+         scheduleYear = currentScheduleYear
+    print('scheduleYear - ',scheduleYear)
+
     # GET SESSION VARIABLES THAT WERE SET AT LOGIN
     staffID = getStaffID()
     shopID = getShopID()
@@ -140,7 +150,6 @@ def index():
     # RUN QUERY TO POPULATE LOCAL ADDRESS PHONE EMAIL
     member = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (member == None):
-        #flash('A valid member number must be specified','info')
         return render_template("member.html",member='',nameArray=nameArray,staffName=staffName)
 
     hdgName = member.First_Name
@@ -167,24 +176,31 @@ def index():
     else:
         expireMsg = ''
 
+    # GET MEMBERS MONITOR SCHEDULE FOR SPECIFIED YEAR
+    sqlMemberSchedule = "SELECT format(Date_Scheduled,'ddd M/d/y') as DateScheduled, AM_PM, Duty, Shop_Abbr, Shop_Name FROM tblMonitor_Schedule "
+    sqlMemberSchedule += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
+    sqlMemberSchedule += "WHERE Member_ID = '" + villageID + "' and DatePart(year,[Date_Scheduled])='" + scheduleYear + "' "
+    sqlMemberSchedule += "ORDER BY Date_Scheduled"
+    memberSchedule = db.engine.execute(sqlMemberSchedule)
+    
     # SET BEGIN DATE TO 12 MONTHS PRIOR TO CURRENT DATE
-    beginDateDAT = todays_date - timedelta(days=365)
-    beginDateSTR = beginDateDAT.strftime('%m-%d-%Y')
+    # beginDateDAT = todays_date - timedelta(days=365)
+    # beginDateSTR = beginDateDAT.strftime('%m-%d-%Y')
 
     # FUTURE MONITOR DUTY
-    sqlFutureDuty = "SELECT format(Date_Scheduled,'ddd M/d/y') as DateScheduled, AM_PM, Duty, Shop_Abbr, Shop_Name FROM tblMonitor_Schedule "
-    sqlFutureDuty += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
-    sqlFutureDuty += "WHERE Member_ID = '" + villageID + "' and Date_Scheduled >='" + todaySTR + "' "
-    sqlFutureDuty += "ORDER BY Date_Scheduled"
-    futureDuty = db.engine.execute(sqlFutureDuty)
+    # sqlFutureDuty = "SELECT format(Date_Scheduled,'ddd M/d/y') as DateScheduled, AM_PM, Duty, Shop_Abbr, Shop_Name FROM tblMonitor_Schedule "
+    # sqlFutureDuty += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
+    # sqlFutureDuty += "WHERE Member_ID = '" + villageID + "' and Date_Scheduled >='" + todaySTR + "' "
+    # sqlFutureDuty += "ORDER BY Date_Scheduled"
+    # futureDuty = db.engine.execute(sqlFutureDuty)
     
     # PAST MONITOR DUTY
-    sqlPastDuty = "SELECT format(Date_Scheduled,'ddd M/d/y') as DateScheduled, AM_PM, Duty, Shop_Abbr, Shop_Name, iif(No_Show = 1,'NS','') as NoShow "
-    sqlPastDuty += " FROM tblMonitor_Schedule "
-    sqlPastDuty += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
-    sqlPastDuty += "WHERE Member_ID = '" + villageID + "' and Date_Scheduled BETWEEN '" + beginDateSTR + "' and '" + todaySTR + "' "
-    sqlPastDuty += "ORDER BY Date_Scheduled"
-    pastDuty = db.engine.execute(sqlPastDuty)
+    # sqlPastDuty = "SELECT format(Date_Scheduled,'ddd M/d/y') as DateScheduled, AM_PM, Duty, Shop_Abbr, Shop_Name, iif(No_Show = 1,'NS','') as NoShow "
+    # sqlPastDuty += " FROM tblMonitor_Schedule "
+    # sqlPastDuty += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
+    # sqlPastDuty += "WHERE Member_ID = '" + villageID + "' and Date_Scheduled BETWEEN '" + beginDateSTR + "' and '" + todaySTR + "' "
+    # sqlPastDuty += "ORDER BY Date_Scheduled"
+    # pastDuty = db.engine.execute(sqlPastDuty)
    
     
     # DOES THE MEMBER HAVE AN UNEXPIRED MONITOR WAIVER?
@@ -231,10 +247,10 @@ def index():
         hasKeys = "Member has " + str(numberOfKeys) + " key(s)"
 
     return render_template("member.html",member=member,hdgName=hdgName,nameArray=nameArray,expireMsg=expireMsg,
-    futureDuty=futureDuty,pastDuty=pastDuty,RAtrainingNeeded=RAtrainingNeeded,BWtrainingNeeded=BWtrainingNeeded,
+    memberSchedule=memberSchedule,RAtrainingNeeded=RAtrainingNeeded,BWtrainingNeeded=BWtrainingNeeded,
     lastYearPaid=lastYearPaid,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,
     waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffName=staffName,isStaff=isStaff,
-    isManager=isManager,isDBA=isDBA,zipCodes=zipCodes)
+    isManager=isManager,isDBA=isDBA,zipCodes=zipCodes,thisYear=currentScheduleYear,lastYear=lastYear)
     
 @app.route('/saveAddress', methods=['POST'])
 def saveAddress():
@@ -1702,14 +1718,19 @@ def printMemberSchedule():
         else:
             needsTraining = 'Last training - ' + lastTrainingSTR
 
-    # RETRIEVE MEMBER SCHEDULE FOR CURRENT YEAR AND FORWARD
-    todays_date = date.today()
-    currentYear = todays_date.year
-    beginDateDAT = datetime(todays_date.year,1,1)
-    todays_dateSTR = todays_date.strftime('%m-%d-%Y')
-    beginDateSTR = beginDateDAT.strftime('%m-%d-%Y')
+    thisYear = db.session.query(ControlVariables.Year_To_Print).filter(ControlVariables.Shop_Number==1).scalar()
+    lastYear = str(int(thisYear)-1)
+    print('thisYear - ',thisYear)
+    print('lastYear - ',lastYear)
     
-    # BUILD SELECT STATEMENT TO RETRIEVE MEMBERS SCHEDULE FOR CURRENT YEAR FORWARD
+    # RETRIEVE MEMBER SCHEDULE FOR CURRENT YEAR AND FORWARD
+    # todays_date = date.today()
+    # currentYear = todays_date.year
+    # beginDateDAT = datetime(todays_date.year,1,1)
+    # todays_dateSTR = todays_date.strftime('%m-%d-%Y')
+    # beginDateSTR = beginDateDAT.strftime('%m-%d-%Y')
+    
+    # BUILD SELECT STATEMENT TO RETRIEVE MEMBERS SCHEDULE FOR SPECIFIED YEAR
     sqlSelect = "SELECT tblMember_Data.Member_ID as memberID, "
     sqlSelect += "First_Name + ' ' + Last_Name as displayName, tblShop_Names.Shop_Name, "
     sqlSelect += "Last_Monitor_Training as trainingDate, tblMonitor_Schedule.Member_ID, "
@@ -1717,12 +1738,14 @@ def printMemberSchedule():
     sqlSelect += "FROM tblMember_Data "
     sqlSelect += "LEFT JOIN tblMonitor_Schedule ON tblMonitor_Schedule.Member_ID = tblMember_Data.Member_ID "
     sqlSelect += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
-    sqlSelect += "WHERE tblMember_Data.Member_ID = '" + memberID + "' and Date_Scheduled >= '"
-    sqlSelect += beginDateSTR + "' ORDER BY Date_Scheduled, AM_PM, Duty"
+    sqlSelect += "WHERE tblMember_Data.Member_ID = '" + memberID + "' "
+    sqlSelect += "and DatePart(year,[Date_Scheduled]) = '" + thisYear + "' "
+    sqlSelect += "ORDER BY Date_Scheduled, AM_PM, Duty"
 
     schedule = db.engine.execute(sqlSelect)
     
-    return render_template("rptMemberSchedule.html",displayName=displayName,needsTraining=needsTraining,schedule=schedule,todays_date=todays_dateSTR)
+    return render_template("rptMemberSchedule.html",displayName=displayName,needsTraining=needsTraining,\
+    schedule=schedule,todays_date=todays_dateSTR,thisYear=thisYear,lastYear=lastYear)
 
 @app.route("/shiftChange")
 def shiftChange():
@@ -2056,3 +2079,12 @@ def checkVillageID():
     else:
         msg = "Village ID " + memberID + " belongs to " + member.First_Name + ' ' + member.Last_Name
     return jsonify(msg=msg)
+
+@app.route("/changeScheduleYear")
+def changeScheduleYear(year):
+    print('year - ',year)
+    return redirect(url_for('index',villageID=memberID,scheduleYear=year))
+
+
+
+

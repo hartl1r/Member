@@ -142,6 +142,7 @@ document.getElementById("needsToolCribID").onclick = function(ev) {
     }
 }
 // HIDE DETAIL UNTIL A MEMBER IS SELECTED
+memberID=document.getElementById('memberID')
 if (memberID.value == 'undefined' | memberID.value == ''){
     panels = document.getElementsByClassName('panel')
     for (i = 0; i < panels.length; i++) {
@@ -1008,4 +1009,13 @@ for (var i = 0; i < btns.length; i++) {
   current[0].className = current[0].className.replace(" active", "");
   this.className += " active";
   });
+}
+
+function changeScheduleYear(yearSpecified) {
+    // SET UP LINK TO MEMBER FORM 
+    var linkToMemberBtn = document.getElementById('linkToMember');
+    link='/index/?villageID=' + currentMemberID + "&scheduleYear=" + yearSpecified 
+    linkToMemberBtn.setAttribute('href', link)
+    alert('link - '+link)
+    linkToMemberBtn.click()
 }

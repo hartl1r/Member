@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Mar 20, 2021</h6>
+            <h6>ver. Mar 21, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -584,8 +584,8 @@
     <div id="monitorDutyID" class="monitorDutyInfo overflow-auto panel">
         <div id="schedulePeriod">
             <span>MONITOR DUTY</span>
-            <button type='button' class="btn periodBtn active">2021</button>
-            <button type='button' class="btn periodBtn ">2020</button>
+            <button type='button' style='margin-left:30px' class="btn periodBtn active" onclick="changeScheduleYear('{{thisYear}}')">{{thisYear}}</button>
+            <button type='button' class="btn periodBtn" onclick="changeScheduleYear('{{lastYear}}')">{{lastYear}}</button>
         </div>
         <form method='POST'  action="/saveMonitorDuty" style="padding-left:0px;padding-top:0px">
             <div class='monthsInTheVillages'>
@@ -638,8 +638,26 @@
                     <span>NS</span>
                 </div>
                 <div id="memberScheduleDetailID" class="memberScheduleDetail">
-                    <!-- FUTURE DUTY -->
-                    <div class="pastDuty">
+                    <!-- MEMBER SCHEDULE -->
+                    <div class="memberSchedule">
+                        {% for m in memberSchedule %}
+                        <div class="memberScheduleRow">
+                            <span class="memberScheduleCol">{{m.Shop_Name}}</span>
+                            <span class="memberScheduleCol">{{m.DateScheduled}}</span>
+                            <span class="memberScheduleCol">{{m.AM_PM}}</span>
+                            <span class="memberScheduleCol">{{m.Duty}}</span>
+                            <input 
+                            type="checkbox"
+                            class="memberScheduleCol" 
+                            onclick="return false"
+                            {% if m.NoShow == 'NS' %}
+                                checked
+                            {% endif %}
+                            >  
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <!-- <div class="pastDuty">
                         {% for p in pastDuty %}
                         <div class="memberScheduleRow">
                             <span class="memberScheduleCol">{{p.Shop_Name}}</span>
@@ -657,8 +675,9 @@
                         </div>
                         {% endfor %}
                     </div>
+                     -->
                     <!-- FUTURE DUTY -->
-                    <div class="futureDuty">
+                    <!-- <div class="futureDuty">
                         {% for f in futureDuty %}
                         <div class="memberScheduleRow">
                             <span class="memberScheduleCol">{{f.Shop_Name}}</span>
@@ -678,7 +697,7 @@
                             >
                         </div>
                         {% endfor %}
-                    </div>
+                    </div> -->
                     
                 </div>
             </div>
