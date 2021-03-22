@@ -36,8 +36,28 @@ if (isCoordinator == 'True') {
     document.getElementById('monitorDutyNotesID').removeAttribute('readonly')
     document.getElementById('monitorDutyNotesID').style=display='block'
 }
-
-var currentMemberID = ''
+// HAS A MEMBER ALREADY BEEN LOADED?
+memberIDpassedIn = document.getElementById('memberID').value
+if (memberIDpassedIn == ''){
+    // THE PAGE DOES NOT CONTAIN A MEMBER RECORD
+    // BUT ...
+    // WAS THE USER WORKING ON A MEMBER RECORD?
+    currentMemberID = localStorage.getItem('currentMemberID')
+    if (currentMemberID != '' && currentMemberID != null){
+        // SET UP LINK TO MEMBER FORM 
+        var linkToMemberBtn = document.getElementById('linkToMember');
+        link='/index/?villageID=' + currentMemberID 
+        linkToMemberBtn.setAttribute('href', link)
+        linkToMemberBtn.click()
+    }
+    else {
+        
+    }
+}
+else {
+    currentMemberID = document.getElementById('memberID').value
+    localStorage.setItem('currentMemberID',currentMemberID)
+}
 
 //==================================================================
 // PAGE START-UP STATEMENTS 
@@ -45,7 +65,6 @@ var currentMemberID = ''
 
 // SET INITIAL VALUES FOR SELECT STATEMENTS
 curZipcode = document.getElementById('zipcodeTextID').value
-//alert('curZipcode - '+curZipcode)
 selectZipcode = document.getElementById('zipcodeSelecterID')
 if (curZipcode != '') {
     selectZipcode.value =  curZipcode
@@ -56,7 +75,6 @@ else{
 
 
 curVillage = document.getElementById('villageTextID').value
-//alert('curVillage - '+ curVillage)
 selectVillage = document.getElementById('villageSelecterID')
 if (curVillage) {
     if (curVillage != '') { 
@@ -505,23 +523,7 @@ function showMenu() {
         menu.innerHTML = 'SHOW MENU'
     }
     document.getElementById("myDropdown").classList.toggle("show");
-    //alert('show')
   }
-  
-// Close the dropdown if the user clicks outside of it
-// window.onclick = function(event) {
-//     alert('window.onclick')
-// if (!event.target.matches('.dropbtn')) {
-//     var dropdowns = document.getElementsByClassName("dropdown-content");
-//     var i;
-//     for (i = 0; i < dropdowns.length; i++) {
-//     var openDropdown = dropdowns[i];
-//     if (openDropdown.classList.contains('show')) {
-//         openDropdown.classList.remove('show');
-//     }
-//     }
-// }
-// }
 
 function noteRoutine() {
     // CHECK FOR EXISTING NOTE
@@ -735,41 +737,26 @@ function villageRtn() {
     village = this.value
     villageText = document.getElementById('villageTextID')
     villageText.setAttribute('value',this.value)
-
-    //alert('The value from the select element is - '+village)
-    // alert('this - '+this.value)
-    // alert('this innerhtml - '+this.innerHTML)
-    //village2 = village.split(" ").join("&nbsp");
-    //village2 = village.split(" ").join("\nbsp");
-    //village2 = village.replace(/\s/g, '')
-    //alert('village2 - '+village2)
-    //document.getElementById('villageTextID').value=village2
-    //document.getElementById('villageTextID').value=this.value
-    //alert('villageRtn - '+ document.getElementById('villageTextID').value)
 }
 
 function typeOfWorkRtn() {
-    //alert('typeOfWorkRtn - '+ this.value)
     typeOfWork = this.value
     document.getElementById('typeOfWorkTextID').value=this.value
-    //document.getElementById('typeOfWorkTextID').value="Special Project"
-
 }
+
 function zipCodeChangeRtn() {
     newZip = this.value
     document.getElementById("zipcodeTextID").value = newZip
 }
 
 function villageChangeRtn() {
-    //alert("village rtn - "+ this.value)
     newVillage = this.value
     document.getElementById("villageTextID").value = newVillage
 }
-// function skillLevelRtn() {
-//     skillLevel = this.value
-//     document.getElementById('skillLevelTextID').value=this.value
-// }
+
 function clearScreen() {
+    currentMemberID = ''
+    localStorage.removeItem('currentMemberID')
     var linkToMemberBtn = document.getElementById('linkToMember');
     link='/index/'
     linkToMemberBtn.setAttribute('href', link)
@@ -927,7 +914,6 @@ function shiftChange() {
         },
         success: function(data, textStatus, jqXHR)
         {
-            //alert('response - ' + data.msg)
             if (data.msg != 'Authorized') {
                 alert(data.msg)
                 // RELOAD INDEX PAGE WITHOUT CHANGING STAFF
@@ -1016,6 +1002,5 @@ function changeScheduleYear(yearSpecified) {
     var linkToMemberBtn = document.getElementById('linkToMember');
     link='/index/?villageID=' + currentMemberID + "&scheduleYear=" + yearSpecified 
     linkToMemberBtn.setAttribute('href', link)
-    alert('link - '+link)
     linkToMemberBtn.click()
 }

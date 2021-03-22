@@ -22,11 +22,14 @@
       color:var(--main-panel-readonly-color) !important;
   }
   #schedulePeriod {
-      text-align: center;
+      text-align: left;
   }
   #schedulePeriod span {
       font-size:1.15rem;
   }
+  /* #schedulePeriod .btn {
+
+  } */
   .periodBtn {
     border: 1px solid black;
     height:25px;
@@ -37,10 +40,15 @@
     cursor: pointer;
     font-size: 10px; 
   }
-  .active, .btn:hover {
-    background-color: #666;
-    color: white;
-  }
+  /* .btn:hover {
+      background-color: yellow !important;
+  } */
+
+  /* .active {
+    border:2px solid black;
+  } */
+
+  
   /* MOBILE DEVICE SETTINGS */
   .body {
       font-size:.5em;

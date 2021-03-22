@@ -30,25 +30,18 @@ def index():
     # GET CURRENT SCHEDULE YEAR
     currentScheduleYear = db.session.query(ControlVariables.Year_To_Print).filter(ControlVariables.Shop_Number==1).scalar()
     lastYear = str(int(currentScheduleYear)-1)
-    print('currentScheduleYear - ',currentScheduleYear)
-    print('lastYear - ',lastYear)
-
+   
     # GET VILLAGE ID FROM QUERY STRING IN URL, ?villageID=123456
     villageID = request.args.get('villageID')
     scheduleYear = request.args.get('scheduleYear')
     if scheduleYear == None:
          scheduleYear = currentScheduleYear
-    print('scheduleYear - ',scheduleYear)
-
+   
     # GET SESSION VARIABLES THAT WERE SET AT LOGIN
     staffID = getStaffID()
     shopID = getShopID()
     staffName = getStaffName()
-
-    print('staffID - ',staffID)
-    print('shopID - ',shopID)
-    print('staffName - ',staffName)
-    
+  
     # GET STAFF PRIVILEDGES (staffName is available as session variable from login.)
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
     if staffMember == None:
@@ -1720,9 +1713,7 @@ def printMemberSchedule():
 
     thisYear = db.session.query(ControlVariables.Year_To_Print).filter(ControlVariables.Shop_Number==1).scalar()
     lastYear = str(int(thisYear)-1)
-    print('thisYear - ',thisYear)
-    print('lastYear - ',lastYear)
-    
+   
     # RETRIEVE MEMBER SCHEDULE FOR CURRENT YEAR AND FORWARD
     # todays_date = date.today()
     # currentYear = todays_date.year
@@ -2082,7 +2073,6 @@ def checkVillageID():
 
 @app.route("/changeScheduleYear")
 def changeScheduleYear(year):
-    print('year - ',year)
     return redirect(url_for('index',villageID=memberID,scheduleYear=year))
 
 

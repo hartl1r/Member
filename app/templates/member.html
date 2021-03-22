@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Mar 21, 2021</h6>
+            <h6>ver. Mar 22, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -583,9 +583,9 @@
     <!-- MONITOR DUTY -->
     <div id="monitorDutyID" class="monitorDutyInfo overflow-auto panel">
         <div id="schedulePeriod">
-            <span>MONITOR DUTY</span>
-            <button type='button' style='margin-left:30px' class="btn periodBtn active" onclick="changeScheduleYear('{{thisYear}}')">{{thisYear}}</button>
-            <button type='button' class="btn periodBtn" onclick="changeScheduleYear('{{lastYear}}')">{{lastYear}}</button>
+            <span style=margin-left:170px>MONITOR DUTY</span>
+            <button type='button' style='margin-left:50px;background-color:white;color:red' class="btn periodBtn active" onclick="changeScheduleYear('{{thisYear}}')">{{thisYear}}</button>
+            <button type='button' style='background-color:white;color:green' class="btn btn-outline-dark periodBtn" onclick="changeScheduleYear('{{lastYear}}')">{{lastYear}}</button>
         </div>
         <form method='POST'  action="/saveMonitorDuty" style="padding-left:0px;padding-top:0px">
             <div class='monthsInTheVillages'>
