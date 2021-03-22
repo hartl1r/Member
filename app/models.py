@@ -40,7 +40,7 @@ class ControlVariables(db.Model):
     Initiation_Fee_Account = db.Column(db.String(10))
     WaitingListApplicantNote = db.Column(db.String(255))
     Message_Board = db.Column(db.String(max))
-    Year_To_Print = db.Column(db.String(4))
+    monitorYear = db.Column('Year_To_Print',db.String(4))
     
 class Member(db.Model):
     __tablename__ = 'tblMember_Data'

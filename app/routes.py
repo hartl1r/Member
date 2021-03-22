@@ -28,7 +28,7 @@ import pyodbc
 @app.route('/index/')
 def index():
     # GET CURRENT SCHEDULE YEAR
-    currentScheduleYear = db.session.query(ControlVariables.Year_To_Print).filter(ControlVariables.Shop_Number==1).scalar()
+    currentScheduleYear = db.session.query(ControlVariables.monitorYear).filter(ControlVariables.Shop_Number==1).scalar()
     lastYear = str(int(currentScheduleYear)-1)
    
     # GET VILLAGE ID FROM QUERY STRING IN URL, ?villageID=123456
@@ -1711,7 +1711,7 @@ def printMemberSchedule():
         else:
             needsTraining = 'Last training - ' + lastTrainingSTR
 
-    thisYear = db.session.query(ControlVariables.Year_To_Print).filter(ControlVariables.Shop_Number==1).scalar()
+    thisYear = db.session.query(ControlVariables.monitorYear).filter(ControlVariables.Shop_Number==1).scalar()
     lastYear = str(int(thisYear)-1)
    
     # RETRIEVE MEMBER SCHEDULE FOR CURRENT YEAR AND FORWARD
