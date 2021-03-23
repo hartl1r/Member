@@ -3,7 +3,7 @@ $(window).ready(function() {
         console.log("aaya"); 
         var keyPressed = event.keyCode || event.which; 
         if (keyPressed === 13) { 
-            alert("You pressed the Enter key!!"); 
+            //alert("You pressed the Enter key!!"); 
             event.preventDefault(); 
             return false; 
         } 
@@ -24,8 +24,6 @@ selectZipcode.value =  ''
 document.getElementById("zipcodeSelecterID").addEventListener("change",zipCodeChangeRtn)
 document.getElementById("villageSelecterID").addEventListener("change",villageChangeRtn)
 
-
-
 function villageChangeRtn() {
     newVillage = this.value
     document.getElementById("villageTextID").value = newVillage
@@ -38,8 +36,10 @@ function zipCodeChangeRtn() {
 }
 
 membershipType = document.getElementById('membershipType')
-membershipType.addEventListener('change',displayTotalFee);
+membershipType.addEventListener('click',displayTotalFee);
 document.getElementById('memberID').addEventListener('change',checkVillageID)
+crtDtRA = document.getElementById('crtDtRA').addEventListener('click',selectedRAdateRtn)
+crtDtBW = document.getElementById('crtDtBW').addEventListener('click',selectedBWdateRtn)
 
 function checkVillageID() {
     var memberID = document.getElementById('memberID').value
@@ -63,14 +63,24 @@ function checkVillageID() {
     }) 
 
 }
+
+function selectedRAdateRtn() {
+    document.getElementById('trainingYes').value = true
+    
+}
+function selectedBWdateRtn() {
+    document.getElementById('trainingYes').checked = true
+}
+
 function displayTotalFee() {
     singleInitiationFee = document.getElementById('singleInitiationFee').value
     singleTotalFee = document.getElementById('singleTotalFee').value
     familyInitiationFee = document.getElementById('familyInitiationFee').value
     familyTotalFee = document.getElementById('familyTotalFee').value
     initiationFee = document.getElementById('initiationFee')
+   
     saveBtn = document.getElementById('saveBtn')
-
+    
     if (membershipType.value == 'single') {
         initiationFee.value = singleInitiationFee
         totalFee = singleTotalFee
@@ -100,4 +110,14 @@ function closeModal() {
 
 $('.phones').usPhoneFormat({
     format: '(xxx) xxx-xxxx',
+});
+
+// phones on keypress
+
+$('.phones').keypress(function(event){
+
+    if(event.which != 8 && isNaN(String.fromCharCode(event.which))){
+        event.preventDefault(); //stop character from entering input
+    }
+
 });

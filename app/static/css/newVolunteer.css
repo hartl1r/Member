@@ -12,15 +12,14 @@
     gap:5px;
     background-color:lightgray;
     margin: auto; 
-    margin-top:10em;
 }
 form {
     margin-top:30px;
-    margin-bottom:30px;
+    margin-bottom:50px;
     margin-left:50px;
     margin-right:50px;
-
 }
+
 .hdg {
     grid-area: hdgArea;
     text-align:center; 
@@ -71,3 +70,12 @@ input.largerCheckbox {
     width: 30px; 
     height: 30px; 
 } 
+
+.waiverSection {
+    display:flex;
+    background-color: lightgray;
+}
+.waiverLabel {
+    margin-top:10px;
+    margin-left:0px;
+}

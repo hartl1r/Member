@@ -16,7 +16,7 @@ selectZipcode.value =  ''
 document.getElementById("zipcodeSelecterID").addEventListener("change",zipCodeChangeRtn)
 function zipCodeChangeRtn() {
     newZip = this.value
-    document.getElementById("zipcodeTextID").value = newZip
+    document.getElementById("zipCodeTextID").value = newZip
 }
 
 function showSaveBtn() {
@@ -66,3 +66,22 @@ function closeModal() {
 $('.phones').usPhoneFormat({
     format: '(xxx) xxx-xxxx',
 });
+
+
+// SET INITIAL VALUES FOR ZIP CODE SELECT STATEMENT
+selectZipcode = document.getElementById('zipcodeSelecterID')
+selectZipcode.value =  ''
+
+document.getElementById("zipcodeSelecterID").addEventListener("change",zipCodeChangeRtn)
+document.getElementById("villageSelecterID").addEventListener("change",villageChangeRtn)
+
+function villageChangeRtn() {
+    newVillage = this.value
+    document.getElementById("villageTextID").value = newVillage
+}
+
+
+function zipCodeChangeRtn() {
+    newZip = this.value
+    document.getElementById("zipCodeTextID").value = newZip
+}

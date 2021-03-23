@@ -18,7 +18,7 @@
         <div class="demographic">
             <div class="form-group-md">
                 <label for=villageID class='col-md-4 form-label-md'>Village ID</label>
-                <input id='villageID' type="text" required class="form-control-md" style="width:60px" autofocus name="villageID">
+                <input id='villageID' type="text" required class="form-control-md" style="width:65px" autofocus name="villageID">
                 <label for=expireDate class="col-md-3 form-label-md" >Expiration date</label>
                 <input type="date" datepicker class="form-control-md" name='expireDate'>
             </div>
@@ -52,12 +52,27 @@
                     <input id="city"type='text' class='form-control-md' name='city' readonly value="The Villages">
                     <input id="state"type='text' class='form-control-md' style=width:25px name='state' readonly value='FL'>
                     <input type="hidden" id="zipCodeTextID" name="zip" style=width:50px; value=''>
-                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" style=padding-bottom:3px;width:95px;color:navy;font-family:inherit>
+                    <select id="zipcodeSelecterID" name="zipcodeSelecterName" required style=padding-bottom:3px;width:95px;color:navy;font-family:inherit>
                         <option value="">Zipcode</option>
                         {% for z in zipCodes %}
                             <option value="{{z.Zipcode}}" class="optZipcode" style=color:navy >{{z.Zipcode}}</option>
                         {% endfor %}
                     </select>
+                    <div class="row">
+                        <label class="col-md-4" for="village">Village</label>
+                        <div class="villageData col-6">
+                            <input id=villageTextID type="hidden" name="village" value="">
+                            <select id="villageSelecterID" 
+                                style="padding-bottom:3px; width:300px; color:navy;font-family:inherit" 
+                                required 
+                                name="villageSelecterName">
+                                <option value="" disabled selected>Select a village ...</option>
+                                {% for village in villages %}
+                                    <option  class="optVillage" value ="{{village.Village_Name}}">{{village.Village_Name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <hr>   
@@ -77,12 +92,21 @@
                     <input id="eMail"type='email' required class='form-control-md' name='eMail' >
                 </div>   
             </div>
-
             <div class='form-group-md' style=margin-top:20px>
                 <label for="dateJoined" class="col-md-4 form-label-md">Date joined</label>
                 <input id="dateJoined"type='date' datepicker class='dateJoined form-control-md' name='dateJoined' readonly>
             </div> 
-
+            <div class="waiverSection" style="border:1px solid red">
+                <label class='col-md-4 waiverLabel'>Villages Waiver</label> 
+                <input 
+                    id='villagesWaiverID' 
+                    class='col-md-1 largerCheckbox' 
+                    type="checkbox" 
+                    style=margin-left:0px;margin-top:7px; 
+                    name="villagesWaiverSigned" 
+                    oninvalid="alert('Check this box if The Villages Waiver has been signed.')" required>
+            </div>  
+            
         </div> <!-- END OF demographic-->
         <div class='footerBtns'>
             <div class="cancelSave" >

@@ -103,9 +103,9 @@
 
             <div class='form-group-md'>
                 <label for="typeOfWork" class="col-md-5 form-label-md">Default type of work</label>
-                <select id="typeOfWorkSelecterID" class="form-control-md selectTypeOfWork" style=margin-left:0px name="typeOfWorkSelected" >
+                <select id="typeOfWorkSelecterID" class="form-control-md selectTypeOfWork" style=margin-left:0px readonly name="typeOfWorkSelected" >
                     <option value='General' selected>General</option>
-                    <option value='Administrative'>Administration</option>
+                    <!-- <option value='Administrative'>Administration</option>
                     <option value='Carver'>Carver</option>
                     <option value='Education'>Education</option>
                     <option value='Repair'>Repair</option>
@@ -113,7 +113,7 @@
                     <option value='Stained Glass'>Stained Glass</option>
                     <option value='Toy Building'>Toy Building</option>
                     <option value='Turner'>Turner</option>
-                    <option value='Painting'>Painting</option>
+                    <option value='Painting'>Painting</option> -->
                 </select>
             </div> 
 
@@ -136,8 +136,6 @@
                     style=margin-left:5px; 
                     name="villagesWaiverSigned" 
                     oninvalid="alert('Check this box if The Villages Waiver has been signed.')" required>
-                    <!-- oninvalid="alert('You must fill out the form!');" required -->
-                    <!-- oninvalid="this.setCustomValidity('Check this box if The Villages Waiver has been signed.')"> -->
             </div>   
             <br>
             <br>
@@ -172,6 +170,15 @@
                     <option value='single'>Regular membership ({{singleInitiationFeeCUR}})</option>
                     <option value='family'>2nd membership ({{familyInitiationFeeCUR}})</option>
                 </select>
+                <div class="form-check-inline" style="margin-left:225px;border:1px solid black">
+                    <span>Training date entered? </span>
+                    <label class="form-check-label">
+                    <input id=trainingYes type="radio" class="form-check-input" style="margin-left:20px" required name="optCertification">Yes
+                    </label>
+                    <label class="form-check-label">
+                      <input id=trainingNotAssigned type="radio" class="form-check-input" style="margin-left:20px;margin-right:10px" name="optCertification">Not Assigned
+                    </label>
+                </div>
                 <!-- <input id='initiationFee' type="hidden" value={{initiationFee}}> -->
                 <input id='singleInitiationFee' type="hidden" value={{singleInitiationFeeCUR}}>
                 <input id='familyInitiationFee' type="hidden" value={{familyInitiationFeeCUR}}>
@@ -183,7 +190,6 @@
             <div class='form-group-md'>
                 <label for="initiationFee" class='col-md-5 form-label-md'>Initiation fee</label>
                 <input id='initiationFee' readonly type="text" class='form-control-md 'style=width:80px;text-align:right name='initiationFee' value = ''>
-            
             </div>
             <div class='form-group-md'>
                 <label for="annualDues" class='col-md-5 form-label-md'>Annual dues</label>

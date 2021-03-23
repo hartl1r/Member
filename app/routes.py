@@ -229,6 +229,10 @@ def index():
             if member.Last_Monitor_Training_Shop_2 < BWlastAcceptableTrainingDate:
                 BWtrainingNeeded = 'Training Needed'
     
+    if member.NonMember_Volunteer == True:
+        RAtrainingNeeded = ''
+        BWtrainingNeeded = ''
+
     # GET LAST PAID YEAR
     lastYearPaid = db.session.query(func.max(DuesPaidYears.Dues_Year_Paid)).filter(DuesPaidYears.Member_ID == villageID).scalar()
     
@@ -1140,7 +1144,6 @@ def logChange(colName,memberID,newData,origData):
             Action = 'UPDATE'
         )
         db.session.add(newTransaction)
-        return
         db.session.commit()
     except SQLAlchemyError as e:
         error = str(e.__dict__['orig'])
@@ -1167,8 +1170,6 @@ def newMemberApplication():
                 RAclassArray.append(RA.trainingDate.strftime('%m-%d-%Y'))
        
         RAavailableDates = len(RAclassArray)
-
-
 
         # PREPARE LIST OF VILLAGES
         sqlSelect = "SELECT Village_Name FROM tblValid_Village_Names "
@@ -1269,8 +1270,9 @@ def newMemberApplication():
     homePhone = request.form.get('homePhone')
     eMail = request.form.get('eMail')
     dateJoined = request.form.get('dateJoined')
-    typeOfWork = request.form.get('typeOfWork')
-    
+    # typeOfWork = request.form.get('typeOfWorkSelected')
+    typeOfWork = 'General'
+
     skillLevel = request.form.get('skillLevel')
 
     certifyDateRA = request.form.get('certifyDateRA')
@@ -1924,9 +1926,18 @@ def newVolunteerApplication():
     
     # DISPLAY BLANK NEW VOLUNTEER FORM
     if request.method != 'POST':
+        # PREPARE LIST OF VILLAGES
+        sqlSelect = "SELECT Village_Name FROM tblValid_Village_Names "
+        sqlSelect += "ORDER BY Village_Name"
+        try:
+            villages = db.engine.execute(sqlSelect)
+        except Exception as e:
+            flash("Could not retrieve village name list.","danger")
+            return 'ERROR in index village function.'
+
         # GET ZIPCODES
         zipCodes = db.session.query(ZipCode).order_by(ZipCode.Zipcode).all()
-        return render_template("newVolunteer.html",zipCodes=zipCodes)
+        return render_template("newVolunteer.html",zipCodes=zipCodes,villages=villages)
 
     # DID USER CANCEL?
     if request.form.get('volunteerCancelBtn') == 'CANCEL':
@@ -1940,7 +1951,6 @@ def newVolunteerApplication():
         return redirect(url_for('index',villageID=villageID,todaysDate=todaySTR))
 
     # PROCESS NEW VOLUNTEER
-
     expireDate = request.form.get('expireDate')
     if expireDate:
         hasTempID = 1
@@ -1954,8 +1964,8 @@ def newVolunteerApplication():
     street = request.form.get('street')
     city = request.form.get('city')
     state = request.form.get('state')
-    zip = request.form.get('zip')
-    
+    zipCode = request.form.get('zip')
+    village = request.form.get('village')
     cellPhone = request.form.get('cellPhone')
     homePhone = request.form.get('homePhone')
     eMail = request.form.get('eMail')
@@ -1973,13 +1983,16 @@ def newVolunteerApplication():
         Address = street,
         City = city,
         State = state,
-        Zip = zip,
+        Zip = zipCode,
+        Village = village,
         Cell_Phone = cellPhone,
         Home_Phone = homePhone,
         eMail = eMail,
         Date_Joined = dateJoined,
         Default_Type_Of_Work = typeOfWork,
-        NonMember_Volunteer = 1
+        NonMember_Volunteer = 1,
+        Villages_Waiver_Signed = 1,
+        Villages_Waiver_Date_Signed = todays_date
     ) 
 
     # GET UTC TIME
