@@ -170,7 +170,7 @@ def index():
         expireMsg = ''
 
     # GET MEMBERS MONITOR SCHEDULE FOR SPECIFIED YEAR
-    sqlMemberSchedule = "SELECT format(Date_Scheduled,'ddd M/d/y') as DateScheduled, AM_PM, Duty, Shop_Abbr, Shop_Name FROM tblMonitor_Schedule "
+    sqlMemberSchedule = "SELECT format(Date_Scheduled,'ddd M/d/y') as DateScheduled, AM_PM, Duty, No_Show, Shop_Abbr, Shop_Name FROM tblMonitor_Schedule "
     sqlMemberSchedule += "LEFT JOIN tblShop_Names ON tblMonitor_Schedule.Shop_Number = tblShop_Names.Shop_Number "
     sqlMemberSchedule += "WHERE Member_ID = '" + villageID + "' and DatePart(year,[Date_Scheduled])='" + scheduleYear + "' "
     sqlMemberSchedule += "ORDER BY Date_Scheduled"
