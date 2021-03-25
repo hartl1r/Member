@@ -27,9 +27,7 @@
   #schedulePeriod span {
       font-size:1.15rem;
   }
-  /* #schedulePeriod .btn {
-
-  } */
+  
   .periodBtn {
     border: 1px solid black;
     height:25px;
@@ -40,13 +38,6 @@
     cursor: pointer;
     font-size: 10px; 
   }
-  /* .btn:hover {
-      background-color: yellow !important;
-  } */
-
-  /* .active {
-    border:2px solid black;
-  } */
 
   
   /* MOBILE DEVICE SETTINGS */
@@ -107,14 +98,6 @@
     border-radius:5px;
     
 }
-/* 
-.staffName {
-    grid-area:staffNameArea;
-    align-items:center;
-    text-align:left;
-    padding-top:1.5rem;
-    margin-left:.5em;
-} */
 
 .hdgVersion {
     grid-area:versionArea;
@@ -143,9 +126,6 @@
     text-align: center;
     color:var(--main-panel-txt-color);
 }
-/* body {
-    font-size:10px;
-} */
 
 input {
     color:blue;
@@ -320,12 +300,7 @@ input {
 .certLabels {
     grid-area:labelArea
 }
-/* .certifiedRA {
-    grid-area:RAcertArea;
-}
-.certifiedBW {
-    grid-area:BWcertArea;
-} */
+
 .willSub {
     grid-area:willSubArea
 }
@@ -338,12 +313,6 @@ input {
 .certificationInfo label{
     text-align:right;
 } 
-/* #RAcertifiedID {
-    margin-right:0px;
-}
-#BWcertifiedID {
-    margin-right:0px;
-} */
 
 #RAtrainingNeeded {
     color:red;
@@ -366,12 +335,6 @@ hr.class-1 {
 } 
 /* MONITOR DUTY PANEL */
 
-/* .monthInputs li {
-    display:inline;
-    text-decoration: none;
-    color:var(--main-txt-color);
-    margin-right:20px;
-} */
 .monitorDutyInfo {
     grid-area:monitorDuty;
     background-color:var(--main-panel-bg-color);
@@ -380,11 +343,7 @@ hr.class-1 {
     border-radius: 10px;
     height:361px;
 }
-/* .monthsInTheVillages {
-    display:grid;
-    justify-items:center;
-    border:1px solid blue;
-} */
+
 .monthNames {
     display:grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -454,50 +413,10 @@ hr.class-1 {
     border:navy solid 1px;
 }  
 
-
-/* table {
-    height:200px;
-    line-height: .5em;
-    padding-left:20px;
-    padding-right:20px;
-    
-}
-tbody {
-    height:150px;
-    overflow-y:scroll;
-    position:absolute;
-    background-color: yellow;
-}
-tr {
-    display:inline-table;
-}
-table th {
-    color:var(--main-txt-color);
-} */
-/* .monitorDuty {
-    border:1px solid black;
-    text-align: center;
-}
-.monitorDuty td {
-    border:1px solid black;
-} */
-.futureDuty span {
-    color:red;
-}
-.pastDuty span {
-    color:green;
-}
 #monitorDutyNotesID {
-    margin-left:1em;
+    margin-left:2em;
     text-align:left;
 }
-/* .center {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-  } */
-
 
 
 /* DROPDOWN MENU CSS FOLLOWS */
@@ -544,32 +463,6 @@ table th {
     color:white !important;
 }
 
-/* 
-#passwordModalID input {
-    font-size:1rem;
-    width:100px;
-    border:1px solid black;
-} */
-/* .pwCancelSaveBtns {
-    margin-top:5px;
-    margin-bottom:0px;
-}
-.pwModalHeader {
-    text-align: center;
-    background-color: navy;
-    color:white;
-    height:40px;
-}
-.pwModalBody {
-    padding-top:1em;
-    margin-left:3em;
-    margin-right:3em;
-}
-.pwModalFooter {
-    text-align: right;
-    background-color: lightgray;
-} */
-
 
 /* ---------------------------- MODALS --------------------------------------------------------------  */ 
 .show {display: block;}
@@ -579,9 +472,7 @@ table th {
     background-color: navy;
     color:white;
 }
-/* .modal-header span {
-    color:white;
-} */
+
 .modal-body {
     margin:auto;
 }
@@ -608,10 +499,6 @@ table th {
       grid-area: footer-right;
       text-align: right;
   }
-
-/* .row {
-    height:50px;
-}  */
 
 #noteModalID { 
     height:800px;
@@ -654,9 +541,7 @@ table th {
     width: 8em;
     height:30px;
   }
-  /* #imagemodal {
-      border: 1px solid red;
-  } */
+  
   .showPhoto {
       text-align: center;
   }
@@ -672,10 +557,6 @@ table th {
     margin-right:20px;
   }
   
-  /* input:disabled {
-      color:green;
-      background-color: yellow;
-  } */
   .acceptDuesBtn {
       display:flex;
       align-items:center;
@@ -688,7 +569,6 @@ table th {
     .parent {
         display: grid;
         grid-template-columns:1fr;
-        /* grid-template-rows:50px 1fr 1fr; */
         grid-template-rows: repeat(3, minmax(50px, auto));
         grid-template-areas: "hdgArea"
                              "localInfo"
@@ -713,7 +593,6 @@ table th {
         display: grid;
         grid-template-rows: repeat(4, minmax(50px, auto));
         grid-template-columns:1fr 1fr;
-        /* grid-template-rows:50px 1fr 1fr; */
         grid-template-areas: "hdgArea           hdgArea"
                              "localInfo         altInfo"
                              "memberStatus      emergInfo
@@ -792,16 +671,6 @@ table th {
         margin-left:0px;
 
     }
-/*     
-    .staffName {
-        grid-area:staffNameArea;
-        width:200px;
-        align-items:left;
-        text-align:left;
-        padding-top:0rem;
-        margin-left:0px;
-        
-    } */
     
     .memberMenu {
         grid-area:menuArea;
@@ -810,11 +679,3 @@ table th {
         padding-top:10px;
     }
 }
-
-
-/* @media (min-width: 1200px) {
-    body {font-size:1rem}
-    .localContactInfo {
-        font-size:1rem;
-    }
-} */

@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Mar 23, 2021</h6>
+            <h6>ver. Mar 25, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -657,48 +657,6 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <!-- <div class="pastDuty">
-                        {% for p in pastDuty %}
-                        <div class="memberScheduleRow">
-                            <span class="memberScheduleCol">{{p.Shop_Name}}</span>
-                            <span class="memberScheduleCol">{{p.DateScheduled}}</span>
-                            <span class="memberScheduleCol">{{p.AM_PM}}</span>
-                            <span class="memberScheduleCol">{{p.Duty}}</span>
-                            <input 
-                            type="checkbox"
-                            class="memberScheduleCol" 
-                            onclick="return false"
-                            {% if p.NoShow == 'NS' %}
-                                checked
-                            {% endif %}
-                            >  
-                        </div>
-                        {% endfor %}
-                    </div>
-                     -->
-                    <!-- FUTURE DUTY -->
-                    <!-- <div class="futureDuty">
-                        {% for f in futureDuty %}
-                        <div class="memberScheduleRow">
-                            <span class="memberScheduleCol">{{f.Shop_Name}}</span>
-                            <span class="memberScheduleCol">{{f.DateScheduled}}</span>
-                            <span class="memberScheduleCol">{{f.AM_PM}}</span>
-                            <span class="memberScheduleCol">{{f.Duty}}</span>
-                            <input 
-                                type="checkbox" 
-                                class="memberScheduleCol"
-                                onclick="return false"
-                                {% if f.NoShow == 'NS' %}
-                                    checked
-                                    value = 'True'
-                                {% else %}
-                                    value = 'False'
-                                {% endif %}
-                            >
-                        </div>
-                        {% endfor %}
-                    </div> -->
-                    
                 </div>
             </div>
            
