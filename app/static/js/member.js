@@ -91,6 +91,9 @@ acceptDuesDate = document.getElementById('acceptDuesDateID').value
 acceptDuesBtn = document.getElementById('acceptDuesID')
 duesPaid = document.getElementById('duesPaidID').value
 volunteer = document.getElementById('volunteerID').value
+restricted = document.getElementById('restrictedID').value
+inActive = document.getElementById('inactiveID').value
+
 if (todaysDateSTR  < acceptDuesDate) {
     acceptDuesBtn.style.display='none'
 }
@@ -100,6 +103,14 @@ if (duesPaid == 'True') {
 
 if (volunteer == 'True') {
     acceptDuesBtn.style.display='none'
+}
+
+if (restricted == 'True') {
+    acceptDuesBtn.style.display = 'none'
+}
+
+if (inActive == 'True') {
+    acceptDuesBtn.style.display = 'none'
 }
 
 typeOfWorkText = document.getElementById('typeOfWorkTextID').value
@@ -943,10 +954,12 @@ function setManagerPermissions() {
     document.getElementById('showCheckInsID').style.display='block'
     document.getElementById('passwordBtnID').style.display='block'
     document.getElementById('staffNoteBtnID').style.display='block'
-    document.getElementById('inactiveID').removeAttribute('readonly')
-    document.getElementById('inactiveDateID').removeAttribute('readonly')
-    document.getElementById('restrictedID').removeAttribute('readonly')
-    document.getElementById('reasonRestricted').removeAttribute('readonly')
+    document.getElementById('inactiveID').removeAttribute('disabled')
+    document.getElementById('inactiveDateID').removeAttribute('disabled')
+    document.getElementById('restrictedID').removeAttribute('disabled')
+    document.getElementById('reasonRestricted').removeAttribute('disabled')
+    document.getElementById('deceasedID').removeAttribute('disabled')
+
 }
 
 

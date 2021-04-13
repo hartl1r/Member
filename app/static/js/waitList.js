@@ -98,6 +98,10 @@ function newApplicant() {
 
 }
 
+$('.phones').usPhoneFormat({
+  format: '(xxx) xxx-xxxx',
+  });
+  
 // function printConfirmation() {
 //   alert('print confirmation')
 //   // SET UP LINK TO waitList FORM 

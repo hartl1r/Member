@@ -93,6 +93,7 @@
     const img = document.createElement("img");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
+    canvas.id='take1'
     canvas.getContext("2d").drawImage(video, 0, 0);
     img.src = canvas.toDataURL("image/png");
     screenshotsContainer.prepend(img);
@@ -100,14 +101,15 @@
     imgBtn.innerHTML = "SAVE";
     imgBtn.classList.add("saveBtn", "btn", "btn-primary", "btn-sm");
     screenshotsContainer.prepend(imgBtn);
+    alert('photo displayed')
   });
 
   // switch camera
-  btnChangeCamera.addEventListener("click", function () {
-    useFrontCamera = !useFrontCamera;
+  //btnChangeCamera.addEventListener("click", function () {
+  //  useFrontCamera = !useFrontCamera;
 
-    initializeCamera();
-  });
+  //  initializeCamera();
+  //});
 
   // stop video stream
   function stopVideoStream() {
@@ -138,37 +140,57 @@
 screenshots.addEventListener("click", function (e) {
   console.log('screenshots click')
   console.log('e.target.innerhtml - '+e.target.innerHTML)
-
+  //canvas=document.getElementById('take1')
   canvas = e.target.nextElementSibling
+  
   console.log('canvas.tagName - '+canvas.tagName)
+  //console.log('canvas.id - '+canvas.id)
+  //console.log('src - '+canvas.src)
   //canvas.toBlob(postFile,'image/jpeg');
   memberID = document.getElementById('memberID').value
-  var dataURL = canvas.toDataURL()
-  $.ajax({
-    type: "GET",
-    url:"/savePhoto",
-    data: {
-      memberID:memberID,
-      imgBase64: dataURL
-    },
-    success: function(data, textStatus, jqXHR)
-        {
-            console.log('success rtn')
-            if (data.msg != 'SUCCESS') {
-                alert(data.msg)
-                
-                return
-            }
-            alert('Photo saved.')
-            //window.history.back()
-        },
-        error: function(jqXHR, textStatus, errorThrown){
-            alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
-       }
-    })
-    console.log('end of ajax')
+  //var dataURL = canvas.toDataURL()
+  //img = canvas.toDataURL("image/png");
+  var dataURL = canvas.src
+  console.log('dataURL - '+dataURL)
+  console.log('before ajax call ')
+  //return
+  saveImgToServer(memberID,dataURL)
+
+  function saveImtToServer(memberID,dataURL)
+    $.ajax({
+      type: "GET",
+      url:"/savePhoto",
+      data: {
+        memberID:memberID,
+        img:img
+        //imgBase64: dataURL
+      },
+      success: function(data, textStatus, jqXHR)
+          {
+              console.log('success rtn')
+              if (data.msg != 'SUCCESS') {
+                  alert(data.msg)
+                  
+                  return
+              }
+              alert('Photo saved.')
+              //window.history.back()
+          },
+          error: function(jqXHR, textStatus, errorThrown){
+              alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
+        }
+      })
+      console.log('end of ajax')
   })
 
+
+function sendImgToServer2(member,dataURL){
+  var request = new XMLHttpRequest();
+  request.open("POST", "/path/to/server", true);
+  var data = new FormData();
+  data.append("image", dataURL, "imagename");
+  request.send(data);
+}
   // btn = e.target.id
   // console.log('btn caption - '+ btn.innerHTML)
   

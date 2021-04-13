@@ -1,6 +1,5 @@
 $(window).ready(function() { 
     $("#newMemberFormID").on("keypress", function (event) { 
-        console.log("aaya"); 
         var keyPressed = event.keyCode || event.which; 
         if (keyPressed === 13) { 
             //alert("You pressed the Enter key!!"); 
@@ -119,5 +118,4 @@ $('.phones').keypress(function(event){
     if(event.which != 8 && isNaN(String.fromCharCode(event.which))){
         event.preventDefault(); //stop character from entering input
     }
-
 });

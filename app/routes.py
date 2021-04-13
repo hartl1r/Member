@@ -23,6 +23,10 @@ from flask_mail import Mail, Message
 mail=Mail(app)
  
 import pyodbc
+import base64
+import os, fnmatch
+# import os.path
+# from os import path
 
 @app.route('/')
 @app.route('/index/')
@@ -1135,7 +1139,7 @@ def logChange(colName,memberID,newData,origData):
     # Write data changes to tblMember_Data_Transactions
     try:
         newTransaction = MemberTransactions(
-            Transaction_Date = datetime.now(est),
+            Transaction_Date = datetime.now('America/New_York'),
             Member_ID = memberID,
             Staff_ID = staffID,
             Original_Data = origData,
@@ -1339,7 +1343,7 @@ def newMemberApplication():
         newDuesPaidYear = DuesPaidYears(
             Member_ID = memberID,
             Dues_Year_Paid = currentDuesYear,
-            Date_Dues_Paid = datetime.now(est)
+            Date_Dues_Paid = datetime.now('America/New_York')
         )
         db.session.add(newDuesPaidYear)
         db.session.commit()
@@ -1361,7 +1365,7 @@ def newMemberApplication():
     #  GET UTC TIME 
     est = timezone('EST')
     newTransaction = MemberTransactions(
-        Transaction_Date = datetime.now(est),
+        Transaction_Date = datetime.now('America/New_York'),
         Member_ID = memberID,
         Staff_ID = staffID,
         Original_Data = '',
@@ -1414,7 +1418,7 @@ def acceptDues():
         newDuesPaidYear = DuesPaidYears(
             Member_ID = memberID,
             Dues_Year_Paid = currentDuesYear,
-            Date_Dues_Paid = datetime.now(est)
+            Date_Dues_Paid = datetime.now('America/New_York')
         )
         db.session.add(newDuesPaidYear)
         db.session.commit()
@@ -1898,7 +1902,7 @@ def saveVillageID():
         try:
             member.Member_ID = newVillageID
             db.session.commit()
-            logChange('Village ID changed',newVillageID,curVillageID,newVillageID)    
+            logChange('Village ID changed',curVillageID,newVillageID,newVillageID)  
             flash("Village ID change successful","success")
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
@@ -2010,7 +2014,7 @@ def newVolunteerApplication():
 
     # ADD TO MEMBER TRANSACTION TABLE
     newTransaction = MemberTransactions(
-        Transaction_Date = datetime.now(est),
+        Transaction_Date = datetime.now('America/New_York'),
         Member_ID = villageID,
         Staff_ID = staffID,
         Original_Data = '',
@@ -2060,19 +2064,28 @@ def getStaffName():
 
 @app.route("/savePhoto", methods=['GET','POST'])
 def savePhoto():
+    print('/savePhoto rtn ...')
     memberID = request.form['memberID']
     img = request.form['imgBase64']
+    print('img-',img)
+    print('after img = ')
     # DOES IMAGE EXIST?
     photo = db.session.query(MemberPhoto).filter(MemberPhoto.memberID == memberID).first()
     if photo:
+        # REPLACE CURRENT PHOTO
         photo.memberPhoto = img
         photo.commit
     else:
-        insertSQL = "INSERT INTO tblMember_Photos (Member_ID, Member_Photo) "
-        insertSQL += "VALUES ('" + memberID + "', '" + img + "'"
-        db.session.execute(insertSQL)
+        try:
+            insertSQL = "INSERT INTO tblMember_Photos (Member_ID, Member_Photo) "
+            insertSQL += "VALUES ('" + memberID + "', '" + img + "'"
+            db.session.execute(insertSQL)
+            msg="SUCCESS"
+        except:
+            msg="Error saving photo."
+    return jsonify(msg=msg)
 
-    return redirect(url_for('index') )   
+    #return redirect(url_for('index') )   
     
 @app.route("/checkVillageID")
 def checkVillageID():
@@ -2089,5 +2102,35 @@ def changeScheduleYear(year):
     return redirect(url_for('index',villageID=memberID,scheduleYear=year))
 
 
+@app.route("/test/")
+def test():
+    #print(os.walk(directory))
+    path='/Users/richardhartley/Projects/Member/app/static/memberPhotos/'
+    #files = os.listdir(path)
+    #print(files)
+    
+    #list_subfolders_with_paths = [f.path for f in os.scandir(path) if f.is_dir()]
+    #print(list_subfolders_with_paths)
+    
+    # listOfFiles = os.listdir('*.jpg')
+    #print('listOfFiles- ',listOfFiles)
 
+    # for root, dirs, files in os.walk("."):
+    #     for filename in files:
+    #         print(filename)
+    
+    # cwd = os.getcwd()
+    # print('cwd- ',cwd)
+    memberID = '604875'
+    filename = path + memberID + '.jpg'
+    print(filename)
 
+    with open(filename,'rb') as f:
+        image=f.read()
+        #print(len(image))
+        #print(image)
+    print('image data type - ',type(image))
+    sqlInsert = "INSERT INTO tblMemberPhotos VALUES ('" + memberID + "', " + image + ")"
+    print('sqlInsert - ',sqlInsert)
+    db.session.execute(sqlInsert)
+    return 'done with test'

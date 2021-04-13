@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Mar 25, 2021</h6>
+            <h6>ver. Apr 13, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -71,7 +71,7 @@
                 <button id='showPhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick='showHidePhoto(this)''>SHOW PHOTO</button>
                 <button id='takePhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick="window.location.href='/takePhoto/?villageID={{member.Member_ID}}'">TAKE PHOTO</button>
                 <!-- <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='takePhotoRtn(this)''>TAKE PHOTO</button> -->
-                
+                <button id="TEST" onclick="window.location.href='/test/'">TEST</button>
             </div>     
         </div> 
 
@@ -382,21 +382,21 @@
             
             <div class="row form-check" style='margin-top:0px;'>
                 <div>
-                    <input id="inactiveID" type="checkbox" class="form-check-input" style=margin-top:8px readonly name="inactive" {% if member.Inactive %} checked {% endif %}value="{{member.Inactive}}">
+                    <input id="inactiveID" type="checkbox" class="form-check-input" style=margin-top:8px disabled name="inactive" {% if member.Inactive %} checked {% endif %}value="{{member.Inactive}}">
                     <label for='inactiveID' class="col-sm-3 form-check-label" style=margin-top:5px>Inactive</label>
-                    <input id="inactiveDateID" type="date" class="form-control-md" style=margin-left:0px readonly name="inactiveDate" placeholder="inactive" value="{{member.Inactive_Date}}">
-                    <input id="deceasedID" type="checkbox" class="col-sm-4 form-check-input" style=margin-top:8px;margin-left:20px; name="deceased" {% if member.Deceased %} checked {% endif %}value="{{member.Deceased}}">
-                    <label for='deceasedID' class="col-sm-2 form-check-label"style=margin-top:10px;margin-left:30px>Deceased</label>
+                    <input id="inactiveDateID" type="date" class="form-control-md" style=margin-left:0px disabled name="inactiveDate" placeholder="inactive" value="{{member.Inactive_Date}}">
+                    <input id="deceasedID" type="checkbox" class="col-sm-4 form-check-input" style=margin-top:8px;margin-left:20px; name="deceased" {% if member.Deceased %} checked {% endif %}value="{{member.Deceased}}" >
+                    <label for='deceasedID' class="col-sm-2 form-check-label"style=margin-top:10px;margin-left:30px >Deceased</label>
                 </div>
             </div>
 
             <div class="row">
-                <input id="restrictedID" type="checkbox" class="form-check-input" style=margin-top:10px;margin-left:0px readonly name="restricted" {% if member.Restricted_From_Shop %} checked {% endif %}value="{{member.Restricted_From_Shop}}">
+                <input id="restrictedID" type="checkbox" class="form-check-input" style=margin-top:10px;margin-left:0px disabled name="restricted" {% if member.Restricted_From_Shop %} checked {% endif %}value="{{member.Restricted_From_Shop}}">
                 <label class="col-sm-4 form-check-label" style=margin-top:11px;margin-left:20px>Restricted</label>
                 <textarea name="reasonRestricted"  
                     style=margin-left:5px;margin-top:5px 
                     id="reasonRestricted"
-                    readonly
+                    disabled
                     placeholder="Reason for restriction" 
                     cols="60" 
                     rows="2">{{member.Reason_For_Restricted_From_Shop if member.Reason_For_Restricted_From_Shop}}</textarea>
