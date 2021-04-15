@@ -622,7 +622,7 @@ function processNote() {
             showAtCheckIn: showAtCheckIn,
             sendEmail: sendEmail,
             memberID:memberID,
-            eMailAddr:'hartl1r@gmail.com',
+            // eMailAddr:'hartl1r@gmail.com',
             msg:msg},
 
         success: function(data, textStatus, jqXHR)

@@ -1016,8 +1016,7 @@ def processNoteToMember():
     showAtCheckIn=request.args.get('showAtCheckIn')
     sendEmail=request.args.get('sendEmail')
     memberID=request.args.get('memberID')
-    emailAddress='hartl1r@gmail.com'
-    #emailAddress = request.args.get('emailAddress')
+    
     msg = request.args.get('msg')
     response = ""
 
@@ -1043,6 +1042,11 @@ def processNoteToMember():
  
     # PREPARE AN EMAIL, IF REQUESTED
     if (sendEmail == 'true'):
+        emailAddress = db.session.query(Member.eMail).filter(Member.Member_ID == memberID).scalar()
+        if emailAddress == None:
+            response = "ERROR - No email address."
+            return make_response (f"{response}")
+
         # PREPARE AN EMAIL
         recipient = emailAddress
         #recipient = ("Richard Hartley", "hartl1r@gmail.com")
