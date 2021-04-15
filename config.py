@@ -26,14 +26,19 @@ params = urllib.parse.quote_plus('DRIVER=' +  os.getenv('Driver') + ';'
 )
 conn_str = 'mssql+pyodbc:///?odbc_connect={}'.format(params)
 
-app.config['MAIL_SERVER']='outlook.office365.com'
-app.config['MAIL_PORT']=587
-app.config['MAIL_USERNAME'] = 'dhartley@thevwc.net'
-app.config['MAIL_PASSWORRD'] = 'vwc-0513'
-app.config['MAIL_USE_TLS'] = True
+# app.config['MAIL_SERVER']='outlook.office365.com'
+# app.config['MAIL_PORT']=587
+# app.config['MAIL_USERNAME'] = 'dhartley@thevwc.net'
+# app.config['MAIL_PASSWORRD'] = 'vwc-0513'
+# app.config['MAIL_USE_TLS'] = True
 
 class Config(object):
     SQLALCHEMY_DATABASE_URI = conn_str 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     TEMPLATES_AUTO_RELOAD=True 
     SECRET_KEY = os.environ.get('Secret_key')
+    MAIL_SERVER = os.environ.get('Mail_server')
+    MAIL_PORT = os.environ.get('Mail_port')
+    MAIL_USERNAME = os.environ.get('Mail_username')
+    MAIL_PASSWORD = os.environ.get('Mail_password')
+    MAIL_USE_TLS = os.environ.get('Mail_use_tls')

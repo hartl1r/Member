@@ -1,20 +1,17 @@
-# config.py # AzureMonitorScheduling
+# config.py #
 
 import os
-#import pyodbc
-import urllib.parse
-
+import pyodbc
+import urllib
+from flask import Flask
 from dotenv import load_dotenv
+from flask_mail import Mail,Message
+app = Flask(__name__)
 
 # LOAD dotenv IN THE BASE DIRECTORY
 basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, '.env'))
-
-# print (os.getenv('Driver'))
-# print (os.getenv('Server'))
-# print (os.getenv('Database'))
-# print (os.getenv('Username'))
-# print (os.getenv('Password'))
+dotenv_path = os.path.join(basedir, '.env')
+load_dotenv(dotenv_path)
 
 params = urllib.parse.quote_plus('DRIVER=' +  os.getenv('Driver') + ';'
                                     'SERVER=' + os.getenv('Server') + ';'
@@ -25,14 +22,12 @@ params = urllib.parse.quote_plus('DRIVER=' +  os.getenv('Driver') + ';'
 conn_str = 'mssql+pyodbc:///?odbc_connect={}'.format(params)
 
 class Config(object):
-    SECRET_KEY = os.environ.get('Secret_key')
     SQLALCHEMY_DATABASE_URI = conn_str 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    TEMPLATES_AUTO_RELOAD=True 
-        
-    MAIL_SERVER = os.getenv('MAIL_SERVER')
-    MAIL_PORT = int(os.getenv('MAIL_PORT') or 25)
-    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS') is not None
-    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
-    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
-    MAIL_ASCII_ATTACHMENTS = False
+    TEMPLATES_AUTO_RELOAD = True 
+    SECRET_KEY = os.environ.get('Secret_key')
+    MAIL_SERVER = os.environ.get('Mail_server')
+    MAIL_PORT = os.environ.get('Mail_port')
+    MAIL_USERNAME = os.environ.get('Mail_username')
+    MAIL_PASSWORD = os.environ.get('Mail_password')
+    MAIL_USE_TLS = os.environ.get('Mail_use_tls')

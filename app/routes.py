@@ -1016,7 +1016,8 @@ def processNoteToMember():
     showAtCheckIn=request.args.get('showAtCheckIn')
     sendEmail=request.args.get('sendEmail')
     memberID=request.args.get('memberID')
-    emailAddress = request.args.get('emailAddress')
+    emailAddress='hartl1r@gmail.com'
+    #emailAddress = request.args.get('emailAddress')
     msg = request.args.get('msg')
     response = ""
 
