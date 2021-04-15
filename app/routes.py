@@ -1049,11 +1049,12 @@ def processNoteToMember():
 
         # PREPARE AN EMAIL
         recipient = emailAddress
+        print('recipient - ',recipient)
         #recipient = ("Richard Hartley", "hartl1r@gmail.com")
         #bcc=("Woodshop","villagesWoodShop@embarqmail.com")
         recipientList = []
         recipientList.append(recipient)
-        message = Message('Hello', sender = 'hartl1r@gmail.com', recipients = recipientList)
+        message = Message('Hello', sender = 'frontdesk@thevwc.net', recipients = recipientList)
         message.subject = "Note from front desk"
         message.body = msg
         mail.send(message)
