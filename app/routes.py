@@ -814,13 +814,15 @@ def saveCertification():
         try:
             db.session.commit()
             flash("Changes successful","success")
+            return redirect(url_for('index',villageID=memberID))
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
             flash('ERROR - Record not added.'+error,'danger')
+            return redirect(url_for('index',villageID=memberID))
         except Exception as e:
-            flash("Certification Info - Could not update certification data.","danger")
+            flash("ERROR - Certification Info - Could not update certification data.","danger")
             db.session.rollback()
-
+            return redirect(url_for('index',villageID=memberID))
     return redirect(url_for('index',villageID=memberID))
 
 
@@ -1141,11 +1143,11 @@ def logChange(colName,memberID,newData,origData):
             origData = origData[0:50]
             
     #  GET UTC TIME
-    est = timezone('EST')
+    est = timezone('America/New_York')
     # Write data changes to tblMember_Data_Transactions
     try:
         newTransaction = MemberTransactions(
-            Transaction_Date = datetime.now('America/New_York'),
+            Transaction_Date = datetime.now(est),
             Member_ID = memberID,
             Staff_ID = staffID,
             Original_Data = origData,
@@ -1344,12 +1346,12 @@ def newMemberApplication():
     ) 
     # ADD RECORD TO tblDues_Years_Paid TABLE
     # GET UTC TIME
-    est = timezone('EST')
+    est = timezone('America/New_York')
     try:
         newDuesPaidYear = DuesPaidYears(
             Member_ID = memberID,
             Dues_Year_Paid = currentDuesYear,
-            Date_Dues_Paid = datetime.now('America/New_York')
+            Date_Dues_Paid = datetime.now(est)
         )
         db.session.add(newDuesPaidYear)
         db.session.commit()
@@ -1369,9 +1371,9 @@ def newMemberApplication():
         db.session.rollback()
 
     #  GET UTC TIME 
-    est = timezone('EST')
+    est = timezone('America/New_York')
     newTransaction = MemberTransactions(
-        Transaction_Date = datetime.now('America/New_York'),
+        Transaction_Date = datetime.now(est),
         Member_ID = memberID,
         Staff_ID = staffID,
         Original_Data = '',
@@ -1419,12 +1421,12 @@ def acceptDues():
         
     # ADD RECORD TO tblDues_Paid_Years
     # GET UTC TIME  
-    est = timezone('EST')
+    est = timezone('America/New_York')
     try:
         newDuesPaidYear = DuesPaidYears(
             Member_ID = memberID,
             Dues_Year_Paid = currentDuesYear,
-            Date_Dues_Paid = datetime.now('America/New_York')
+            Date_Dues_Paid = datetime.now(est)
         )
         db.session.add(newDuesPaidYear)
         db.session.commit()
@@ -2006,7 +2008,7 @@ def newVolunteerApplication():
     ) 
 
     # GET UTC TIME
-    est = timezone('EST')
+    est = timezone('America/New_York')
     
     # ADD TO tblMember_Data TABLE
     try:
@@ -2020,7 +2022,7 @@ def newVolunteerApplication():
 
     # ADD TO MEMBER TRANSACTION TABLE
     newTransaction = MemberTransactions(
-        Transaction_Date = datetime.now('America/New_York'),
+        Transaction_Date = datetime.now(est),
         Member_ID = villageID,
         Staff_ID = staffID,
         Original_Data = '',
