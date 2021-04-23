@@ -35,7 +35,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Apr 17, 2021</h6>
+            <h6>ver. Apr 23, 2021</h6>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -65,13 +65,11 @@
                     <hr>
                     <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication'">New Member Application</button>
                     <button id='newVolunteerBtnID' class='dropdown-item' onclick="window.location.href='/newVolunteerApplication'">New Volunteer Application</button>
-                    
-                    <!-- <button id='shiftChangeBtnID' class='dropdown-item' disabled onclick='shiftChange()'>Temporary Login</button> -->
                 </div>
                 <button id='showPhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick='showHidePhoto(this)''>SHOW PHOTO</button>
                 <button id='takePhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick="window.location.href='/takePhoto/?villageID={{member.Member_ID}}'">TAKE PHOTO</button>
                 <!-- <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='takePhotoRtn(this)''>TAKE PHOTO</button> -->
-                <button id="TEST" onclick="window.location.href='/test/'">TEST</button>
+                <!-- <button id="TEST" onclick="window.location.href='/test/'">TEST PHOTO</button> -->
             </div>     
         </div> 
 
@@ -550,6 +548,7 @@
                             <option value='Carver'>Carver</option>
                             <option value='Education'>Education</option>
                             <option value='Repair'>Repair</option>
+                            <option value="Safety">Safety</option>
                             <option value='Special Project'>Special Project</option>
                             <option value="Stained Glass">Stained Glass</option>
                             <option value="Toy Building">Toy Building</option>
@@ -744,9 +743,9 @@
             </div>
             <div class="modal-body">
                 <span>Message:</span><br>
-                <textarea id="staffMsgID" style=font-size:14px rows="20"" cols="90" >test data</textarea>
+                <!-- <textarea id="staffMsgID" style=font-size:14px rows="20"" cols="90" >test data</textarea> -->
                 <br><br>
-                
+                <span id="staffMsgID"></span>
                 <div class="modal-footer">
                     <div class='footer-right-col'> 
                         <button id='cancelStaffMsgID' type='button' class='btn btn-secondary btn-sm'>Cancel</button>

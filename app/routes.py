@@ -1344,22 +1344,6 @@ def newMemberApplication():
         Villages_Waiver_Signed = 1,
         Villages_Waiver_Date_Signed = todays_date
     ) 
-    # ADD RECORD TO tblDues_Years_Paid TABLE
-    # GET UTC TIME
-    est = timezone('America/New_York')
-    try:
-        newDuesPaidYear = DuesPaidYears(
-            Member_ID = memberID,
-            Dues_Year_Paid = currentDuesYear,
-            Date_Dues_Paid = datetime.now(est)
-        )
-        db.session.add(newDuesPaidYear)
-        db.session.commit()
-
-    except SQLAlchemyError as e:
-        error = str(e.__dict__['orig'])
-        flash('ERROR - '+error,'danger')
-        db.session.rollback()
     
     # ADD TO tblMember_Data TABLE
     try:
@@ -1381,6 +1365,24 @@ def newMemberApplication():
         Data_Item = 'NEW MEMBER',
         Action = 'NEW'
     )
+
+    # ADD RECORD TO tblDues_Years_Paid TABLE
+    # GET UTC TIME
+    est = timezone('America/New_York')
+    try:
+        newDuesPaidYear = DuesPaidYears(
+            Member_ID = memberID,
+            Dues_Year_Paid = currentDuesYear,
+            Date_Dues_Paid = datetime.now(est)
+        )
+        db.session.add(newDuesPaidYear)
+        db.session.commit()
+
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        flash('ERROR - '+error,'danger')
+        db.session.rollback()
+    
     # WRITE TO MEMBER_TRANSACTION TABLE
     try:
         db.session.add(newTransaction)
@@ -1808,9 +1810,16 @@ def saveName():
         logChange('First name',memberID,firstName,member.First_Name)
         member.First_Name = firstName
         fieldsChanged += 1 
-
+    # print('length - ',len(middleName))
+    # print('middleName - |',member.Middle_Name,'|',middleName,'|')
+    # if (middleName == None):
+    #     middleName = Null
+    # print('middleName - |',member.Middle_Name,'|',middleName,'|')
     if member.Middle_Name != middleName:
         logChange('Middle name',memberID,middleName,member.Middle_Name)
+        # print('name is changed')
+        # print('length - ',len(middleName))
+
         member.Middle_Name = middleName
         fieldsChanged += 1 
 

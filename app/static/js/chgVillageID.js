@@ -36,4 +36,8 @@ function compareIDs() {
     if (firstID != secondID) {
         alert('The new and re-typed IDs do not match.')
     }
+    else {
+        document.getElementById('chgVillageIDSaveBtnID').disabled=false
+    }
+    
 }

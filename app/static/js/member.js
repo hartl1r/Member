@@ -576,8 +576,9 @@ function getStaffNoteRtn() {
         {
             if (data.msg) {
                 msg = data.msg
-                msgElement = document.getElementById('staffMsgID')
-                msgElement.value = msg
+                //msgElement = document.getElementById('staffMsgID')
+                //msgElement.value = msg
+                document.getElementById('staffMsgID').innerHTML = msg
             }
         },
         error: function(result){
@@ -639,7 +640,7 @@ function processNote() {
 }
 
 function saveStaffMsg() {
-    msg = document.getElementById('staffMsgID').value
+    msg = document.getElementById('staffMsgID').innerHTML
     $.ajax({
         url : "/saveStaffMsg",
         type: "GET",
@@ -847,9 +848,11 @@ function linkToMonitorSchedule() {
         link = "https://fd.thevwc.org:42735/?villageID=" + memberID 
     }
     else{
-        link = "https://fd.thevwc.org:42735/"
+        link = "https://fd.thevwc.org:42735/" 
     }
-    window.location.href = link 
+    //window.location.href = link,'_blank'
+    //window.open(link,'_blank')
+    window.open(link)
 }
 
 $('.phones').usPhoneFormat({
