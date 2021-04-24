@@ -19,9 +19,12 @@ import datetime as dt
 from datetime import date, datetime, timedelta
 from pytz import timezone
 
-from flask_mail import Mail, Message
-mail=Mail(app)
- 
+# from flask_mail import Mail, Message
+# mail=Mail(app)
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 import pyodbc
 import base64
 import os, fnmatch
@@ -1019,7 +1022,7 @@ def processNoteToMember():
     sendEmail=request.args.get('sendEmail')
     memberID=request.args.get('memberID')
     
-    msg = request.args.get('msg')
+    currentMsg = request.args.get('msg')
     response = ""
 
     # PREPARE A NOTE TO DISPLAY AT CHECK-IN, IF REQUESTED
@@ -1033,7 +1036,7 @@ def processNoteToMember():
         try:
             newNote = NotesToMembers(
                 memberID = memberID, 
-                noteToMember = msg)
+                noteToMember = currentMsg)
             db.session.add(newNote)
             db.session.commit()
             response = "New note successfully created!"
@@ -1041,27 +1044,40 @@ def processNoteToMember():
         except SQLAlchemyError as e:
             db.session.rollback()
             return make_response(f"ERROR - Could not add a new note.")
- 
+    
+    
+    if (sendEmail != 'true'):
+        return make_response (f"{response}")
+    
     # PREPARE AN EMAIL, IF REQUESTED
-    if (sendEmail == 'true'):
-        emailAddress = db.session.query(Member.eMail).filter(Member.Member_ID == memberID).scalar()
-        if emailAddress == None:
-            response = "ERROR - No email address."
-            return make_response (f"{response}")
+    member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+    if (member.eMail == None or member.eMail == ''):
+        response += "ERROR - No email address."
+        return make_response (f"{response}")
+    emailAddress = member.eMail
+    displayName = member.First_Name + ' ' + member.Last_Name
 
-        # PREPARE AN EMAIL
-        recipient = emailAddress
-        print('recipient - ',recipient)
-        #recipient = ("Richard Hartley", "hartl1r@gmail.com")
-        #bcc=("Woodshop","villagesWoodShop@embarqmail.com")
-        recipientList = []
-        recipientList.append(recipient)
-        message = Message('Hello', sender = 'frontdesk@thevwc.net', recipients = recipientList)
-        message.subject = "Note from front desk"
-        message.body = msg
-        mail.send(message)
-        response += "/nEmail sent."
+    sender = ('frontdesk@thevwc.net')
+    password = 'Dove1234'
+    recipient = emailAddress
+    subject = 'Message to ' + displayName
+    message = currentMsg
 
+    msg = MIMEMultipart()
+    msg['From'] = sender
+    msg['To'] = recipient
+    msg['Subject']=subject
+
+    # Attach the message to the MIMEMultipart object
+    msg.attach(MIMEText(message, 'plain'))
+    server = smtplib.SMTP('outlook.office365.com',587)
+    server.starttls()
+    server.login(sender,password)
+    text = msg.as_string() # Convert the MIMEMultipart object to a string to send
+    server.sendmail(sender,recipient,text)
+    server.quit()
+
+    response += "/nEmail sent."
     return make_response (f"{response}")
 
 

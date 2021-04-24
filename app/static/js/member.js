@@ -132,7 +132,9 @@ emergencyInfo.addEventListener('click',emergencyDataChanged);
 membershipInfo.addEventListener('click',membershipDataChanged);
 certificationInfo.addEventListener('click',certificationDataChanged);
 monitorDutyInfo.addEventListener('click',monitorDutyDataChanged);
-
+window.addEventListener('unload', function(event) {
+    localStorage.removeItem('currentMemberID')
+  });
 
 // MODAL EVENT LISTENERS
 document.getElementById("cancelNoteID").addEventListener("click",cancelNote)
@@ -837,8 +839,7 @@ function classSignUp() {
     else{
         link = "https://fd.thevwc.org:42738/"
     }
-    window.location.href = link 
-
+    window.open(link,'_blank')
     return
 }
 
@@ -851,8 +852,7 @@ function linkToMonitorSchedule() {
         link = "https://fd.thevwc.org:42735/" 
     }
     //window.location.href = link,'_blank'
-    //window.open(link,'_blank')
-    window.open(link)
+    window.open(link,'_blank')
 }
 
 $('.phones').usPhoneFormat({
