@@ -155,33 +155,34 @@ screenshots.addEventListener("click", function (e) {
   console.log('before ajax call ')
   //return
   saveImgToServer(memberID,dataURL)
+})
 
-  function saveImtToServer(memberID,dataURL)
-    $.ajax({
-      type: "GET",
-      url:"/savePhoto",
-      data: {
-        memberID:memberID,
-        img:img
-        //imgBase64: dataURL
-      },
-      success: function(data, textStatus, jqXHR)
-          {
-              console.log('success rtn')
-              if (data.msg != 'SUCCESS') {
-                  alert(data.msg)
-                  
-                  return
-              }
-              alert('Photo saved.')
-              //window.history.back()
-          },
-          error: function(jqXHR, textStatus, errorThrown){
-              alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
-        }
-      })
-      console.log('end of ajax')
-  })
+function saveImtToServer(memberID,dataURL){
+  $.ajax({
+    type: "GET",
+    url:"/savePhoto",
+    data: {
+      memberID:memberID,
+      img:img
+      //imgBase64: dataURL
+    },
+    success: function(data, textStatus, jqXHR)
+        {
+            console.log('success rtn')
+            if (data.msg != 'SUCCESS') {
+                alert(data.msg)
+                
+                return
+            }
+            alert('Photo saved.')
+            //window.history.back()
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+            alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
+      }
+    })
+    console.log('end of ajax')
+  }
 
 
 function sendImgToServer2(member,dataURL){

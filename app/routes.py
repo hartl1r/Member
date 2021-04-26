@@ -1723,6 +1723,9 @@ def saveRoles():
 # PRINT MEMBER MONITOR DUTY SCHEDULE
 @app.route("/printMemberSchedule/", methods=['GET','POST'])
 def printMemberSchedule():
+    todays_date = date.today()
+    todays_dateSTR = todays_date.strftime('%m-%d-%Y')
+
     memberID = request.args.get('villageID')
     # GET MEMBER NAME
     member = db.session.query(Member).filter(Member.Member_ID== memberID).first()
