@@ -1899,10 +1899,17 @@ def saveName():
 def changeVillageID():
     staffID = getStaffID()
     memberID = request.args.get('villageID')
-    if (memberID == ''):
-        flash("You must select a member first.","info")
-    
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
+
+    # if (memberID == ''):
+    #     flash("You must select a member first.","info")
+    #     return redirect(url_for('index'))
+
+    if memberID == staffID:
+        flash("You may not change the id of the user that is logged in.",'danger')
+        return render_template("chgVillageID.html",member=member)
+        #return redirect(url_for('index'))
+
     if (member == None):
         flash ("No member match for Village ID change.",'danger')
         return redirect(url_for('index'))
