@@ -1,3 +1,5 @@
+
+
 (function () {
   if (
     !"mediaDevices" in navigator ||
@@ -75,18 +77,18 @@
 
   // handle events
   // play
-  btnPlay.addEventListener("click", function () {
-    video.play();
-    btnPlay.classList.add("is-hidden");
-    btnPause.classList.remove("is-hidden");
-  });
+  // btnPlay.addEventListener("click", function () {
+  //   video.play();
+  //   btnPlay.classList.add("is-hidden");
+  //   btnPause.classList.remove("is-hidden");
+  // });
 
   // pause
-  btnPause.addEventListener("click", function () {
-    video.pause();
-    btnPause.classList.add("is-hidden");
-    btnPlay.classList.remove("is-hidden");
-  });
+  // btnPause.addEventListener("click", function () {
+  //   video.pause();
+  //   btnPause.classList.add("is-hidden");
+  //   btnPlay.classList.remove("is-hidden");
+  // });
 
   // take screenshot
   btnScreenshot.addEventListener("click", function () {
@@ -101,7 +103,7 @@
     imgBtn.innerHTML = "SAVE";
     imgBtn.classList.add("saveBtn", "btn", "btn-primary", "btn-sm");
     screenshotsContainer.prepend(imgBtn);
-    alert('photo displayed')
+    //alert('photo displayed')
   });
 
   // switch camera
@@ -153,11 +155,17 @@ screenshots.addEventListener("click", function (e) {
   var dataURL = canvas.src
   console.log('dataURL - '+dataURL)
   console.log('before ajax call ')
-  //return
+ 
   saveImgToServer(memberID,dataURL)
+  window.history.back()
 })
 
-function saveImtToServer(memberID,dataURL){
+function saveImgToServer(memberID,img){
+  console.log('saveImgToServer ...')
+  testing = true
+  if (testing){
+    return
+  }
   $.ajax({
     type: "GET",
     url:"/savePhoto",
@@ -185,13 +193,16 @@ function saveImtToServer(memberID,dataURL){
   }
 
 
-function sendImgToServer2(member,dataURL){
-  var request = new XMLHttpRequest();
-  request.open("POST", "/path/to/server", true);
-  var data = new FormData();
-  data.append("image", dataURL, "imagename");
-  request.send(data);
-}
+// function sendImgToServer2(member,dataURL){
+//   var request = new XMLHttpRequest();
+//   request.open("POST", "/path/to/server", true);
+//   var data = new FormData();
+//   data.append("image", dataURL, "imagename");
+//   request.send(data);
+// }
+
+
+
   // btn = e.target.id
   // console.log('btn caption - '+ btn.innerHTML)
   

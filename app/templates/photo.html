@@ -1,6 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% block title %}PHOTO{% endblock title %}
 
+{% block styles %}
+    {{super()}}
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/photo.css') }}"> -->
+{% endblock %}
+
+{% block app_content %}
+
+<!-- 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +16,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
   
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-</head>
+</head> -->
 
-<body>
+
   <section class="section">
     <div class="container">
       <div class="columns">
@@ -57,18 +65,19 @@
     </div>
   </section>
 
-  <footer class="footer">
+  <!-- <footer class="footer">
     <div class="content has-text-centered">
       <p>
         By <a href="https://www.webdevdrops.com/">Douglas Matoso</a> | <a
           href="https://github.com/doug2k1/javascript-camera">Source code</a>
       </p>
     </div>
-  </footer>
-
+  </footer> -->
   <canvas class="is-hidden" id="canvas"></canvas>
-  <script src="{{ url_for('static', filename='js/photo.js') }}"> </script>
-  <!-- <script src="photo.js"></script> -->
-</body>
+{% endblock %}
 
-</html>
+{% block scripts %}
+    {{super()}}
+    <script src="{{ url_for('static', filename='js/photo.js') }}"> </script>
+{% endblock %}
+  
