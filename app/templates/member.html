@@ -26,16 +26,16 @@
                 <a id="linkToMember" style="display:none" href=""></a>
             </div>
         </div>
-       
+        
         <!-- ------------------------------------------------------ -->
         <div class="memberName">
             <input id='memberNameID' type="hidden" value="{{hdgName}}">
-            <h3>{{ hdgName }}</h3>
+            <h3>{{hdgName}}</h3>
         </div>
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h6>ver. Apr 30, 2021</h6>
+            <h3>ver. May 1, 2021</h3>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -66,7 +66,7 @@
                     <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication'">New Member Application</button>
                     <button id='newVolunteerBtnID' class='dropdown-item' onclick="window.location.href='/newVolunteerApplication'">New Volunteer Application</button>
                 </div>
-                <button id='showPhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick='showHidePhoto(this)''>SHOW PHOTO</button>
+                <button id='showPhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick='showPhoto(this)''>SHOW PHOTO</button>
                 <button id='takePhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick="window.location.href='/takePhoto/?villageID={{member.Member_ID}}'">TAKE PHOTO</button>
                 <!-- <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='takePhotoRtn(this)''>TAKE PHOTO</button> -->
                 <!-- <button id="TEST" onclick="window.location.href='/test/'">TEST PHOTO</button> -->
@@ -542,7 +542,7 @@
                     <div class='col-12'>
                         <label class="control-label col-form-label-md">Type of work</label>
                         <input id=typeOfWorkTextID type="hidden" class="form-control-md" name="typeOfWorkHidden" value="{{member.Default_Type_Of_Work}}">
-                        <select id="typeOfWorkSelecterID" class="form-control-md selectTypeOfWork" style=margin-left:10px name="typeOfWorkSelecterName">
+                        <select id="typeOfWorkSelecterID" disabled class="form-control-md selectTypeOfWork" style=margin-left:10px name="typeOfWorkSelecterName">
                             <option value='General'>General</option>
                             <option value='Administrative'>Administration</option>
                             <option value='Carver'>Carver</option>
@@ -560,12 +560,12 @@
                 
                 <div class="row">
                     <label class="control-label col-sm-4 col-form-label-md" style=text-align:left;margin-left:0px">Monitor Exemption</label>
-                    <textarea name="waiverReason" class="col-md-6" style=margin-left:10px id="waiverReason" cols="30" rows="1">{{member.Monitor_Duty_Waiver_Reason if member.Monitor_Duty_Waiver_Reason}}</textarea>
+                    <textarea name="waiverReason" class="col-md-6" disabled style=margin-left:10px id="waiverReason" cols="30" rows="1">{{member.Monitor_Duty_Waiver_Reason if member.Monitor_Duty_Waiver_Reason}}</textarea>
                 </div>
 
                 <div class="row">
                     <label class="control-label col-sm-4 col-form-label-md"style=text-align:left;>Exemption Expiration</label>
-                    <input type="date" class="form-control-md" style="margin-left:10px; width:9em;" name="waiverExpirationDate" value="{{member.Monitor_Duty_Waiver_Expiration_Date}}"> 
+                    <input id="waiverExpirationDate" type="date" class="form-control-md" disabled style="margin-left:10px; width:9em;" name="waiverExpirationDate" value="{{member.Monitor_Duty_Waiver_Expiration_Date}}"> 
                 </div>
                 
                 <div class="cancelSave" style=padding-left:100px>
@@ -698,7 +698,7 @@
             </div> 
         </form>
     </div>      
-    </div> <!-- END OF DETAIL SECTION -->
+     <!-- END OF DETAIL SECTION -->
 </div>
 
 <!-- MODAL FORM FOR NOTE TO MEMBER (BOOTSTRAP) -->
@@ -741,7 +741,7 @@
                     <span aria-hidden="true" >&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style=margin-left:10px;margin-right:10px>
                 <span>Message:</span><br>
                 <!-- <textarea id="staffMsgID" style=font-size:14px rows="20"" cols="90" >test data</textarea> -->
                 <br><br>
@@ -770,16 +770,18 @@
 
             <div class="modal-body passwordsBody">
                 <div class="row">
-                    <div class="col-7">
+                    <div class="col-6">
                         <label for="curPasswordID" style=font-size:medium>Current password:</label>
                     </div>
                     <div class="col-2"><input id='curPasswordID' style=font-size:medium;width:130px; type="text" value=''></div>
+                    <div class="col-1"></div>
                 </div>
                 <div class="row">
-                    <div class="col-7">
+                    <div class="col-6">
                         <label for="newPasswordID" style=font-size:medium>New password:</label>
                     </div>
-                    <div class="col-2"><input id='newPasswordID' style=font-size:medium;width:130px; type="text" ></div>
+                    <div class="col-2"><input id='newPasswordID' style=margin-right:10px;font-size:medium;width:130px; type="text" ></div>
+                    <div class="col-1"></div>
                 </div>
                 <br><br>
             </div>   
@@ -804,15 +806,15 @@
 		<div class="modal-content">
 			<div class="modal-header" style="background-color: navy;color:white">
 				<h5 class="modal-title" id="modalTitle"></h5>
-				<button type="button" class="close" onclick=closeModal() aria-label="Close">
+				<button type="button" class="close" onclick=closeMsgModal() aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body" id=modalBody style=text-align:center>
 			</div>
 			
-				<div class="modal-footer">
-				<button type="button" class="btn btn-primary" onclick=closeModal() data-dismiss="modal">CLOSE</button>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick=closeMsgModal() data-dismiss="modal">CLOSE</button>
 			</div>
 		</div>
 	</div>
@@ -820,12 +822,12 @@
 
 
 <!-- Modal for photo. -->
-<div class="modal fade" id="photo" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="photoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
-		<div class="modal-content" style=background-color:lightgray>
+		<div class="modal-content" style=background-color:white>
 			<div class="modal-header" style="background-color: navy;color:white">
 				<h5 class="modal-title" id="modalTitle"></h5>
-				<button type="button" class="close" onclick=closeModal() aria-label="Close">
+				<button type="button" class="close" onclick=closePhotoModal() aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -840,7 +842,7 @@
 			</div>
 			
             <div class="modal-photo-footer" style=text-align:center>
-                <button type="button" class="btn btn-primary" onclick=closeModal() data-dismiss="modal">CLOSE</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick=closePhotoModal() >CLOSE</button>
             </div>
 		</div>
 	</div>
@@ -852,7 +854,3 @@
     {{super()}}
     <script src="{{ url_for('static', filename='js/member.js') }}"> </script>
 {% endblock %}
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>

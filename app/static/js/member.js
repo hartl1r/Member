@@ -29,6 +29,7 @@ var todaysDateSTR =  (todaysDate.getFullYear() + "-" + ("0"+(todaysDate.getMonth
 var isDBA = document.getElementById('isDBA').value
 var isManager = document.getElementById('isManager').value
 var isCoordinator = document.getElementById('isCoordinator').value
+console.log('isDBA - '+isDBA)
 if (isDBA == 'True' | isManager == 'True') {
     setManagerPermissions()
 }
@@ -124,6 +125,7 @@ emergencyInfo = document.getElementById('emergencyID')
 membershipInfo = document.getElementById('membershipID')
 certificationInfo = document.getElementById('certificationID')
 monitorDutyInfo = document.getElementById('monitorDutyID')
+memberMenu = document.getElementById('myDropdown')
 
 // DEFINE EVENT LISTENERS
 localContactInfo.addEventListener('click',localDataChanged);
@@ -132,6 +134,10 @@ emergencyInfo.addEventListener('click',emergencyDataChanged);
 membershipInfo.addEventListener('click',membershipDataChanged);
 certificationInfo.addEventListener('click',certificationDataChanged);
 monitorDutyInfo.addEventListener('click',monitorDutyDataChanged);
+memberMenu.addEventListener('click', function() {
+    showMenu()
+});
+
 window.addEventListener('unload', function(event) {
     localStorage.removeItem('currentMemberID')
   });
@@ -728,23 +734,31 @@ function updatePassword() {
 //     photoModal.src = "{{ url_for('static', filename='memberPhotos/" + currentMemberID + ".jpg') }}"
 
 // }
-function showHidePhoto(objBtn) {
-    photo = document.getElementById('memberImgID')
+//function showHidePhoto(objBtn) {
+    //photo = document.getElementById('memberImgID')
+    //memberID = document.getElementById('memberID').value
+    // if (objBtn.innerHTML == 'SHOW PHOTO'){
+    //     objBtn.innerHTML = 'HIDE PHOTO'
+        //photo.src = "/static/memberPhotos/" + memberID + ".jpg "
+        //photo.style.display='inline'
+
+        // photoImgModal = document.getElementById('photoImgID')
+        // photoImgModal.src = "/static/memberPhotos/" + memberID + ".jpg "
+        // $('#photo').modal('show')
+
+    //}
+    // else {
+    //     objBtn.innerHTML = 'SHOW PHOTO'
+    //     photo.style.display='none'
+    //}
+//}
+
+function showPhoto() {
+    console.log('showPhoto ...')
     memberID = document.getElementById('memberID').value
-    if (objBtn.innerHTML == 'SHOW PHOTO'){
-        objBtn.innerHTML = 'HIDE PHOTO'
-        photo.src = "/static/memberPhotos/" + memberID + ".jpg "
-        photo.style.display='inline'
-
-        photoImgModal = document.getElementById('photoImgID')
-        photoImgModal.src = "/static/memberPhotos/" + memberID + ".jpg "
-        $('#photo').modal('show')
-
-    }
-    else {
-        objBtn.innerHTML = 'SHOW PHOTO'
-        photo.style.display='none'
-    }
+    photoImgModal = document.getElementById('photoImgID')
+    photoImgModal.src = "/static/memberPhotos/" + memberID + ".jpg "
+    $('#photoModal').modal('show')
 }
 
 function villageRtn() {
@@ -962,7 +976,12 @@ function setManagerPermissions() {
     document.getElementById('restrictedID').removeAttribute('disabled')
     document.getElementById('reasonRestricted').removeAttribute('disabled')
     document.getElementById('deceasedID').removeAttribute('disabled')
+    //document.getElementById('typeOfWorkSelecterID').disabled=false
+    document.getElementById('typeOfWorkSelecterID').removeAttribute('disabled')
 
+    document.getElementById('waiverReason').disabled=false
+    document.getElementById('waiverExpirationDate').disabled=false
+    //alert('end of set manager permissions')
 }
 
 
@@ -998,10 +1017,15 @@ function modalAlert(title,msg) {
 //     //modalAlert("MEMBER PHOTO","No photo available.")
 // }
 
-	
-function closeModal() {
-	$('#photo').modal('hide')
+$("#photoModal").prependTo("body");	
+function closeMsgModal() {
+	$('#myModalMsg').modal('hide')
 }
+
+function closePhotoModal() {
+	$('#photoModal').modal('hide')
+}
+
 // Add active class to the current button (highlight it)
 var header = document.getElementById("schedulePeriod");
 var btns = header.getElementsByClassName("btn");
@@ -1020,3 +1044,7 @@ function changeScheduleYear(yearSpecified) {
     linkToMemberBtn.setAttribute('href', link)
     linkToMemberBtn.click()
 }
+
+// $(document).on('click','body *',function() {
+//     $('.modal').modal('hide')
+// })

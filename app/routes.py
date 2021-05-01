@@ -48,7 +48,10 @@ def index():
     staffID = getStaffID()
     shopID = getShopID()
     staffName = getStaffName()
-  
+    
+    print('staffID - ',staffID)
+
+
     # GET STAFF PRIVILEDGES (staffName is available as session variable from login.)
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
     if staffMember == None:
@@ -78,6 +81,8 @@ def index():
     else:
         isCoordinator = 'False'
 
+    print(isDBA,isManager,isStaff)
+    
     if (isDBA == 'False' and isManager == 'False' and isStaff == 'False') :          
         return render_template('notAuthorized.html',staffName=staffName)
         
