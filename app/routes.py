@@ -49,7 +49,7 @@ def index():
     shopID = getShopID()
     staffName = getStaffName()
     
-    print('staffID - ',staffID)
+    #print('staffID - ',staffID)
 
 
     # GET STAFF PRIVILEDGES (staffName is available as session variable from login.)
@@ -81,7 +81,7 @@ def index():
     else:
         isCoordinator = 'False'
 
-    print(isDBA,isManager,isStaff)
+    #print(isDBA,isManager,isStaff)
     
     if (isDBA == 'False' and isManager == 'False' and isStaff == 'False') :          
         return render_template('notAuthorized.html',staffName=staffName)
@@ -146,7 +146,7 @@ def index():
     # IF A VILLAGE ID WAS NOT PASSED IN, DISPLAY THE BLANK INDEX.HTML FORM AND HAVE USER SELECT A NAME OR ID
     if (villageID == None):
         return render_template("member.html",member="",nameArray=nameArray,waitListCnt=waitListCnt,
-        currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,staffName=staffName,
+        currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,staffName=staffName,staffID=staffID,
         isManager=isManager,isDBA=isDBA,isCoordinator=isCoordinator,villages=villages,zipCodes=zipCodes)
 
 
@@ -155,7 +155,7 @@ def index():
     # RUN QUERY TO POPULATE LOCAL ADDRESS PHONE EMAIL
     member = db.session.query(Member).filter(Member.Member_ID == villageID).first()
     if (member == None):
-        return render_template("member.html",member='',nameArray=nameArray,staffName=staffName)
+        return render_template("member.html",member='',nameArray=nameArray,staffName=staffName,staffID=staffID)
 
     hdgName = member.First_Name
     if member.Middle_Name is not None:
@@ -259,7 +259,8 @@ def index():
     memberSchedule=memberSchedule,RAtrainingNeeded=RAtrainingNeeded,BWtrainingNeeded=BWtrainingNeeded,
     lastYearPaid=lastYearPaid,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,
     waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffName=staffName,isStaff=isStaff,
-    isManager=isManager,isDBA=isDBA,zipCodes=zipCodes,thisYear=currentScheduleYear,lastYear=lastYear)
+    isManager=isManager,isDBA=isDBA,zipCodes=zipCodes,thisYear=currentScheduleYear,lastYear=lastYear,
+    staffID=staffID)
     
 @app.route('/saveAddress', methods=['POST'])
 def saveAddress():
@@ -1950,7 +1951,7 @@ def saveVillageID():
         try:
             member.Member_ID = newVillageID
             db.session.commit()
-            logChange('Village ID changed',curVillageID,newVillageID,newVillageID)  
+            logChange('Village ID changed',curVillageID,newVillageID,curVillageID)  
             flash("Village ID change successful","success")
         except SQLAlchemyError as e:
             error = str(e.__dict__['orig'])
@@ -2089,8 +2090,9 @@ def getStaffID():
     if 'staffID' in session:
         staffID = session['staffID']
     else:
-        flash('Login ID is missing, will use 604875','danger')
-        staffID = '757856'
+        #flash('Login ID is missing, will use 604875','danger')
+        session['staffID'] = '604875'
+        staffID = '604875'
     return staffID
 
 def getShopID():
@@ -2098,15 +2100,17 @@ def getShopID():
         shopID = session['shopID']
     else:
         # SET RA FOR TESTING; SEND FLASH ERROR MESSAGE FOR PRODUCTION
+        session['shopID'] = 'RA'
         shopID = 'RA'
         msg = "Missing location information; Rolling Acres assumed."
-        flash(msg,"danger")
+        #flash(msg,"danger")
     return shopID    
 
 def getStaffName():
     if 'staffname' in session:
         staffName = session['staffname']
     else:
+        session['staffName'] = 'rlh'
         staffName = 'No name.'
     return staffName
 
@@ -2114,7 +2118,7 @@ def getStaffName():
 def savePhoto():
     print('/savePhoto rtn ...')
     memberID = request.form['memberID']
-    img = request.form['imgBase64']
+    img = request.form['dataURL']
     print('img-',img)
     print('after img = ')
     # DOES IMAGE EXIST?
@@ -2152,33 +2156,18 @@ def changeScheduleYear(year):
 
 @app.route("/test/")
 def test():
-    #print(os.walk(directory))
     path='/Users/richardhartley/Projects/Member/app/static/memberPhotos/'
-    #files = os.listdir(path)
-    #print(files)
-    
-    #list_subfolders_with_paths = [f.path for f in os.scandir(path) if f.is_dir()]
-    #print(list_subfolders_with_paths)
-    
-    # listOfFiles = os.listdir('*.jpg')
-    #print('listOfFiles- ',listOfFiles)
-
-    # for root, dirs, files in os.walk("."):
-    #     for filename in files:
-    #         print(filename)
-    
-    # cwd = os.getcwd()
-    # print('cwd- ',cwd)
     memberID = '604875'
     filename = path + memberID + '.jpg'
     print(filename)
 
     with open(filename,'rb') as f:
-        image=f.read()
-        #print(len(image))
-        #print(image)
-    print('image data type - ',type(image))
-    sqlInsert = "INSERT INTO tblMemberPhotos VALUES ('" + memberID + "', " + image + ")"
-    print('sqlInsert - ',sqlInsert)
-    db.session.execute(sqlInsert)
+        data = f.read()
+    
+    insertSQL = "INSERT INTO memberPhotos VALUES "
+    insertSQL += "('" + memberID + "', "
+    insertSQL += "(SELECT * FROM OPENROWSET(BULK '" + filename + "', SINGLE_BLOB) as T1))"
+    print('SQL - ',insertSQL)
+    db.engine.execute(insertSQL)
+
     return 'done with test'

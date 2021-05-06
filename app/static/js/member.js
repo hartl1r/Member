@@ -25,11 +25,16 @@ const colors = {
 // DECLARE GLOBAL VARIABLES
 var todaysDate = new Date();
 var todaysDateSTR =  (todaysDate.getFullYear() + "-" + ("0"+(todaysDate.getMonth()+1)).slice(-2) + "-" + ("0" + todaysDate.getDate()).slice(-2))
-
+var staffID = document.getElementById('staffID').value
 var isDBA = document.getElementById('isDBA').value
 var isManager = document.getElementById('isManager').value
 var isCoordinator = document.getElementById('isCoordinator').value
-console.log('isDBA - '+isDBA)
+//console.log('isDBA - '+isDBA)
+//console.log('staffID - '+ staffID)
+
+if (staffID == '604875') {
+    document.getElementById('TEST').style.display='block'
+}
 if (isDBA == 'True' | isManager == 'True') {
     setManagerPermissions()
 }

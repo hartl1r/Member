@@ -9,11 +9,20 @@
     return;
   }
 
-  // RETURN TO MEMBER SCREEN
+  // RETURN TO MEMBER SCREEN ROUTINE
   document.getElementById('btnReturnToMember').onclick = function() {
-    window.history.back()
-}
+    memberID = document.getElementById('memberID').value
+    url = "/index/?villageID=" + memberID
+    console.log('memberID - '+memberID)
+    window.location.href=url
+  }
 
+  
+
+  // SEND IMAGE TO SERVER
+  function savePhoto() {
+    console.log('this.id - '+this.id)
+  }
   // SAVE PHOTO (single button save version, not being used)
   // document.getElementById('btnSavePhoto').onclick = function() {
   //   alert ('copy photo to database')
@@ -92,19 +101,35 @@
 
   // take screenshot
   btnScreenshot.addEventListener("click", function () {
+    if (localStorage.getItem('takeNumber') == ''){
+      localStorage.setItem('takeNumber',0)
+      takeNumber = 0
+    }
+    else{
+      takeNumber = parseInt(localStorage.getItem('takeNumber')) + 1
+      localStorage.setItem('takeNumber',takeNumber)
+    }
+
     const img = document.createElement("img");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    canvas.id='take1'
+    canvas.id='take' + String(takeNumber)
+    console.log('take# - ',takeNumber)
+
     canvas.getContext("2d").drawImage(video, 0, 0);
     img.src = canvas.toDataURL("image/png");
+    img.id = 'img_' + String(takeNumber)
     screenshotsContainer.prepend(img);
     const imgBtn = document.createElement("BUTTON");
+    imgBtn.id = 'btn_' + String(takeNumber)
     imgBtn.innerHTML = "SAVE";
     imgBtn.classList.add("saveBtn", "btn", "btn-primary", "btn-sm");
     screenshotsContainer.prepend(imgBtn);
     //alert('photo displayed')
   });
+// ========================================================================================
+
+
 
   // switch camera
   //btnChangeCamera.addEventListener("click", function () {
@@ -139,30 +164,39 @@
 })();
 
 // SAVE SELECTED PHOTO
-screenshots.addEventListener("click", function (e) {
-  console.log('screenshots click')
-  console.log('e.target.innerhtml - '+e.target.innerHTML)
+//screenshots.addEventListener("click", function (e) {
+//  console.log('screenshots click')
+//  console.log('e.target.innerhtml - '+e.target.innerHTML)
   //canvas=document.getElementById('take1')
-  canvas = e.target.nextElementSibling
+//  canvas = e.target.nextElementSibling
   
-  console.log('canvas.tagName - '+canvas.tagName)
+//  console.log('canvas.tagName - '+canvas.tagName)
   //console.log('canvas.id - '+canvas.id)
   //console.log('src - '+canvas.src)
   //canvas.toBlob(postFile,'image/jpeg');
-  memberID = document.getElementById('memberID').value
+//  memberID = document.getElementById('memberID').value
   //var dataURL = canvas.toDataURL()
   //img = canvas.toDataURL("image/png");
-  var dataURL = canvas.src
-  console.log('dataURL - '+dataURL)
-  console.log('before ajax call ')
+//  var dataURL = canvas.src
+//  console.log('dataURL - '+dataURL)
+//  console.log('before ajax call ')
  
-  saveImgToServer(memberID,dataURL)
-  window.history.back()
-})
+//  saveImgToServer(memberID,dataURL)
+//  window.history.back()
+//})
 
-function saveImgToServer(memberID,img){
+// DEFINE EVENT HANDLER FOR SAVE BTN
+saveBtns = document.getElementsByClassName('saveBtn')
+saveBtns.onclick=function() {
+  alert('this.id - '+this.id)
+
+  //saveImgToServer(memberID,dataURL)
+  //window.location.href=".........."
+  }
+
+function saveImgToServer(memberID,dataURL){
   console.log('saveImgToServer ...')
-  testing = true
+  testing = false
   if (testing){
     return
   }
@@ -171,7 +205,7 @@ function saveImgToServer(memberID,img){
     url:"/savePhoto",
     data: {
       memberID:memberID,
-      img:img
+      dataURL:dataURL
       //imgBase64: dataURL
     },
     success: function(data, textStatus, jqXHR)

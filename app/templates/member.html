@@ -12,6 +12,7 @@
     <!-- HEADING BAND -->
     <div class="hdg">
         <!-- HIDDEN VALUES -->
+        <input type="hidden" id="staffID" value={{staffID}}>
         <input id="isManager" type="hidden" value={{isManager}}>
         <input id="isDBA" type="hidden" value={{isDBA}}>
         <input id="isCoordinator" type="hidden" value={{isCoordinator}}>
@@ -35,7 +36,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h3>ver. May 1, 2021</h3>
+            <h3>ver. May 6, 2021</h3>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -69,7 +70,7 @@
                 <button id='showPhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick='showPhoto(this)''>SHOW PHOTO</button>
                 <button id='takePhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick="window.location.href='/takePhoto/?villageID={{member.Member_ID}}'">TAKE PHOTO</button>
                 <!-- <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='takePhotoRtn(this)''>TAKE PHOTO</button> -->
-                <!-- <button id="TEST" onclick="window.location.href='/test/'">TEST PHOTO</button> -->
+                <button id="TEST" style=display:none onclick="window.location.href='/test/'">TEST PHOTO</button> 
             </div>     
         </div> 
 
