@@ -30,6 +30,9 @@
   select option {
       color:black;
   }
+  textarea:read-only {
+    color:var(--main-panel-readonly-color) !important;
+  }
   input:read-only {
       color:var(--main-panel-readonly-color) !important;
   }
