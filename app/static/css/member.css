@@ -18,6 +18,18 @@
       height:20px;
       width:20px;
   }
+  /* :read-only {
+    color:var(--main-panel-readonly-color);  
+  } */
+  /* select:read-only {
+    color:var(--main-panel-readonly-color);
+  } */
+  select:disabled {
+      color:green;
+  }
+  select option {
+      color:black;
+  }
   input:read-only {
       color:var(--main-panel-readonly-color) !important;
   }
@@ -288,6 +300,15 @@ input {
     font-size:16px;
     color:var(--main-panel-txt-color);
 }
+.certificationInfo:disabled {
+    color:lightgray;
+}
+#waiverReason label:after {
+    color:red;
+}
+#waiverReason:disabled {
+    color:lightgray;
+}
 
 .certTopPanel {
     padding-right:20px;
@@ -340,9 +361,11 @@ hr.class-1 {
     color:var(--main-panel-txt-color);
     border:var(--main-panel-border);
     border-radius: 10px;
-    height:361px;
+    max-height: 383px;
 }
-
+#schedulePeriod button {
+    font-weight: 700;
+}
 .monthNames {
     display:grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -721,4 +744,18 @@ hr.class-1 {
 
 /* #staffNoteModalID {
     
+} */
+.manager {
+    color:navy !important;
+}
+.mgr label {
+    color:red !important
+}
+/* .mgrOnly {
+    color:gray;
+} */
+/* 
+input:disabled {
+    background-color: yellow;
+    color:lightcoral;
 } */

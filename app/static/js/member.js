@@ -38,6 +38,7 @@ if (staffID == '604875') {
 if (isDBA == 'True' | isManager == 'True') {
     setManagerPermissions()
 }
+
 if (isCoordinator == 'True') {
     document.getElementById('monitorDutyNotesID').removeAttribute('readonly')
     document.getElementById('monitorDutyNotesID').style=display='block'
@@ -981,14 +982,38 @@ function setManagerPermissions() {
     document.getElementById('restrictedID').removeAttribute('disabled')
     document.getElementById('reasonRestricted').removeAttribute('disabled')
     document.getElementById('deceasedID').removeAttribute('disabled')
-    //document.getElementById('typeOfWorkSelecterID').disabled=false
     document.getElementById('typeOfWorkSelecterID').removeAttribute('disabled')
+    //document.getElementById('typeOfWorkSelecterID').removeAttribute('readonly')
+    document.getElementById('typeOfWorkSelecterID').style.color = colors.blue 
+    document.getElementById('waiverReason').removeAttribute('readonly')
+    document.getElementById('waiverExpirationDate').removeAttribute('readonly')
 
-    document.getElementById('waiverReason').disabled=false
-    document.getElementById('waiverExpirationDate').disabled=false
-    //alert('end of set manager permissions')
+    
+    // mgrElements = document.querySelectorByAll('input','textarea','select')
+    // for (inputElement of mgrElements) {
+    //     console.log('id- ' + inputElement.id)
+    //     inputElement.disabled=false
+    // }
+     
+    // mgrElements = document.querySelectorAll('manager')
+    // for (element of mgrElements) {
+    //     element.style.color = colors.violet
+    // }
+     
 }
 
+// function setStyleForStaff() {
+//     console.log('setStyleForStaff')
+//     mgrElements = document.getElementsByClassName('manager')
+//     for (element of mgrElements) {
+//         console.log('ID - ' + element.id)
+//         element.classList.remove('manager')
+//     }
+    //document.getElementsByClassName('mgrOnly').style.color = colors.red
+    //document.getElementById('typeOfWorkLabelID').style.color = colors.red 
+    //document.getElementById('waiverReason').style.color = colors.violet 
+    //document.getElementById('waiverExpirationDate').style.color = colors.lightgray  
+//}
 
 document.querySelector('#monthCheckboxesID').onclick = function(ev) {
     inputID = ev.target.id

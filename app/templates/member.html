@@ -36,7 +36,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h3>ver. May 6, 2021</h3>
+            <h3>ver. May 10, 2021</h3>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -316,10 +316,10 @@
                 </div>
                 <div class='medCol2'>
                     <div style='display:flex;margin-top:20px'>
-                        <label for="emergOtherDiagnosisID" style='font-size:12px'>Other</label>
+                        <label for="emergOtherDiagnosisID">Other</label>
                         <textarea 
                             id="emergOtherDiagnosisID" 
-                            style='font-size:12px;margin-left:25px;' 
+                            style='font-size:12px;margin-left:30px;' 
                             rows="2" 
                             cols="25" 
                             name='otherDiagnosis' >{{member.Emerg_Other_Diagnosis if member.Emerg_Other_Diagnosis}}</textarea>
@@ -541,9 +541,9 @@
             <div class='certBottomPanel'>
                 <div class="row">
                     <div class='col-12'>
-                        <label class="control-label col-form-label-md">Type of work</label>
+                        <label id=typeOfWorkLabelID class="control-label col-form-label-md">Type of work</label>
                         <input id=typeOfWorkTextID type="hidden" class="form-control-md" name="typeOfWorkHidden" value="{{member.Default_Type_Of_Work}}">
-                        <select id="typeOfWorkSelecterID" disabled class="form-control-md selectTypeOfWork" style=margin-left:10px name="typeOfWorkSelecterName">
+                        <select id="typeOfWorkSelecterID" disabled class="form-control-md" style=margin-left:10px;
                             <option value='General'>General</option>
                             <option value='Administrative'>Administration</option>
                             <option value='Carver'>Carver</option>
@@ -560,13 +560,13 @@
                 </div>
                 
                 <div class="row">
-                    <label class="control-label col-sm-4 col-form-label-md" style=text-align:left;margin-left:0px">Monitor Exemption</label>
-                    <textarea name="waiverReason" class="col-md-6" disabled style=margin-left:10px id="waiverReason" cols="30" rows="1">{{member.Monitor_Duty_Waiver_Reason if member.Monitor_Duty_Waiver_Reason}}</textarea>
+                    <label for="waiverReason" class=" control-label col-sm-4 col-form-label-md" style=text-align:left;margin-left:0px;>Monitor Exemption</label>
+                    <textarea id="waiverReason" name="waiverReason" class="col-md-6" readonly style=margin-left:10px; cols="30" rows="1">{{member.Monitor_Duty_Waiver_Reason if member.Monitor_Duty_Waiver_Reason}}</textarea>
                 </div>
 
                 <div class="row">
-                    <label class="control-label col-sm-4 col-form-label-md"style=text-align:left;>Exemption Expiration</label>
-                    <input id="waiverExpirationDate" type="date" class="form-control-md" disabled style="margin-left:10px; width:9em;" name="waiverExpirationDate" value="{{member.Monitor_Duty_Waiver_Expiration_Date}}"> 
+                    <label for="waiverExpirationDate" class=" control-label col-sm-4 col-form-label-md" style=text-align:left;>Exemption Expiration</label>
+                    <input id="waiverExpirationDate" type="date" class=" form-control-md" readonly style="margin-left:10px; width:9em;" name="waiverExpirationDate" value="{{member.Monitor_Duty_Waiver_Expiration_Date}}"> 
                 </div>
                 
                 <div class="cancelSave" style=padding-left:100px>
@@ -583,11 +583,11 @@
     <!-- MONITOR DUTY -->
     <div id="monitorDutyID" class="monitorDutyInfo overflow-auto panel">
         <div id="schedulePeriod">
-            <span style=margin-left:170px>MONITOR DUTY</span>
+            <span style=margin-left:230px>MONITOR DUTY</span>
             <button type='button' style='margin-left:50px;background-color:white;color:red' class="btn periodBtn active" onclick="changeScheduleYear('{{thisYear}}')">{{thisYear}}</button>
-            <button type='button' style='background-color:white;color:green' class="btn btn-outline-dark periodBtn" onclick="changeScheduleYear('{{lastYear}}')">{{lastYear}}</button>
+            <button type='button' style='background-color:white;color:black' class="btn btn-outline-dark periodBtn" onclick="changeScheduleYear('{{lastYear}}')">{{lastYear}}</button>
         </div>
-        <form method='POST'  action="/saveMonitorDuty" style="padding-left:0px;padding-top:0px">
+        <form method='POST'  action="/saveMonitorDuty" style="padding-left:0px;padding-top:20px">
             <div class='monthsInTheVillages'>
                 <div class="monthNames" style="margin:0; padding:0;">
                     <label>Jan</label>
