@@ -62,7 +62,7 @@
                     <button id='rolesBtnID' class='dropdown-item' disabled style=display:none onclick="window.location.href='/roles/?villageID={{member.Member_ID}}'">Roles</button>
                     <button id='showCheckInsID' class="dropdown-item" disabled style=display:none onclick="window.location.href='/checkIns/?villageID={{member.Member_ID}}'">Show check-ins</button>
                     <button id='passwordBtnID' class='dropdown-item' disabled style=display:none onclick='passwordRoutine()'>Change password</button>                   
-                    <button id='staffNoteBtnID' class='dropdown-item' style=display:None onclick='getStaffNoteRtn()'>Edit Note to Staff</button>                   
+                    <!-- <button id='staffNoteBtnID' class='dropdown-item' style=display:None onclick='getStaffNoteRtn()'>Edit Note to Staff</button>                    -->
                     <hr>
                     <button id='newMemberBtnID' class='dropdown-item' onclick="window.location.href='/newMemberApplication'">New Member Application</button>
                     <button id='newVolunteerBtnID' class='dropdown-item' onclick="window.location.href='/newVolunteerApplication'">New Volunteer Application</button>
@@ -464,7 +464,6 @@
                     <div class='col-4 BWcolumn'>
                         <input 
                             id='BWcertifiedID' 
-                            disabled=true 
                             type="checkbox" 
                             class='form-control'
                             name='certifiedBW'  

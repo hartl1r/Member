@@ -9,11 +9,28 @@
     return;
   }
 
+  document.getElementsByClassName('saveBtn').addEventListener('click', function (evt) {
+    console.log('evt.target - ',evt.target,evt.target.id)
+    alert('this.id - '+this.id)
+  })
+    
+    // saveBtns = document.getElementsByClassName('saveBtn')
+    // saveBtns.onclick=function() {
+      
+  // DEFINE EVENT HANDLER FOR SAVE BTN
+  $('.saveBtn').click(function() {
+    console.log('saveBtn id - '+this.id)
+    alert('saveBtn id - ' + this.id)
+  })
+
+  // INITIALIZE PHOTO NUMBER COUNTER
+  localStorage.setItem('takeNumber',0)
+
   // RETURN TO MEMBER SCREEN ROUTINE
   document.getElementById('btnReturnToMember').onclick = function() {
     memberID = document.getElementById('memberID').value
     url = "/index/?villageID=" + memberID
-    console.log('memberID - '+memberID)
+    //console.log('memberID - '+memberID)
     window.location.href=url
   }
 
@@ -23,34 +40,7 @@
   function savePhoto() {
     console.log('this.id - '+this.id)
   }
-  // SAVE PHOTO (single button save version, not being used)
-  // document.getElementById('btnSavePhoto').onclick = function() {
-  //   alert ('copy photo to database')
-  //   canvas = document.getElementById('canvas')
-  //   img = canvas.toDataURL("image/png");
-  //   $.ajax({
-  //       url: "/savePhoto",
-  //       type: "GET",
-  //       data: {
-  //           memberID:memberID,
-  //           img:img
-  //       },
-  //       success: function(data, textStatus, jqXHR)
-  //       {
-  //           if (data.msg != 'SUCCESS') {
-  //               alert(data.msg)
-                
-  //               return
-  //           }
-  //           alert('Photo saved.')
-  //           window.history.back()
-  //       },
-  //       error: function(jqXHR, textStatus, errorThrown){
-  //           alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
-  //       }
-  //   })
-  // }
- 
+  
   // get page elements
   const video = document.querySelector("#video");
   const btnPlay = document.querySelector("#btnPlay");
@@ -84,20 +74,7 @@
   // current video stream
   let videoStream;
 
-  // handle events
-  // play
-  // btnPlay.addEventListener("click", function () {
-  //   video.play();
-  //   btnPlay.classList.add("is-hidden");
-  //   btnPause.classList.remove("is-hidden");
-  // });
-
-  // pause
-  // btnPause.addEventListener("click", function () {
-  //   video.pause();
-  //   btnPause.classList.add("is-hidden");
-  //   btnPlay.classList.remove("is-hidden");
-  // });
+ 
 
   // take screenshot
   btnScreenshot.addEventListener("click", function () {
@@ -107,6 +84,7 @@
     }
     else{
       takeNumber = parseInt(localStorage.getItem('takeNumber')) + 1
+      console.log('incremented takeNumber - '+takeNumber)
       localStorage.setItem('takeNumber',takeNumber)
     }
 
@@ -128,15 +106,6 @@
     //alert('photo displayed')
   });
 // ========================================================================================
-
-
-
-  // switch camera
-  //btnChangeCamera.addEventListener("click", function () {
-  //  useFrontCamera = !useFrontCamera;
-
-  //  initializeCamera();
-  //});
 
   // stop video stream
   function stopVideoStream() {
@@ -185,14 +154,11 @@
 //  window.history.back()
 //})
 
-// DEFINE EVENT HANDLER FOR SAVE BTN
-saveBtns = document.getElementsByClassName('saveBtn')
-saveBtns.onclick=function() {
-  alert('this.id - '+this.id)
+//
 
   //saveImgToServer(memberID,dataURL)
   //window.location.href=".........."
-  }
+  //}
 
 function saveImgToServer(memberID,dataURL){
   console.log('saveImgToServer ...')

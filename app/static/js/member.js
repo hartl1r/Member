@@ -32,7 +32,7 @@ var isCoordinator = document.getElementById('isCoordinator').value
 //console.log('isDBA - '+isDBA)
 //console.log('staffID - '+ staffID)
 document.getElementById('BWcertifiedID').classList.add('indeterminate')
-if (staffID == '604875') {
+if (staffID == '604875' || staffID == '373608') {
     document.getElementById('TEST').style.display='block'
 }
 if (isDBA == 'True' | isManager == 'True') {
@@ -377,6 +377,7 @@ document.getElementById('villagesWaiverID').onclick = function(ev) {
 }
 // SET VALUE OF CERTIFICATION PANEL CHECKBOXES WHEN CLICKED
 document.getElementById('RAcertifiedID').onclick = function(ev) {
+    console.log('RA - '+isDBA+isManager)
     if (isDBA == 'False' & isManager == 'False'){
         alert("You may not change this setting.")
         return false
@@ -390,6 +391,7 @@ document.getElementById('RAcertifiedID').onclick = function(ev) {
 }
 
 document.getElementById('BWcertifiedID').onclick = function(ev) {
+    console.log('BW - '+isDBA+isManager)
     if (isDBA == 'False' & isManager == 'False'){
         alert("You may not change this setting.")
         return false
@@ -880,7 +882,8 @@ function linkToMonitorSchedule() {
         link = "https://fd.thevwc.org:42735/" 
     }
     //window.location.href = link,'_blank'
-    window.open(link,'_blank')
+    //window.open(link,'_blank')
+    window.open(link)
 }
 
 $('.phones').usPhoneFormat({
