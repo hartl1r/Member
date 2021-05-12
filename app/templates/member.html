@@ -36,7 +36,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h3>ver. May 11, 2021</h3>
+            <h3>ver. May 12, 2021</h3>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -436,6 +436,7 @@
     <!-- CERTIFICATION INFORMATION -->
     <div id="certificationID" class="certificationInfo panel">
         <h5>CERTIFICATION</h5>
+        <hr>
         <form method='POST' action="/saveCertification" style="padding-left:10px">
             <div class='certTopPanel'>
                 <div class='row'>
@@ -443,16 +444,15 @@
                     <div class='col-4 RAcolumn' >ROLLING ACRES</div>
                     <div class='col-4 BWcolumn' >BROWNWOOD</div>        
                 </div>
-
+             
                 <div class='row'>
                     <div class='col-3'></div>
                     <div class='col-4 RAcolumn'>
                         <input 
                             id='RAcertifiedID' 
                             name='certifiedRA'
-                            disabled=true 
                             type="checkbox" 
-                            class="form-control" 
+                            class='form-control'
                             {% if member.Certified %} 
                                 checked 
                                 value='True'
@@ -466,7 +466,7 @@
                             id='BWcertifiedID' 
                             disabled=true 
                             type="checkbox" 
-                            class="form-control"
+                            class='form-control'
                             name='certifiedBW'  
                             {% if member.Certified_2 %} 
                                 checked 
@@ -474,7 +474,7 @@
                             value="{{member.Certified_2}}">
                     </div> 
                 </div>  
-
+                
                 <div class='row'>
                     <div class='col-3'>Certified:</div>
                     <div class='col-4 RAcolumn'>
@@ -495,7 +495,7 @@
                         <input id='BWdateCertifiedID' readonly type="date" class="form-control-md "  style="width: 9em;" name="certifiedBWdate" value="{{member.Certification_Training_Date_2 if member.Certification_Training_Date_2}}">
                     </div>
                 </div>
-
+                
                 <div class='row'>
                     <div class='col-3'>Will Sub:</div>
                     <div class='col-4 RAcolumn'>
@@ -512,7 +512,7 @@
                             value="{{member.Monitor_Sub}}">   
                     </div>
                     <div class='col-4 BWcolumn'>                
-                        <input id='BWwillSub' type="checkbox" class="form-control" style=margin-left:0px name="willSubBW" {% if member.Monitor_Sub_2 %} checked {% endif %} readonly value="{{member.Monitor_Sub_2}}">                
+                        <input id='BWwillSub' type="checkbox" class='form-control' style=margin-left:0px name="willSubBW" {% if member.Monitor_Sub_2 %} checked {% endif %} readonly value="{{member.Monitor_Sub_2}}">                
                     </div>
                 </div>
                 

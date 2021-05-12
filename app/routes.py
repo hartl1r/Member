@@ -55,7 +55,10 @@ def index():
     # GET STAFF PRIVILEDGES (staffName is available as session variable from login.)
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
     if staffMember == None:
-        msg = "No match for staffID " + villageID + "; cannot continue."
+        if villageID != None:
+            msg = "No match for staffID " + villageID + "; cannot continue."
+        else:
+            msg = "Missing village ID for staff member; cannot continue."
         flash(msg,"danger")
         return msg
 

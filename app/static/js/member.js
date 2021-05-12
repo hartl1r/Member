@@ -31,7 +31,7 @@ var isManager = document.getElementById('isManager').value
 var isCoordinator = document.getElementById('isCoordinator').value
 //console.log('isDBA - '+isDBA)
 //console.log('staffID - '+ staffID)
-
+document.getElementById('BWcertifiedID').classList.add('indeterminate')
 if (staffID == '604875') {
     document.getElementById('TEST').style.display='block'
 }
@@ -377,6 +377,10 @@ document.getElementById('villagesWaiverID').onclick = function(ev) {
 }
 // SET VALUE OF CERTIFICATION PANEL CHECKBOXES WHEN CLICKED
 document.getElementById('RAcertifiedID').onclick = function(ev) {
+    if (isDBA == 'False' & isManager == 'False'){
+        alert("You may not change this setting.")
+        return false
+    }
     if (ev.target.checked) {
         document.getElementById('RAcertifiedID').value='True'
     }
@@ -386,6 +390,10 @@ document.getElementById('RAcertifiedID').onclick = function(ev) {
 }
 
 document.getElementById('BWcertifiedID').onclick = function(ev) {
+    if (isDBA == 'False' & isManager == 'False'){
+        alert("You may not change this setting.")
+        return false
+    }
     if (ev.target.checked) {
         document.getElementById('BWcertifiedID').value='True'
     }

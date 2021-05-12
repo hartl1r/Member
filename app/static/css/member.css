@@ -42,6 +42,7 @@
   #schedulePeriod span {
       font-size:1.15rem;
   }
+
   
   .periodBtn {
     border: 1px solid black;
@@ -364,7 +365,7 @@ hr.class-1 {
     color:var(--main-panel-txt-color);
     border:var(--main-panel-border);
     border-radius: 10px;
-    max-height: 383px;
+    max-height: 408px;
 }
 #schedulePeriod button {
     font-weight: 700;
