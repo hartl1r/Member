@@ -987,7 +987,7 @@ function setManagerPermissions() {
     document.getElementById('rolesBtnID').style.display='block'
     document.getElementById('showCheckInsID').style.display='block'
     document.getElementById('passwordBtnID').style.display='block'
-    document.getElementById('staffNoteBtnID').style.display='block'
+   // document.getElementById('staffNoteBtnID').style.display='block'
     document.getElementById('inactiveID').removeAttribute('disabled')
     document.getElementById('inactiveDateID').removeAttribute('disabled')
     document.getElementById('restrictedID').removeAttribute('disabled')
