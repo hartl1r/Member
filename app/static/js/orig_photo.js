@@ -1,12 +1,51 @@
+alert('beginning of photo.js')
 
+// $(".saveBtn").click(function() {
+//   alert('saveBtn this.id - '+this.id)
+// })
+console.log('const arrClass')
+const arrClass = document.querySelectorAll(".saveBtn");
+for (let i of arrClass) {
+  i.addEventListener("click", (e) => {
+      console.log("Perform Action")
+    })
+}
+
+console.log('navigator test')
 //(function () {
   if (
     !"mediaDevices" in navigator ||
     !"getUserMedia" in navigator.mediaDevices
   ) {
     alert("Camera API is not available in your browser");
+    //return;
   }
   
+  console.log('saveBtns rtn')
+  var saveBtns = document.getElementsByClassName('saveBtn')
+
+  for (var i = 0; i < saveBtns.length; i++) {
+    console.log('i = '+i)
+    saveBtns[i].addEventListener('click',savePhoto)
+  }
+  
+  // var savePhoto = function() {
+  //   alert('this.id - '+this.id)
+  // }
+    // saveBtns.onclick=function() {
+      
+  // DEFINE EVENT HANDLER FOR SAVE BTN
+  // $('.saveBtn').click(function() {
+  //   console.log('saveBtn id - '+this.id)
+  //   alert('saveBtn id - ' + this.id)
+  // })
+
+  // document.getElementsByClassName('saveBtn').addEventListener('click', function (evt) {
+  //   console.log('evt.target - ',evt.target,evt.target.id)
+  //   alert('this.id - '+this.id)
+  // })
+  
+
   // INITIALIZE PHOTO NUMBER COUNTER
   localStorage.setItem('takeNumber',0)
 
@@ -14,7 +53,30 @@
   document.getElementById('btnReturnToMember').onclick = function() {
     memberID = document.getElementById('memberID').value
     url = "/index/?villageID=" + memberID
+    //console.log('memberID - '+memberID)
     window.location.href=url
+  }
+
+  function save1() {
+    alert('save1')
+  }
+  function save2() {
+    alert('save2')
+  }
+  function save3() {
+    alert('save3')
+  }
+  // document.getElementById('btn_1').onclick = function() {
+  //   console.log('btn_1 clicked')
+  // }
+
+  // document.getElementById('btn_2').onclick = function() {
+  //   console.log('btn_2 clicked')
+  //}
+
+  // SEND IMAGE TO SERVER
+  function savePhoto() {
+    console.log('this.id - '+this.id)
   }
   
   // get page elements
@@ -75,12 +137,10 @@
     img.id = 'img_' + String(takeNumber)
     screenshotsContainer.prepend(img);
     const imgBtn = document.createElement("BUTTON");
-    var id='btn_' + String(takeNumber)
-    imgBtn.id = id
+    imgBtn.id = 'btn_' + String(takeNumber)
     imgBtn.innerHTML = "SAVE";
     imgBtn.classList.add("saveBtn", "btn", "btn-primary", "btn-sm");
-    imgBtn.setAttribute('onclick','savePhoto(id)');
-    //imgBtn.onclick = "savePhoto()";
+    //imgBtn.onclick = "savePhoto";
      
     screenshotsContainer.prepend(imgBtn);
     //alert('photo displayed')
@@ -110,8 +170,6 @@
   }
 
   initializeCamera();
-
-
 //})();
 
 // SAVE SELECTED PHOTO
@@ -125,8 +183,8 @@
   //console.log('canvas.id - '+canvas.id)
   //console.log('src - '+canvas.src)
   //canvas.toBlob(postFile,'image/jpeg');
-
-//var dataURL = canvas.toDataURL()
+//  memberID = document.getElementById('memberID').value
+  //var dataURL = canvas.toDataURL()
   //img = canvas.toDataURL("image/png");
 //  var dataURL = canvas.src
 //  console.log('dataURL - '+dataURL)
@@ -142,33 +200,26 @@
   //window.location.href=".........."
   //}
 
-  // SEND IMAGE TO SERVER
-  function savePhoto(id) {
-    imgID = 'img_' + id.slice(4,5)
-    photo = document.getElementById(imgID)
-    memberID = document.getElementById('memberID').value
-    console.log('memberID innerHTML - '+document.getElementById('memberID').innerHTML)
-    dataURL = photo.src
-    alert('dataURL - '+ dataURL)
-    saveImgToServerGET(memberID,dataURL)
+function saveImgToServer(memberID,dataURL){
+  console.log('saveImgToServer ...')
+  testing = false
+  if (testing){
+    return
   }
-function saveImgToServerGET(memberID,dataURL){
-  console.log('saveImgToServerGET ...')
-  console.log('type of dataURL - '+typeof(dataURL))
-  console.log('memberID - '+memberID)
-  alert('dataURL - '+dataURL)
   $.ajax({
     type: "GET",
-    url:"/savePhotoGET",
+    url:"/savePhoto",
     data: {
       memberID:memberID,
-      imgBase64: dataURL
+      dataURL:dataURL
+      //imgBase64: dataURL
     },
     success: function(data, textStatus, jqXHR)
         {
             console.log('success rtn')
             if (data.msg != 'SUCCESS') {
                 alert(data.msg)
+                
                 return
             }
             alert('Photo saved.')
@@ -181,35 +232,7 @@ function saveImgToServerGET(memberID,dataURL){
     console.log('end of ajax')
   }
 
-  function saveImgToServerPOST(memberID,dataURL){
-    console.log('saveImgToServer ...')
-    
-    $.ajax({
-      type: "POST",
-      url:"/savePhotoPOST",
-      data: {
-        memberID:memberID,
-        imgBase64: dataURL
-      },
-      success: function(data, textStatus, jqXHR)
-          {
-              console.log('success rtn')
-              if (data.msg != 'SUCCESS') {
-                  alert(data.msg)
-                  
-                  return
-              }
-              alert('Photo saved.')
-              //window.history.back()
-          },
-          error: function(jqXHR, textStatus, errorThrown){
-              alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
-        }
-      })
-      console.log('end of ajax')
-    }
-  
-  
+
 // function sendImgToServer2(member,dataURL){
 //   var request = new XMLHttpRequest();
 //   request.open("POST", "/path/to/server", true);
@@ -217,3 +240,31 @@ function saveImgToServerGET(memberID,dataURL){
 //   data.append("image", dataURL, "imagename");
 //   request.send(data);
 // }
+
+
+
+  // btn = e.target.id
+  // console.log('btn caption - '+ btn.innerHTML)
+  
+  // console.log('img element - '+ imgTagName)
+
+  
+  // saveBtn = document.getElementById(this.id)
+  // console.log('caption - '+saveBtn.innerHTML)
+  
+  // imgElement = this.nextElementSibling
+  // console.log('innerHTML - '+ imgElement.innerHTML)
+  // console.log('value - ' + this.value)
+  // console.log('innerHTML - ' + this.innerhtml)
+  // console.log('tag - '+ this.tag)
+  // console.log(this.target.id)
+  //alert('saveImage')
+  // imgElement = this.nextElementSibling.id
+  // document.getElementById(imgElement).style.border = "thin solid #0000FF"
+
+// btn_2=document.getElementById('btn_2')
+// btn_2.addEventListener('click',savePhoto('btn_2'))
+
+function saveImage(btnID) {
+  alert('btnID - '+btnID)
+}

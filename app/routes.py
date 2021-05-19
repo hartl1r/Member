@@ -2184,3 +2184,103 @@ def test():
     db.engine.execute(insertSQL)
 
     return 'done with test'
+
+
+@app.route("/savePhotoGET", methods=['GET'])
+def savePhotoGET():
+    print('savePhotoGET ...')
+
+    test = 'saveToFile'
+    #test = 'saveToDB'
+
+    # RETRIEVE MEMBER ID AND PHOTO IMAGE
+    memberID = request.args.get('memberID')
+    imgBase64 = request.args.get('imgBase64')
+    print('imgBase64 - ',imgBase64)
+
+    b64_str = imgBase64.encode('ascii')
+    print('b64_str - ',b64_str)
+
+    b64_bytes = base64.b64decode(b64_str)
+    print('b64_bytes - ',b64_bytes)
+
+    decode_str = b64_bytes.decode('ascii')
+    print('decode_str - ',decode_str)
+   
+    #imgData2 = img.decode('utf-8')
+    #print('imgData2 - ',imgData2)
+    #base64_string = data_base64.decode('utf-8')
+    # OPTION 1 ...............................................................
+    # SAVE AS FILE TO STATIC FOLDER (memberPhotos)
+    # convert img to suitable format for write to static folder/memberPhotos
+
+    # SAVE IMAGE USING Image.save() METHOD FROM PYTHON IMAGING LIBNRARY (PIL)
+    # "/static/memberPhotos/" + memberID + ".jpg "
+    path = "/static/memberPhotos/"
+    filename = memberID + '.jpg'
+    filepath = path + filename
+    #  creating a image object
+    iml = Image.open(img)
+    #  save a image using extension
+    iml = iml.save(filepath)
+    if (test == 'saveToFile'):
+        msg('Photo saved to file.')
+        return jsonify(msg=msg)
+
+    # OPTION 2 ............................................................... 
+    # CONVERT img to suitable format for storing in db
+    #imgData = base64.b64decode(img)
+    # /OR/
+    #imgData2 = img.decode('utf-8')
+    
+    # SAVE TO SQL SERVER TABLE
+    # DOES IMAGE EXIST?
+    photo = db.session.query(MemberPhotos).filter(MemberPhotos.memberID == memberID).first()
+    if photo:
+        # REPLACE CURRENT PHOTO
+        photo.memberPhoto = img
+        photo.commit
+    else:
+        try:
+            insertSQL = "INSERT INTO tblMember_Photos (Member_ID, Member_Photo) "
+            insertSQL += "VALUES ('" + memberID + "', '" + img + "'"
+            db.session.execute(insertSQL)
+            msg="SUCCESS - Photo saved to database."
+        except:
+            msg="Error saving photo."
+    return jsonify(msg=msg)
+
+    #return redirect(url_for('index') )   
+    
+
+
+
+@app.route("/savePhotoPOST", methods=['POST'])
+def savePhotoPOST():
+    print('/savePhotoPOST rtn ...')
+    memberID = request.get['memberID']
+    print('memberID - ',memberID)
+    img = request.values('imgBase64')
+    imgData = base64_decode(img)
+    print('imgData - ',imgData)
+    print('img-',img)
+    print('after img = ')
+    # DOES IMAGE EXIST?
+    photo = db.session.query(MemberPhotos).filter(MemberPhotos.memberID == memberID).first()
+    if photo:
+        # REPLACE CURRENT PHOTO
+        photo.memberPhoto = img
+        photo.commit
+    else:
+        try:
+            insertSQL = "INSERT INTO tblMember_Photos (Member_ID, Member_Photo) "
+            insertSQL += "VALUES ('" + memberID + "', '" + img + "'"
+            db.session.execute(insertSQL)
+            msg="SUCCESS"
+        except:
+            msg="Error saving photo."
+    return jsonify(msg=msg)
+
+    #return redirect(url_for('index') )   
+    
+

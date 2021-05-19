@@ -379,7 +379,7 @@ document.getElementById('villagesWaiverID').onclick = function(ev) {
 document.getElementById('RAcertifiedID').onclick = function(ev) {
     console.log('RA - '+isDBA+isManager)
     if (isDBA == 'False' & isManager == 'False'){
-        alert("You may not change this setting.")
+        modalAlert("CERTIFICATION","You may not change this setting.")
         return false
     }
     if (ev.target.checked) {
@@ -393,7 +393,7 @@ document.getElementById('RAcertifiedID').onclick = function(ev) {
 document.getElementById('BWcertifiedID').onclick = function(ev) {
     console.log('BW - '+isDBA+isManager)
     if (isDBA == 'False' & isManager == 'False'){
-        alert("You may not change this setting.")
+        modalAlert("CERTIFICATION","You may not change this setting.")
         return false
     }
     if (ev.target.checked) {
@@ -869,7 +869,8 @@ function classSignUp() {
     else{
         link = "https://fd.thevwc.org:42738/"
     }
-    window.open(link,'_blank')
+    var classSignup = window.open(link,'classSignup')
+    classSignup.focus();
     return
 }
 
@@ -882,8 +883,9 @@ function linkToMonitorSchedule() {
         link = "https://fd.thevwc.org:42735/" 
     }
     //window.location.href = link,'_blank'
-    //window.open(link,'_blank')
-    window.open(link)
+    var monitorWindow = window.open(link,'monitorWindow');
+    //window.open(link)
+    monitorWindow.focus();
 }
 
 $('.phones').usPhoneFormat({
@@ -1046,8 +1048,8 @@ document.getElementById('needsToolCribID').onclick = function(ev) {
 }
 
 function modalAlert(title,msg) {
-	document.getElementById("modalTitle").innerHTML = title
-	document.getElementById("modalBody").innerHTML= msg
+	document.getElementById("modalAlertTitle").innerHTML = title
+	document.getElementById("modalAlertBody").innerHTML= msg
 	$('#myModalMsg').modal('show')
 }
 
