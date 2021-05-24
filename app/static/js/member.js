@@ -195,7 +195,7 @@ else
     document.getElementById('chgVillageID').removeAttribute('disabled')
     document.getElementById('mntrSchedBtnID').removeAttribute('disabled')
     document.getElementById('showPhotoBtn').removeAttribute('disabled')
-    document.getElementById('copyPhotoBtn').removeAttribute('disabled')
+    document.getElementById('takePhotoBtn').removeAttribute('disabled')
     document.getElementById('showCheckInsID').removeAttribute('disabled')
     document.getElementById('monitorSchedulingBtnID').removeAttribute('disabled')
     

@@ -1980,6 +1980,7 @@ def saveVillageID():
    
 @app.route("/takePhoto/")
 def takePhoto():
+    print('/takePhoto rtn ...')
     villageID = request.args.get('villageID')
     return render_template("photo.html",memberID=villageID)
 
@@ -2177,10 +2178,17 @@ def savePhotoPOST():
 
     img = request.form['imgBase64']
     #print('img - ',img)
+    print('type for img - ',type(img))
     
+    # the following gives 'incorrect padding'
     #imgDecoded = base64.decodestring(img)
-    imgDecoded = base64.standard_b64decode(img)
-    print('imgDecoded - ',imgDecoded)
+    #imgDecoded = base64.standard_b64decode(img)
+    #print('imgDecoded - ',imgDecoded)
+    
+    # DECODE 
+    image_64_decode = base64.decodestring(img)
+    print('type for image_64_decode - ',type(image_64_decode))
+    print('image_64_decode - ',image_64_decode)
     
     
     # DOES IMAGE EXIST?
@@ -2225,7 +2233,13 @@ def copyExistingPhoto():
     image_64_decode = base64.decodestring(image_64_encode)
 
     # WRITE IMAGE TO DESKTOP
-    image_result = open('test.jpg', 'wb')
+    memberID = '000001'
+    currentWorkingDirectory = os.getcwd()
+    memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
+    fileName = memberID + ".jpg"
+    filePath = memberPhotosPath + fileName
+    image_result = open(filePath,'wb')
+    #image_result = open('test.jpg', 'wb')
     image_result.write(image_64_decode)
 
     # ..........  the above all works .......... the image 'test.jpg' is on the desktop
