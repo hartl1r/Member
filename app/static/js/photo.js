@@ -80,12 +80,8 @@
     imgBtn.innerHTML = "SAVE";
     imgBtn.classList.add("saveBtn", "btn", "btn-primary", "btn-sm");
     imgBtn.setAttribute('onclick','savePhoto(id)');
-    //imgBtn.onclick = "savePhoto()";
-     
     screenshotsContainer.prepend(imgBtn);
-    //alert('photo displayed')
   });
-// ========================================================================================
 
   // stop video stream
   function stopVideoStream() {
@@ -111,79 +107,16 @@
 
   initializeCamera();
 
-
-//})();
-
-// SAVE SELECTED PHOTO
-//screenshots.addEventListener("click", function (e) {
-//  console.log('screenshots click')
-//  console.log('e.target.innerhtml - '+e.target.innerHTML)
-  //canvas=document.getElementById('take1')
-//  canvas = e.target.nextElementSibling
-  
-//  console.log('canvas.tagName - '+canvas.tagName)
-  //console.log('canvas.id - '+canvas.id)
-  //console.log('src - '+canvas.src)
-  //canvas.toBlob(postFile,'image/jpeg');
-
-//var dataURL = canvas.toDataURL()
-  //img = canvas.toDataURL("image/png");
-//  var dataURL = canvas.src
-//  console.log('dataURL - '+dataURL)
-//  console.log('before ajax call ')
- 
-//  saveImgToServer(memberID,dataURL)
-//  window.history.back()
-//})
-
-//
-
-  //saveImgToServer(memberID,dataURL)
-  //window.location.href=".........."
-  //}
-
-  // SEND IMAGE TO SERVER
+  // SAVE SELECTED PHOTO
   function savePhoto(id) {
     imgID = 'img_' + id.slice(4,5)
     photo = document.getElementById(imgID)
     memberID = document.getElementById('memberID').value
-    console.log('memberID innerHTML - '+document.getElementById('memberID').innerHTML)
-    dataURL = photo.src
-    alert('dataURL - '+ dataURL)
-    saveImgToServerGET(memberID,dataURL)
-  }
-function saveImgToServerGET(memberID,dataURL){
-  console.log('saveImgToServerGET ...')
-  console.log('type of dataURL - '+typeof(dataURL))
-  console.log('memberID - '+memberID)
-  alert('dataURL - '+dataURL)
-  $.ajax({
-    type: "GET",
-    url:"/savePhotoGET",
-    data: {
-      memberID:memberID,
-      imgBase64: dataURL
-    },
-    success: function(data, textStatus, jqXHR)
-        {
-            console.log('success rtn')
-            if (data.msg != 'SUCCESS') {
-                alert(data.msg)
-                return
-            }
-            alert('Photo saved.')
-            //window.history.back()
-        },
-        error: function(jqXHR, textStatus, errorThrown){
-            alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
-      }
-    })
-    console.log('end of ajax')
-  }
-
-  function saveImgToServerPOST(memberID,dataURL){
-    console.log('saveImgToServer ...')
     
+    dataURL = photo.src
+    alert('memberID - '+memberID + '\ndataURL - '+ dataURL)
+
+    // SEND IMAGE TO SERVER
     $.ajax({
       type: "POST",
       url:"/savePhotoPOST",
@@ -196,24 +129,14 @@ function saveImgToServerGET(memberID,dataURL){
               console.log('success rtn')
               if (data.msg != 'SUCCESS') {
                   alert(data.msg)
-                  
                   return
               }
               alert('Photo saved.')
-              //window.history.back()
           },
           error: function(jqXHR, textStatus, errorThrown){
               alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
         }
-      })
-      console.log('end of ajax')
-    }
+    })
+  }
+    
   
-  
-// function sendImgToServer2(member,dataURL){
-//   var request = new XMLHttpRequest();
-//   request.open("POST", "/path/to/server", true);
-//   var data = new FormData();
-//   data.append("image", dataURL, "imagename");
-//   request.send(data);
-// }

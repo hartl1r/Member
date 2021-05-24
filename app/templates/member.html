@@ -36,7 +36,7 @@
 
         <!-- ------------------------------------------------------ -->
         <div class="hdgVersion">
-            <h3>ver. May 19, 2021</h3>
+            <h3>ver. May 24, 2021</h3>
         </div>
 
         <!-- ------------------------------------------------------ -->
@@ -69,8 +69,8 @@
                 </div>
                 <button id='showPhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick='showPhoto(this)''>SHOW PHOTO</button>
                 <button id='takePhotoBtn' class='btn btn-secondary btn-sm' style=margin-left:20px disabled onclick="window.location.href='/takePhoto/?villageID={{member.Member_ID}}'">TAKE PHOTO</button>
-                <!-- <button id='takePhotoBtn' class='btn btn-secondary' style=margin-left:20px onclick='takePhotoRtn(this)''>TAKE PHOTO</button> -->
-                <button id="TEST" style=display:none onclick="window.location.href='/test/'">TEST PHOTO</button> 
+                <button id='copyPhotoBtn' class='btn btn-secondary' style=margin-left:20px;display:none onclick="window.location.href='/copyExistingPhoto/?memberID={{member.Member_ID}}'">COPY EXISTING PHOTO</button>
+                
             </div>     
         </div> 
 

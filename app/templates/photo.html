@@ -26,30 +26,18 @@
           <h1 class="title">
             MEMBER PHOTO
           </h1>
-          <input type="hidden" id="memberID">{{memberID}}
+          <h2>
+            <label for="memberID">Member ID -</label>
+            <input type="text" id="memberID" value={{memberID}}>{{memberID}}
+          </h2>
           <video autoplay id="video"></video>
-          <!-- <button class="button is-hidden" id="btnPlay">
-            <span class="icon is-small">
-              <i class="fas fa-play"></i>
-            </span>
-          </button> -->
-          <!-- <button class="button" id="btnPause">
-            <span class="icon is-small">
-              <i class="fas fa-pause"></i>
-            </span>
-          </button> -->
+          
           <button class="button is-success" id="btnScreenshot">
             <span class="icon is-small">
               <i class="fas fa-camera"></i>
             </span>
           </button>
           
-          <!-- <button class="button" id="btnSavePhoto">
-            <span class="icon">
-              <i class="fas fa-sync-alt"></i>
-            </span>
-            <span>Save Photo</span>
-          </button> -->
           <button class="button" id="btnReturnToMember">
             <span class="icon">
               <i class="fas fa-sync-alt"></i>
@@ -66,14 +54,6 @@
     </div>
   </section>
 
-  <!-- <footer class="footer">
-    <div class="content has-text-centered">
-      <p>
-        By <a href="https://www.webdevdrops.com/">Douglas Matoso</a> | <a
-          href="https://github.com/doug2k1/javascript-camera">Source code</a>
-      </p>
-    </div>
-  </footer> -->
   <canvas class="is-hidden" id="canvas"></canvas>
 {% endblock %}
 

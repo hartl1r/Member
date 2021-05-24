@@ -2167,104 +2167,22 @@ def changeScheduleYear(year):
     return redirect(url_for('index',villageID=memberID,scheduleYear=year))
 
 
-@app.route("/test/")
-def test():
-    path='/Users/richardhartley/Projects/Member/app/static/memberPhotos/'
-    memberID = '604875'
-    filename = path + memberID + '.jpg'
-    print(filename)
-
-    with open(filename,'rb') as f:
-        data = f.read()
-    
-    insertSQL = "INSERT INTO memberPhotos VALUES "
-    insertSQL += "('" + memberID + "', "
-    insertSQL += "(SELECT * FROM OPENROWSET(BULK '" + filename + "', SINGLE_BLOB) as T1))"
-    print('SQL - ',insertSQL)
-    db.engine.execute(insertSQL)
-
-    return 'done with test'
-
-
-@app.route("/savePhotoGET", methods=['GET'])
-def savePhotoGET():
-    print('savePhotoGET ...')
-
-    test = 'saveToFile'
-    #test = 'saveToDB'
-
-    # RETRIEVE MEMBER ID AND PHOTO IMAGE
-    memberID = request.args.get('memberID')
-    imgBase64 = request.args.get('imgBase64')
-    print('imgBase64 - ',imgBase64)
-
-    b64_str = imgBase64.encode('ascii')
-    print('b64_str - ',b64_str)
-
-    b64_bytes = base64.b64decode(b64_str)
-    print('b64_bytes - ',b64_bytes)
-
-    decode_str = b64_bytes.decode('ascii')
-    print('decode_str - ',decode_str)
-   
-    #imgData2 = img.decode('utf-8')
-    #print('imgData2 - ',imgData2)
-    #base64_string = data_base64.decode('utf-8')
-    # OPTION 1 ...............................................................
-    # SAVE AS FILE TO STATIC FOLDER (memberPhotos)
-    # convert img to suitable format for write to static folder/memberPhotos
-
-    # SAVE IMAGE USING Image.save() METHOD FROM PYTHON IMAGING LIBNRARY (PIL)
-    # "/static/memberPhotos/" + memberID + ".jpg "
-    path = "/static/memberPhotos/"
-    filename = memberID + '.jpg'
-    filepath = path + filename
-    #  creating a image object
-    iml = Image.open(img)
-    #  save a image using extension
-    iml = iml.save(filepath)
-    if (test == 'saveToFile'):
-        msg('Photo saved to file.')
-        return jsonify(msg=msg)
-
-    # OPTION 2 ............................................................... 
-    # CONVERT img to suitable format for storing in db
-    #imgData = base64.b64decode(img)
-    # /OR/
-    #imgData2 = img.decode('utf-8')
-    
-    # SAVE TO SQL SERVER TABLE
-    # DOES IMAGE EXIST?
-    photo = db.session.query(MemberPhotos).filter(MemberPhotos.memberID == memberID).first()
-    if photo:
-        # REPLACE CURRENT PHOTO
-        photo.memberPhoto = img
-        photo.commit
-    else:
-        try:
-            insertSQL = "INSERT INTO tblMember_Photos (Member_ID, Member_Photo) "
-            insertSQL += "VALUES ('" + memberID + "', '" + img + "'"
-            db.session.execute(insertSQL)
-            msg="SUCCESS - Photo saved to database."
-        except:
-            msg="Error saving photo."
-    return jsonify(msg=msg)
-
-    #return redirect(url_for('index') )   
-    
-
-
 
 @app.route("/savePhotoPOST", methods=['POST'])
 def savePhotoPOST():
     print('/savePhotoPOST rtn ...')
-    memberID = request.get['memberID']
+
+    memberID = request.form['memberID']
     print('memberID - ',memberID)
-    img = request.values('imgBase64')
-    imgData = base64_decode(img)
-    print('imgData - ',imgData)
-    print('img-',img)
-    print('after img = ')
+
+    img = request.form['imgBase64']
+    #print('img - ',img)
+    
+    #imgDecoded = base64.decodestring(img)
+    imgDecoded = base64.standard_b64decode(img)
+    print('imgDecoded - ',imgDecoded)
+    
+    
     # DOES IMAGE EXIST?
     photo = db.session.query(MemberPhotos).filter(MemberPhotos.memberID == memberID).first()
     if photo:
@@ -2284,3 +2202,57 @@ def savePhotoPOST():
     #return redirect(url_for('index') )   
     
 
+@app.route('/copyExistingPhoto/')
+def copyExistingPhoto():
+    # print('/copyExistingPhoto rtn ...')
+
+    memberID = request.args.get('memberID')
+    print('memberID - ',memberID)
+
+    currentWorkingDirectory = os.getcwd()
+    memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
+    fileName = memberID + ".jpg"
+    filePath = memberPhotosPath + fileName
+    # print('filePath - ',filePath)
+
+    image = open(filePath,'rb')  # OPEN BINARY FILE IN READ MODE
+    image_read = image.read()
+    image_64_encode = base64.encodestring(image_read)
+    # print (image_64_encode)
+    
+
+    # DECODE 
+    image_64_decode = base64.decodestring(image_64_encode)
+
+    # WRITE IMAGE TO DESKTOP
+    image_result = open('test.jpg', 'wb')
+    image_result.write(image_64_decode)
+
+    # ..........  the above all works .......... the image 'test.jpg' is on the desktop
+
+    status = 'test'
+    if status == 'test':
+        return 'DONE WITH TEST'
+
+    # IS THERE AN IMAGE ON FILE
+    photoInDB = db.session.query(MemberPhotos.memberID).filter(MemberPhotos.Member_ID == memberID).first()
+    
+    # IF NO IMAGE ON FILE, BUILD INSERT STATEMENT
+    if photoInDB == None:
+        insertSQL = "INSERT INTO memberPhotos VALUES "
+        insertSQL += "('" + memberID + "', "
+        insertSQL += "(SELECT * FROM OPENROWSET(BULK '" + filename + "', SINGLE_BLOB) as T1))"
+        print('SQL - ',insertSQL)
+        db.engine.execute(insertSQL)
+        msg = 'SUCCESS'
+        return msg
+    else:    
+        # IF THERE IS AN IMAGE ON FILE, BUILD UPDATE STATEMENT
+        updateSQL = "UPDATE tblMember_Photos SET = " + ""
+        updateSQL += " WHERE Member_ID = '" + memberID + "'"
+        # EXECUTE SQL STATEMENT
+        #db.engine.execute(updateSQL)
+        msg = 'SUCCESS'
+        return msg
+    
+    

@@ -33,7 +33,7 @@ var isCoordinator = document.getElementById('isCoordinator').value
 //console.log('staffID - '+ staffID)
 document.getElementById('BWcertifiedID').classList.add('indeterminate')
 if (staffID == '604875' || staffID == '373608') {
-    document.getElementById('TEST').style.display='block'
+    document.getElementById('copyPhotoBtn').style.display='block'
 }
 if (isDBA == 'True' | isManager == 'True') {
     setManagerPermissions()
@@ -165,16 +165,7 @@ document.getElementById("typeOfWorkSelecterID").addEventListener("change",typeOf
 document.getElementById("zipcodeSelecterID").addEventListener("change",zipCodeChangeRtn)
 document.getElementById("villageSelecterID").addEventListener("change",villageChangeRtn)
 
-//document.getElementById("takePhotoBtn").addEventListener("click",takePhotoRtn)
-// document.querySelector('#monthCheckboxesID').onclick = function(ev) {
-//     inputID = ev.target.id + 'ResidentValue'
-//     if (ev.target.checked) {
-//         document.getElementById(inputID).value='True'
-//     }
-//     else {
-//         document.getElementById(inputID).value='False' 
-//     }
-// }
+//document.getElementById("copyExistingPhotoBtn").addEventListener("click",copyExistingPhoto)
 
 document.getElementById("needsToolCribID").onclick = function(ev) {
     if (ev.checked) {
@@ -204,7 +195,7 @@ else
     document.getElementById('chgVillageID').removeAttribute('disabled')
     document.getElementById('mntrSchedBtnID').removeAttribute('disabled')
     document.getElementById('showPhotoBtn').removeAttribute('disabled')
-    document.getElementById('takePhotoBtn').removeAttribute('disabled')
+    document.getElementById('copyPhotoBtn').removeAttribute('disabled')
     document.getElementById('showCheckInsID').removeAttribute('disabled')
     document.getElementById('monitorSchedulingBtnID').removeAttribute('disabled')
     
@@ -882,9 +873,8 @@ function linkToMonitorSchedule() {
     else{
         link = "https://fd.thevwc.org:42735/" 
     }
-    //window.location.href = link,'_blank'
+
     var monitorWindow = window.open(link,'monitorWindow');
-    //window.open(link)
     monitorWindow.focus();
 }
 
@@ -1091,3 +1081,27 @@ function changeScheduleYear(yearSpecified) {
 // $(document).on('click','body *',function() {
 //     $('.modal').modal('hide')
 // })
+
+// function copyExistingPhoto() {
+//     // SEND MEMBER TO SERVER
+//     $.ajax({
+//         type: "POST",
+//         url:"/copyExistingPhoto",
+//         data: {
+//           memberID:memberID,
+//           imgBase64: dataURL
+//         },
+//         success: function(data, textStatus, jqXHR)
+//             {
+//                 console.log('success rtn')
+//                 if (data.msg != 'SUCCESS') {
+//                     alert(data.msg)
+//                     return
+//                 }
+//                 alert('Photo saved.')
+//             },
+//             error: function(jqXHR, textStatus, errorThrown){
+//                 alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
+//           }
+//       })
+// }
