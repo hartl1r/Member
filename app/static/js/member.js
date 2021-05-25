@@ -764,7 +764,8 @@ function showPhoto() {
     console.log('showPhoto ...')
     memberID = document.getElementById('memberID').value
     photoImgModal = document.getElementById('photoImgID')
-    photoImgModal.src = "/static/memberPhotos/" + memberID + ".jpg "
+    //photoImgModal.src = "/static/memberPhotos/" + memberID + ".jpg "
+    photoImgModal.src = "/static/memberPhotos/" + memberID + ".png"
     $('#photoModal').modal('show')
 }
 

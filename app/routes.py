@@ -28,6 +28,11 @@ from email.mime.multipart import MIMEMultipart
 import pyodbc
 import base64
 import os, fnmatch
+
+from base64 import b64decode
+from io import BytesIO
+from PIL import Image
+
 # import os.path
 # from os import path
 
@@ -1066,8 +1071,9 @@ def processNoteToMember():
     emailAddress = member.eMail
     displayName = member.First_Name + ' ' + member.Last_Name
 
-    sender = ('frontdesk@thevwc.net')
-    password = 'Dove1234'
+    sender = app.config['MAIL_USERNAME']
+    password = app.config['MAIL_PASSWORD']
+    
     recipient = emailAddress
     subject = 'Message to ' + displayName
     message = currentMsg
@@ -2171,31 +2177,59 @@ def changeScheduleYear(year):
 
 @app.route("/savePhotoPOST", methods=['POST'])
 def savePhotoPOST():
-    print('/savePhotoPOST rtn ...')
+    #print('/savePhotoPOST rtn ...')
 
     memberID = request.form['memberID']
-    print('memberID - ',memberID)
+    #print('memberID - ',memberID)
 
-    img = request.form['imgBase64']
-    #print('img - ',img)
-    print('type for img - ',type(img))
+    currentWorkingDirectory = os.getcwd()
+    memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
+    fileName = memberID + ".png"
+    # fileName for testing overrides member + '.jpg' -  '604875.jpg'
+    #fileName = "000002.png"
+    filePath = memberPhotosPath + fileName
+    #print('filePath - ',filePath)
+
+    # GET BASE64 DATA
+    imgBase64 = request.form['imgBase64']
+    ##print ('imgBase64 - ',imgBase64)
+
+    # SPLIT OFF HEADER
+    img_data = imgBase64.split(",",1)[1]
+    #print('img_data - ',img_data)
+    #print('type for img_data - ',type(img_data))
     
-    # the following gives 'incorrect padding'
-    #imgDecoded = base64.decodestring(img)
-    #imgDecoded = base64.standard_b64decode(img)
-    #print('imgDecoded - ',imgDecoded)
-    
-    # DECODE 
-    image_64_decode = base64.decodestring(img)
-    print('type for image_64_decode - ',type(image_64_decode))
-    print('image_64_decode - ',image_64_decode)
-    
-    
+    # PARSE OUT DATA FROM BASE64 'img' VARIABLE
+    img_data += '=='
+    image = Image.open(BytesIO(b64decode(img_data)))
+
+    # SAVE THE PARSED DATA TO A FILE - /status/memberPhotos/xxxxxx.png
+    try:
+        image.save(filePath)
+        msg = "SUCCESS"
+        return make_response (f"{msg}")
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        msg = "ERROR - " + error
+        return make_response (f"{msg}")
+    except:
+        msg = "ERROR"
+        return make_response (f"{msg}")
+    #print('end of test')
+    END_OF_TEST = True
+    if END_OF_TEST:
+        msg = "SUCCESS"
+        return make_response (f"{msg}")
+        
+
+
+
+    #  SAVE TO DATABASE
     # DOES IMAGE EXIST?
     photo = db.session.query(MemberPhotos).filter(MemberPhotos.memberID == memberID).first()
     if photo:
         # REPLACE CURRENT PHOTO
-        photo.memberPhoto = img
+        photo.memberPhoto = image
         photo.commit
     else:
         try:

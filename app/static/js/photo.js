@@ -114,7 +114,7 @@
     memberID = document.getElementById('memberID').value
     
     dataURL = photo.src
-    alert('memberID - '+memberID + '\ndataURL - '+ dataURL)
+    //alert('memberID - '+memberID + '\ndataURL - '+ dataURL)
 
     // SEND IMAGE TO SERVER
     $.ajax({
@@ -132,6 +132,7 @@
                   return
               }
               alert('Photo saved.')
+              history.back()
           },
           error: function(jqXHR, textStatus, errorThrown){
               alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)

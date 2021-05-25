@@ -13,11 +13,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 dotenv_path = os.path.join(basedir, '.env')
 load_dotenv(dotenv_path)
 
-# print (os.getenv('Driver'))
-# print (os.getenv('Server'))
-# print (os.getenv('Database'))
-# print (os.getenv('Username'))
-# print (os.getenv('Password'))
 params = urllib.parse.quote_plus('DRIVER=' +  os.getenv('Driver') + ';'
                                     'SERVER=' + os.getenv('Server') + ';'
                                     'DATABASE=' + os.getenv('Database') + ';'
@@ -25,12 +20,6 @@ params = urllib.parse.quote_plus('DRIVER=' +  os.getenv('Driver') + ';'
                                     'PWD=' + os.getenv('Password') + ';'
 )
 conn_str = 'mssql+pyodbc:///?odbc_connect={}'.format(params)
-
-# app.config['MAIL_SERVER']='outlook.office365.com'
-# app.config['MAIL_PORT']=587
-# app.config['MAIL_USERNAME'] = 'dhartley@thevwc.net'
-# app.config['MAIL_PASSWORD'] = 'vwc-0513'
-# app.config['MAIL_USE_TLS'] = True
 
 class Config(object):
     SQLALCHEMY_DATABASE_URI = conn_str 
