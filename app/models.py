@@ -147,6 +147,7 @@ class Member(db.Model):
     isSpecialProjects = db.Column(db.Boolean)
     Manager = db.Column(db.Boolean)
     isVP = db.Column(db.Boolean)
+    PhotoStatus = db.Column(db.Integer)
     LightspeedID = db.Column(db.String(20))
     fullName = column_property(First_Name + " " + Last_Name)
     # Relationships
@@ -293,6 +294,7 @@ class WaitList(db.Model):
     ApplicantDeclines = db.Column(db.Date)
     NoLongerInterested = db.Column(db.Date)
     PlannedCertificationDate = db.Column(db.Date)
+
     fullName = column_property(FirstName + " " + LastName)
 
 class KeysTable(db.Model):
@@ -318,7 +320,7 @@ class ZipCode(db.Model):
     Zipcode = db.Column(db.String(5), primary_key=True)
 
 class MemberPhotos(db.Model):
-    __tablename__='tblmemberPhotos'
+    __tablename__='memberPhotos'
     __table_args__ = {"schema": "dbo"}
     memberID = db.Column(db.String(6), primary_key=True)
     memberPhoto = db.Column(db.VARBINARY(max))

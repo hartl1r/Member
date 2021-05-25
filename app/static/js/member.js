@@ -32,9 +32,10 @@ var isCoordinator = document.getElementById('isCoordinator').value
 //console.log('isDBA - '+isDBA)
 //console.log('staffID - '+ staffID)
 document.getElementById('BWcertifiedID').classList.add('indeterminate')
-if (staffID == '604875' || staffID == '373608') {
-    document.getElementById('copyPhotoBtn').style.display='block'
-}
+// if (staffID == '604875' || staffID == '373608') {
+//     document.getElementById('copyPhotoBtn').style.display='block'
+//     document.getElementById('copyAllPhotoBtn').style.display='block'
+// }
 if (isDBA == 'True' | isManager == 'True') {
     setManagerPermissions()
 }
@@ -764,9 +765,62 @@ function showPhoto() {
     console.log('showPhoto ...')
     memberID = document.getElementById('memberID').value
     photoImgModal = document.getElementById('photoImgID')
-    //photoImgModal.src = "/static/memberPhotos/" + memberID + ".jpg "
-    photoImgModal.src = "/static/memberPhotos/" + memberID + ".png"
+    // try {
+    photoImgModal.src = "/static/memberPhotos/"+memberID + ".png"
+    photoImgModal.alt = "No photo available."
     $('#photoModal').modal('show')
+    return
+    // }
+    // catch {
+    //     photoImgModal.alt = "/static/memberPhotos/NoPhoto.png"
+    //     $('#photoModal').modal('show')
+    //     return
+    // }
+    // test = true
+    // if (test){
+    //     return
+    // }
+    // console.log('trying jpg ...')
+    // try {
+    //     photoImgModal.src = "/static/memberPhotos/"+memberID + ".jpg"
+    //     $('#photoModal').modal('show')
+    //     console.log('end jpg rtn ...')
+    //     return
+    // }
+    // catch {
+    //     console.log('try png ...')
+    //     try {
+    //         photoImgModal.src = "/static/memberPhotos/"+memberID + ".png"
+    //         $('#photoModal').modal('show')
+    //         console.log('end png rtn ...')
+    //         return   
+    //     }
+    //     catch {
+    //         console.log('display NoPhoto ...')
+    //         photoImgModal.src = "/static/memberPhotos/NoPhoto.png"
+    //         $('#photoModal').modal('show') 
+    //         return  
+    //     }
+    // }
+    // jpgFilename = "/static/memberPhotos/" + memberID + ".jpg"
+    // console.log ('jpgFilename - '+jpgFilename)
+    // var jpgPhoto = new File(jpgFilename);
+    // if (typeof(jpgPhoto) != undefined) {
+    //     photoImgModal.src = jpgPhoto  // USE JPG PHOTO
+    // }
+    // else {
+    //     pngFilename = "/static/memberPhotos/" + memberID + ".png"
+    //     console.log ('pngFilename - '+pngFilename)
+    //     var pngPhoto = new File(pngFilename);
+    //     if (typeof(pngPhoto) != undefined) {
+    //          photoImgModal.src = pngPhoto
+    //     }
+    //     else {
+    //         var noPhoto = new File("/static/memberPhotos/NoPhoto.png");
+    //         photoImgModal.src = noPhoto
+    //     }
+    // }
+    
 }
 
 function villageRtn() {

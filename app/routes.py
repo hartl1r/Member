@@ -9,7 +9,7 @@ from flask_bootstrap import Bootstrap
 from werkzeug.urls import url_parse
 from app.models import ShopName, Member, MemberActivity, MonitorSchedule, MonitorScheduleTransaction,\
 MonitorWeekNote, CoordinatorsSchedule, ControlVariables, NotesToMembers, MemberTransactions,\
-DuesPaidYears, WaitList, KeysTable, Village, ZipCode
+DuesPaidYears, WaitList, KeysTable, Village, ZipCode, MemberPhotos
 from app import app
 from app import db
 from sqlalchemy import func, case, desc, extract, select, update, text
@@ -1085,7 +1085,9 @@ def processNoteToMember():
 
     # Attach the message to the MIMEMultipart object
     msg.attach(MIMEText(message, 'plain'))
-    server = smtplib.SMTP('outlook.office365.com',587)
+    
+    #server = smtplib.SMTP('outlook.office365.com',587)
+    server = smtplib.SMTP(app.config['MAIL_SERVER'],app.config['MAIL_PORT'])
     server.starttls()
     server.login(sender,password)
     text = msg.as_string() # Convert the MIMEMultipart object to a string to send
@@ -2177,27 +2179,18 @@ def changeScheduleYear(year):
 
 @app.route("/savePhotoPOST", methods=['POST'])
 def savePhotoPOST():
-    #print('/savePhotoPOST rtn ...')
-
     memberID = request.form['memberID']
-    #print('memberID - ',memberID)
-
+    
     currentWorkingDirectory = os.getcwd()
     memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
     fileName = memberID + ".png"
-    # fileName for testing overrides member + '.jpg' -  '604875.jpg'
-    #fileName = "000002.png"
     filePath = memberPhotosPath + fileName
-    #print('filePath - ',filePath)
 
     # GET BASE64 DATA
     imgBase64 = request.form['imgBase64']
-    ##print ('imgBase64 - ',imgBase64)
 
     # SPLIT OFF HEADER
     img_data = imgBase64.split(",",1)[1]
-    #print('img_data - ',img_data)
-    #print('type for img_data - ',type(img_data))
     
     # PARSE OUT DATA FROM BASE64 'img' VARIABLE
     img_data += '=='
@@ -2215,92 +2208,145 @@ def savePhotoPOST():
     except:
         msg = "ERROR"
         return make_response (f"{msg}")
-    #print('end of test')
-    END_OF_TEST = True
-    if END_OF_TEST:
-        msg = "SUCCESS"
-        return make_response (f"{msg}")
-        
-
-
+    
 
     #  SAVE TO DATABASE
     # DOES IMAGE EXIST?
-    photo = db.session.query(MemberPhotos).filter(MemberPhotos.memberID == memberID).first()
-    if photo:
-        # REPLACE CURRENT PHOTO
-        photo.memberPhoto = image
-        photo.commit
-    else:
-        try:
-            insertSQL = "INSERT INTO tblMember_Photos (Member_ID, Member_Photo) "
-            insertSQL += "VALUES ('" + memberID + "', '" + img + "'"
-            db.session.execute(insertSQL)
-            msg="SUCCESS"
-        except:
-            msg="Error saving photo."
-    return jsonify(msg=msg)
+    # photo = db.session.query(MemberPhotos).filter(MemberPhotos.memberID == memberID).first()
+    # if photo:
+    #     # REPLACE CURRENT PHOTO
+    #     photo.memberPhoto = image
+    #     photo.commit
+    # else:
+    #     try:
+    #         insertSQL = "INSERT INTO tblMember_Photos (Member_ID, Member_Photo) "
+    #         insertSQL += "VALUES ('" + memberID + "', '" + img + "'"
+    #         db.session.execute(insertSQL)
+    #         msg="SUCCESS"
+    #     except:
+    #         msg="Error saving photo."
+    # return jsonify(msg=msg)
 
     #return redirect(url_for('index') )   
-    
 
+
+
+# THE FOLLOWING IS USED TO COPY THE JPG OF ONE MEMBER TO AN PNG FILE
 @app.route('/copyExistingPhoto/')
 def copyExistingPhoto():
-    # print('/copyExistingPhoto rtn ...')
-
+    # COPY JPG TO PNG
     memberID = request.args.get('memberID')
-    print('memberID - ',memberID)
-
     currentWorkingDirectory = os.getcwd()
     memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
+    
     fileName = memberID + ".jpg"
     filePath = memberPhotosPath + fileName
-    # print('filePath - ',filePath)
-
-    image = open(filePath,'rb')  # OPEN BINARY FILE IN READ MODE
-    image_read = image.read()
-    image_64_encode = base64.encodestring(image_read)
-    # print (image_64_encode)
     
+    print('input - ',filePath)
+    try:
+        image = open(filePath,'rb')  # OPEN BINARY FILE IN READ MODE
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        print('.5 SQLAlchemyError - ',error)
+        response = "ERROR - "+error
+        return make_response(f"{response}")
+        
+    except Exception as e:
+        print('1. Exception - ')
+        response = "ERROR - could not open file ???"
+        return make_response(f"{response}")
+    try:  
+        print('image_read ... ') 
+        image_read = image.read()
+        image_64_encode = base64.encodestring(image_read)
+    except:
+        print('2.')
+        response = "ERROR - "+error
+        return make_response(f"{response}")
 
     # DECODE 
-    image_64_decode = base64.decodestring(image_64_encode)
+    try:
+        print('image_64_decode ...')
+        image_64_decode = base64.decodestring(image_64_encode)
+    except:
+        print('3.')
+        response = "ERROR - "+error
+        return make_response(f"{response}")
 
-    # WRITE IMAGE TO DESKTOP
-    memberID = '000001'
+    # WRITE IMAGE AS png TO /status/memberPhotos/xxxxxx.png
     currentWorkingDirectory = os.getcwd()
     memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
-    fileName = memberID + ".jpg"
-    filePath = memberPhotosPath + fileName
-    image_result = open(filePath,'wb')
-    #image_result = open('test.jpg', 'wb')
-    image_result.write(image_64_decode)
+    fileName = memberID + ".png"
+    print('start copy ...')
+    try:
+        filePath = memberPhotosPath + fileName
+        print('output - ', filePath)
+        image_result = open(filePath,'wb')
+        #image_result = open('test.jpg', 'wb')
+        image_result.write(image_64_decode)
+    except:
+        print('4.')
+        response = "ERROR - "+error
+        return make_response(f"{response}")
 
-    # ..........  the above all works .......... the image 'test.jpg' is on the desktop
+    response = "SUCCESS"
+    return make_response(f"{response}")
 
-    status = 'test'
-    if status == 'test':
-        return 'DONE WITH TEST'
 
-    # IS THERE AN IMAGE ON FILE
-    photoInDB = db.session.query(MemberPhotos.memberID).filter(MemberPhotos.Member_ID == memberID).first()
+@app.route('/copyAllPhotos/')
+def copyAllPhotos():
+
+    currentWorkingDirectory = os.getcwd()
+    memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
+    count = 0
+    members=db.session.query(Member).filter(Member.PhotoStatus == 2)
     
-    # IF NO IMAGE ON FILE, BUILD INSERT STATEMENT
-    if photoInDB == None:
-        insertSQL = "INSERT INTO memberPhotos VALUES "
-        insertSQL += "('" + memberID + "', "
-        insertSQL += "(SELECT * FROM OPENROWSET(BULK '" + filename + "', SINGLE_BLOB) as T1))"
-        print('SQL - ',insertSQL)
-        db.engine.execute(insertSQL)
-        msg = 'SUCCESS'
-        return msg
-    else:    
-        # IF THERE IS AN IMAGE ON FILE, BUILD UPDATE STATEMENT
-        updateSQL = "UPDATE tblMember_Photos SET = " + ""
-        updateSQL += " WHERE Member_ID = '" + memberID + "'"
-        # EXECUTE SQL STATEMENT
-        #db.engine.execute(updateSQL)
-        msg = 'SUCCESS'
-        return msg
+    for m in members:
+        memberID = m.Member_ID
+        count += 1
+        print(str(count), memberID)
+        fileName = memberID + ".jpg"
+        filePath = memberPhotosPath + fileName
+        print('input - ',filePath)
+        try:
+            image = open(filePath,'rb')  # OPEN BINARY FILE IN READ MODE
+        except SQLAlchemyError as e:
+            error = str(e.__dict__['orig'])
+            print('.5 SQLAlchemyError - ',error)
+            continue
+        except Exception as e:
+            print('1. Exception - ')
+            continue
+        try:  
+            print('image_read ... ') 
+            image_read = image.read()
+            image_64_encode = base64.encodestring(image_read)
+        except:
+            print('2.')
+            continue
+
+        # DECODE 
+        try:
+            print('image_64_decode ...')
+            image_64_decode = base64.decodestring(image_64_encode)
+        except:
+            print('3.')
+            continue
+
+        # WRITE IMAGE AS png TO /status/memberPhotos/xxxxxx.png
+        currentWorkingDirectory = os.getcwd()
+        memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
+        fileName = memberID + ".png"
+        print('start copy ...')
+        try:
+            filePath = memberPhotosPath + fileName
+            print('output - ', filePath)
+            image_result = open(filePath,'wb')
+            image_result.write(image_64_decode)
+        except:
+            print('4.')
+            continue
+        
+    return 'DONE WITH COPY'
     
-    
+

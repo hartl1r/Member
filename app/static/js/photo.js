@@ -112,10 +112,8 @@
     imgID = 'img_' + id.slice(4,5)
     photo = document.getElementById(imgID)
     memberID = document.getElementById('memberID').value
-    
     dataURL = photo.src
-    //alert('memberID - '+memberID + '\ndataURL - '+ dataURL)
-
+    
     // SEND IMAGE TO SERVER
     $.ajax({
       type: "POST",
@@ -126,13 +124,8 @@
       },
       success: function(data, textStatus, jqXHR)
           {
-              console.log('success rtn')
-              if (data.msg != 'SUCCESS') {
-                  alert(data.msg)
-                  return
-              }
               alert('Photo saved.')
-              history.back()
+              location.reload()
           },
           error: function(jqXHR, textStatus, errorThrown){
               alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
