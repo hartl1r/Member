@@ -33,9 +33,6 @@ from base64 import b64decode
 from io import BytesIO
 from PIL import Image
 
-# import os.path
-# from os import path
-
 @app.route('/')
 @app.route('/index/')
 def index():
@@ -2185,6 +2182,7 @@ def savePhotoPOST():
     memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
     fileName = memberID + ".png"
     filePath = memberPhotosPath + fileName
+    print('save photo path - ',filePath)
 
     # GET BASE64 DATA
     imgBase64 = request.form['imgBase64']
@@ -2349,4 +2347,37 @@ def copyAllPhotos():
         
     return 'DONE WITH COPY'
     
+@app.route('/copyJPGtoPNG/')
+def copyJPGtoPNG():
+    print('begin copyJPGtoPNG ...')
+    currentWorkingDirectory = os.getcwd()
+    memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
+    count = 0
+    members=db.session.query(Member).filter(Member.PhotoStatus == 1)
+    
+    for m in members:
+        memberID = m.Member_ID
+        count += 1
+        print(str(count), memberID)
+        fileName = memberID + ".jpg"
+        jpgFilePath = memberPhotosPath + memberID + ".jpg"
+        pngFilePath = memberPhotosPath + memberID + ".png"
 
+        print('input - ',jpgFilePath)
+       
+        try:
+            im1 = Image.open(r"{jpgFilePath}")
+        except:
+            print('file was not found? or ??? ...')
+            # file wasn't found
+            continue
+
+        try:
+            print('output - ',pngFilePath)
+            im1.save(r"{pngFilePath}")
+        except:
+            print('could not write output? or ??? ...')
+            # could not write output file
+            continue
+    # END FOR LOOP
+    return 'DONE WITH COPY'

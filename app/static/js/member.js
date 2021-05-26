@@ -29,13 +29,11 @@ var staffID = document.getElementById('staffID').value
 var isDBA = document.getElementById('isDBA').value
 var isManager = document.getElementById('isManager').value
 var isCoordinator = document.getElementById('isCoordinator').value
-//console.log('isDBA - '+isDBA)
-//console.log('staffID - '+ staffID)
+
 document.getElementById('BWcertifiedID').classList.add('indeterminate')
-// if (staffID == '604875' || staffID == '373608') {
-//     document.getElementById('copyPhotoBtn').style.display='block'
-//     document.getElementById('copyAllPhotoBtn').style.display='block'
-// }
+if (staffID == '604875' || staffID == '373608') {
+    document.getElementById('copyJPGtoPNGBtn').style.display='block'
+}
 if (isDBA == 'True' | isManager == 'True') {
     setManagerPermissions()
 }
@@ -369,7 +367,6 @@ document.getElementById('villagesWaiverID').onclick = function(ev) {
 }
 // SET VALUE OF CERTIFICATION PANEL CHECKBOXES WHEN CLICKED
 document.getElementById('RAcertifiedID').onclick = function(ev) {
-    console.log('RA - '+isDBA+isManager)
     if (isDBA == 'False' & isManager == 'False'){
         modalAlert("CERTIFICATION","You may not change this setting.")
         return false
@@ -383,7 +380,6 @@ document.getElementById('RAcertifiedID').onclick = function(ev) {
 }
 
 document.getElementById('BWcertifiedID').onclick = function(ev) {
-    console.log('BW - '+isDBA+isManager)
     if (isDBA == 'False' & isManager == 'False'){
         modalAlert("CERTIFICATION","You may not change this setting.")
         return false
@@ -732,94 +728,14 @@ function updatePassword() {
     showMenu()
 }
 
-
-// function setPhotoSrc() {
-//     photo = document.getElementsByClassName('memberImgID')
-//     photo.src = "{{ url_for('static', filename='memberPhotos/" + currentMemberID + ".jpg') }}"
-
-//     // for photo modal display if used
-//     photoModal = document.getElementById('photoImgID')
-//     photoModal.src = "{{ url_for('static', filename='memberPhotos/" + currentMemberID + ".jpg') }}"
-
-// }
-//function showHidePhoto(objBtn) {
-    //photo = document.getElementById('memberImgID')
-    //memberID = document.getElementById('memberID').value
-    // if (objBtn.innerHTML == 'SHOW PHOTO'){
-    //     objBtn.innerHTML = 'HIDE PHOTO'
-        //photo.src = "/static/memberPhotos/" + memberID + ".jpg "
-        //photo.style.display='inline'
-
-        // photoImgModal = document.getElementById('photoImgID')
-        // photoImgModal.src = "/static/memberPhotos/" + memberID + ".jpg "
-        // $('#photo').modal('show')
-
-    //}
-    // else {
-    //     objBtn.innerHTML = 'SHOW PHOTO'
-    //     photo.style.display='none'
-    //}
-//}
-
 function showPhoto() {
-    console.log('showPhoto ...')
+    //location.reload()
     memberID = document.getElementById('memberID').value
     photoImgModal = document.getElementById('photoImgID')
-    // try {
     photoImgModal.src = "/static/memberPhotos/"+memberID + ".png"
     photoImgModal.alt = "No photo available."
     $('#photoModal').modal('show')
     return
-    // }
-    // catch {
-    //     photoImgModal.alt = "/static/memberPhotos/NoPhoto.png"
-    //     $('#photoModal').modal('show')
-    //     return
-    // }
-    // test = true
-    // if (test){
-    //     return
-    // }
-    // console.log('trying jpg ...')
-    // try {
-    //     photoImgModal.src = "/static/memberPhotos/"+memberID + ".jpg"
-    //     $('#photoModal').modal('show')
-    //     console.log('end jpg rtn ...')
-    //     return
-    // }
-    // catch {
-    //     console.log('try png ...')
-    //     try {
-    //         photoImgModal.src = "/static/memberPhotos/"+memberID + ".png"
-    //         $('#photoModal').modal('show')
-    //         console.log('end png rtn ...')
-    //         return   
-    //     }
-    //     catch {
-    //         console.log('display NoPhoto ...')
-    //         photoImgModal.src = "/static/memberPhotos/NoPhoto.png"
-    //         $('#photoModal').modal('show') 
-    //         return  
-    //     }
-    // }
-    // jpgFilename = "/static/memberPhotos/" + memberID + ".jpg"
-    // console.log ('jpgFilename - '+jpgFilename)
-    // var jpgPhoto = new File(jpgFilename);
-    // if (typeof(jpgPhoto) != undefined) {
-    //     photoImgModal.src = jpgPhoto  // USE JPG PHOTO
-    // }
-    // else {
-    //     pngFilename = "/static/memberPhotos/" + memberID + ".png"
-    //     console.log ('pngFilename - '+pngFilename)
-    //     var pngPhoto = new File(pngFilename);
-    //     if (typeof(pngPhoto) != undefined) {
-    //          photoImgModal.src = pngPhoto
-    //     }
-    //     else {
-    //         var noPhoto = new File("/static/memberPhotos/NoPhoto.png");
-    //         photoImgModal.src = noPhoto
-    //     }
-    // }
     
 }
 
@@ -1045,33 +961,7 @@ function setManagerPermissions() {
     document.getElementById('typeOfWorkSelecterID').style.color = colors.blue 
     document.getElementById('waiverReason').removeAttribute('readonly')
     document.getElementById('waiverExpirationDate').removeAttribute('readonly')
-
-    
-    // mgrElements = document.querySelectorByAll('input','textarea','select')
-    // for (inputElement of mgrElements) {
-    //     console.log('id- ' + inputElement.id)
-    //     inputElement.disabled=false
-    // }
-     
-    // mgrElements = document.querySelectorAll('manager')
-    // for (element of mgrElements) {
-    //     element.style.color = colors.violet
-    // }
-     
 }
-
-// function setStyleForStaff() {
-//     console.log('setStyleForStaff')
-//     mgrElements = document.getElementsByClassName('manager')
-//     for (element of mgrElements) {
-//         console.log('ID - ' + element.id)
-//         element.classList.remove('manager')
-//     }
-    //document.getElementsByClassName('mgrOnly').style.color = colors.red
-    //document.getElementById('typeOfWorkLabelID').style.color = colors.red 
-    //document.getElementById('waiverReason').style.color = colors.violet 
-    //document.getElementById('waiverExpirationDate').style.color = colors.lightgray  
-//}
 
 document.querySelector('#monthCheckboxesID').onclick = function(ev) {
     inputID = ev.target.id
@@ -1132,31 +1022,3 @@ function changeScheduleYear(yearSpecified) {
     linkToMemberBtn.setAttribute('href', link)
     linkToMemberBtn.click()
 }
-
-// $(document).on('click','body *',function() {
-//     $('.modal').modal('hide')
-// })
-
-// function copyExistingPhoto() {
-//     // SEND MEMBER TO SERVER
-//     $.ajax({
-//         type: "POST",
-//         url:"/copyExistingPhoto",
-//         data: {
-//           memberID:memberID,
-//           imgBase64: dataURL
-//         },
-//         success: function(data, textStatus, jqXHR)
-//             {
-//                 console.log('success rtn')
-//                 if (data.msg != 'SUCCESS') {
-//                     alert(data.msg)
-//                     return
-//                 }
-//                 alert('Photo saved.')
-//             },
-//             error: function(jqXHR, textStatus, errorThrown){
-//                 alert("savePhoto Error ..."+errorThrown+'\n'+textStatus)
-//           }
-//       })
-// }
