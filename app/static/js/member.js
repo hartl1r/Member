@@ -729,11 +729,14 @@ function updatePassword() {
 }
 
 function showPhoto() {
-    //location.reload()
     memberID = document.getElementById('memberID').value
+    url = "/static/memberPhotos/"+memberID + ".png"
+    //CacheStorage.delete(url)
+    
     photoImgModal = document.getElementById('photoImgID')
-    photoImgModal.src = "/static/memberPhotos/"+memberID + ".png"
+    photoImgModal.src = url
     photoImgModal.alt = "No photo available."
+
     $('#photoModal').modal('show')
     return
     
@@ -995,7 +998,10 @@ function modalAlert(title,msg) {
 //     //modalAlert("MEMBER PHOTO","No photo available.")
 // }
 
-$("#photoModal").prependTo("body");	
+
+
+//$("#photoModal").prependTo("body");
+
 function closeMsgModal() {
 	$('#myModalMsg').modal('hide')
 }

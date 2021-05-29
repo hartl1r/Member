@@ -31,3 +31,4 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('Mail_username')
     MAIL_PASSWORD = os.environ.get('Mail_password')
     MAIL_USE_TLS = os.environ.get('Mail_use_tls')
+    ADMINS = os.environ.get('Admins')

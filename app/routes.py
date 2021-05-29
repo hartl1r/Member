@@ -33,9 +33,16 @@ from base64 import b64decode
 from io import BytesIO
 from PIL import Image
 
+import logging
+
+logging.basicConfig(filename='record.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+
 @app.route('/')
 @app.route('/index/')
 def index():
+    app.logger.info('Info level log')
+    app.logger.warning('Warning level log')
+   
     # GET CURRENT SCHEDULE YEAR
     currentScheduleYear = db.session.query(ControlVariables.monitorYear).filter(ControlVariables.Shop_Number==1).scalar()
     lastYear = str(int(currentScheduleYear)-1)
@@ -272,6 +279,9 @@ def saveAddress():
     
     # GET DATA FROM FORM
     memberID = request.form['memberID']
+
+    # divide by 0 to test logging and error reporting
+    x = 1/0
     
     if request.form.get('hasTemporaryVillageID') == 'True':
         hasTemporaryVillageID = True
@@ -1985,7 +1995,6 @@ def saveVillageID():
    
 @app.route("/takePhoto/")
 def takePhoto():
-    print('/takePhoto rtn ...')
     villageID = request.args.get('villageID')
     return render_template("photo.html",memberID=villageID)
 
@@ -2182,7 +2191,7 @@ def savePhotoPOST():
     memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
     fileName = memberID + ".png"
     filePath = memberPhotosPath + fileName
-    print('save photo path - ',filePath)
+    #print('save photo path - ',filePath)
 
     # GET BASE64 DATA
     imgBase64 = request.form['imgBase64']
