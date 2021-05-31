@@ -280,9 +280,6 @@ def saveAddress():
     # GET DATA FROM FORM
     memberID = request.form['memberID']
 
-    # divide by 0 to test logging and error reporting
-    x = 1/0
-    
     if request.form.get('hasTemporaryVillageID') == 'True':
         hasTemporaryVillageID = True
     else:
@@ -751,8 +748,8 @@ def saveCertification():
     RAmonitorTrainingDate = request.form.get('RAmonitorTrainingDate')    
     BWmonitorTrainingDate = request.form.get('BWmonitorTrainingDate')    
     
-    typeOfWork = request.form.get('typeOfWorkSelecterName')
-   
+    typeOfWork = request.form.get('typeOfWorkHidden')
+     
     waiverExpirationDate = request.form.get('waiverExpirationDate')
     waiverReason = request.form.get('waiverReason')
 

@@ -749,6 +749,7 @@ function villageRtn() {
 }
 
 function typeOfWorkRtn() {
+    console.log('typeOfWork value - '+this.value)
     typeOfWork = this.value
     document.getElementById('typeOfWorkTextID').value=this.value
 }
