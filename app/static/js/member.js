@@ -829,11 +829,13 @@ function acceptDues() {
 
 function classSignUp() {
     memberID = document.getElementById('memberID').value
+    currentURL = document.getElementById('currentURL').value
+
     if (memberID != ''){
-        link = "https://fd.thevwc.org:42738/?villageID=" + memberID 
+        link = currentURL + ":42738/?villageID=" + memberID 
     }
     else{
-        link = "https://fd.thevwc.org:42738/"
+        link = currentURL + ":42738/"
     }
     var classSignup = window.open(link,'classSignup')
     classSignup.focus();
@@ -842,11 +844,13 @@ function classSignUp() {
 
 function linkToMonitorSchedule() {
     memberID = document.getElementById('memberID').value
+    currentURL = document.getElementById('currentURL').value
+
     if (memberID != ''){
-        link = "https://fd.thevwc.org:42735/?villageID=" + memberID 
+        link = currentURL + ":42735/?villageID=" + memberID 
     }
     else{
-        link = "https://fd.thevwc.org:42735/" 
+        link = currentURL + ":42735/" 
     }
 
     var monitorWindow = window.open(link,'monitorWindow');

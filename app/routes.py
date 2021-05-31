@@ -42,7 +42,8 @@ logging.basicConfig(filename='record.log', level=logging.DEBUG, format=f'%(ascti
 def index():
     app.logger.info('Info level log')
     app.logger.warning('Warning level log')
-   
+    currentURL = app.config['CURRENT_URL']
+
     # GET CURRENT SCHEDULE YEAR
     currentScheduleYear = db.session.query(ControlVariables.monitorYear).filter(ControlVariables.Shop_Number==1).scalar()
     lastYear = str(int(currentScheduleYear)-1)
@@ -159,7 +160,8 @@ def index():
     if (villageID == None):
         return render_template("member.html",member="",nameArray=nameArray,waitListCnt=waitListCnt,
         currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,staffName=staffName,staffID=staffID,
-        isManager=isManager,isDBA=isDBA,isCoordinator=isCoordinator,villages=villages,zipCodes=zipCodes)
+        isManager=isManager,isDBA=isDBA,isCoordinator=isCoordinator,villages=villages,zipCodes=zipCodes,
+        currentURL=currentURL)
 
 
     # IF A VILLAGE ID WAS PASSED IN ...
@@ -272,7 +274,7 @@ def index():
     lastYearPaid=lastYearPaid,currentDuesYear=currentDuesYear,acceptDuesDate=acceptDuesDate,
     waitListCnt=waitListCnt,hasKeys=hasKeys,villages=villages,staffName=staffName,isStaff=isStaff,
     isManager=isManager,isDBA=isDBA,zipCodes=zipCodes,thisYear=currentScheduleYear,lastYear=lastYear,
-    staffID=staffID)
+    staffID=staffID,currentURL=currentURL)
     
 @app.route('/saveAddress', methods=['POST'])
 def saveAddress():
@@ -1098,7 +1100,7 @@ def processNoteToMember():
     server.sendmail(sender,recipient,text)
     server.quit()
 
-    response += "/nEmail sent."
+    response += "Email sent."
     return make_response (f"{response}")
 
 

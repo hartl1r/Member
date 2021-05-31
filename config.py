@@ -32,3 +32,4 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('Mail_password')
     MAIL_USE_TLS = os.environ.get('Mail_use_tls')
     ADMINS = os.environ.get('Admins')
+    CURRENT_URL = os.environ.get('Current_URL')
