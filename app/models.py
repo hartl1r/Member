@@ -40,7 +40,7 @@ class ControlVariables(db.Model):
     Initiation_Fee_Account = db.Column(db.String(10))
     WaitingListApplicantNote = db.Column(db.String(255))
     Message_Board = db.Column(db.String(max))
-    monitorYear = db.Column('Year_To_Print',db.String(4))
+    monitorYear = db.Column(db.String(4))
     
 class Member(db.Model):
     __tablename__ = 'tblMember_Data'
@@ -95,7 +95,7 @@ class Member(db.Model):
     Oct_resident = db.Column(db.Boolean)
     Nov_resident = db.Column(db.Boolean)
     Dec_resident = db.Column(db.Boolean)
-    Alt_Street = db.Column('Alt_Adddress',db.String(30))
+    Alt_Street = db.Column('Alt_Address',db.String(30))
     Alt_City = db.Column(db.String(25))
     Alt_State = db.Column(db.String(2))
     Alt_Zip = db.Column(db.String(10))

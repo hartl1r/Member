@@ -1100,7 +1100,7 @@ def processNoteToMember():
     server.sendmail(sender,recipient,text)
     server.quit()
 
-    response += "Email sent."
+    response += "\nEmail sent."
     return make_response (f"{response}")
 
 
