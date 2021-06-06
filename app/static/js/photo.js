@@ -114,7 +114,6 @@
     photo = document.getElementById(imgID)
     memberID = document.getElementById('memberID').value
     dataURL = photo.src
-    //alert(dataURL)
 
     // SEND IMAGE TO SERVER
     $.ajax({

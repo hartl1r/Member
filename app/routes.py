@@ -2177,18 +2177,13 @@ def checkVillageID():
 def changeScheduleYear(year):
     return redirect(url_for('index',villageID=memberID,scheduleYear=year))
 
-
-
 @app.route("/savePhotoPOST", methods=['POST'])
 def savePhotoPOST():
-    print('savePhotoPOST')
-
     memberID = request.form['memberID']
     currentWorkingDirectory = os.getcwd()
     memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
     fileName = memberID + ".jpg"
     filePath = memberPhotosPath + fileName
-    print('save photo path - ',filePath)
 
     # GET BASE64 DATA
     imgBase64 = request.form['imgBase64']
