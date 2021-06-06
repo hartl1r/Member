@@ -59,9 +59,6 @@ def index():
     shopID = getShopID()
     staffName = getStaffName()
     
-    #print('staffID - ',staffID)
-
-
     # GET STAFF PRIVILEDGES (staffName is available as session variable from login.)
     staffMember = db.session.query(Member).filter(Member.Member_ID == staffID).first()
     if staffMember == None:
@@ -2184,13 +2181,14 @@ def changeScheduleYear(year):
 
 @app.route("/savePhotoPOST", methods=['POST'])
 def savePhotoPOST():
+    print('savePhotoPOST')
+
     memberID = request.form['memberID']
-    
     currentWorkingDirectory = os.getcwd()
     memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
-    fileName = memberID + ".png"
+    fileName = memberID + ".jpg"
     filePath = memberPhotosPath + fileName
-    #print('save photo path - ',filePath)
+    print('save photo path - ',filePath)
 
     # GET BASE64 DATA
     imgBase64 = request.form['imgBase64']
@@ -2237,155 +2235,8 @@ def savePhotoPOST():
 
 
 
-# THE FOLLOWING IS USED TO COPY THE JPG OF ONE MEMBER TO AN PNG FILE
-@app.route('/copyExistingPhoto/')
-def copyExistingPhoto():
-    # COPY JPG TO PNG
-    memberID = request.args.get('memberID')
-    currentWorkingDirectory = os.getcwd()
-    memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
-    
-    fileName = memberID + ".jpg"
-    filePath = memberPhotosPath + fileName
-    
-    print('input - ',filePath)
-    try:
-        image = open(filePath,'rb')  # OPEN BINARY FILE IN READ MODE
-    except SQLAlchemyError as e:
-        error = str(e.__dict__['orig'])
-        print('.5 SQLAlchemyError - ',error)
-        response = "ERROR - "+error
-        return make_response(f"{response}")
-        
-    except Exception as e:
-        print('1. Exception - ')
-        response = "ERROR - could not open file ???"
-        return make_response(f"{response}")
-    try:  
-        print('image_read ... ') 
-        image_read = image.read()
-        image_64_encode = base64.encodestring(image_read)
-    except:
-        print('2.')
-        response = "ERROR - "+error
-        return make_response(f"{response}")
-
-    # DECODE 
-    try:
-        print('image_64_decode ...')
-        image_64_decode = base64.decodestring(image_64_encode)
-    except:
-        print('3.')
-        response = "ERROR - "+error
-        return make_response(f"{response}")
-
-    # WRITE IMAGE AS png TO /status/memberPhotos/xxxxxx.png
-    currentWorkingDirectory = os.getcwd()
-    memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
-    fileName = memberID + ".png"
-    print('start copy ...')
-    try:
-        filePath = memberPhotosPath + fileName
-        print('output - ', filePath)
-        image_result = open(filePath,'wb')
-        #image_result = open('test.jpg', 'wb')
-        image_result.write(image_64_decode)
-    except:
-        print('4.')
-        response = "ERROR - "+error
-        return make_response(f"{response}")
-
-    response = "SUCCESS"
-    return make_response(f"{response}")
-
-
-@app.route('/copyAllPhotos/')
-def copyAllPhotos():
-
-    currentWorkingDirectory = os.getcwd()
-    memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
-    count = 0
-    members=db.session.query(Member).filter(Member.PhotoStatus == 2)
-    
-    for m in members:
-        memberID = m.Member_ID
-        count += 1
-        print(str(count), memberID)
-        fileName = memberID + ".jpg"
-        filePath = memberPhotosPath + fileName
-        print('input - ',filePath)
-        try:
-            image = open(filePath,'rb')  # OPEN BINARY FILE IN READ MODE
-        except SQLAlchemyError as e:
-            error = str(e.__dict__['orig'])
-            print('.5 SQLAlchemyError - ',error)
-            continue
-        except Exception as e:
-            print('1. Exception - ')
-            continue
-        try:  
-            print('image_read ... ') 
-            image_read = image.read()
-            image_64_encode = base64.encodestring(image_read)
-        except:
-            print('2.')
-            continue
-
-        # DECODE 
-        try:
-            print('image_64_decode ...')
-            image_64_decode = base64.decodestring(image_64_encode)
-        except:
-            print('3.')
-            continue
-
-        # WRITE IMAGE AS png TO /status/memberPhotos/xxxxxx.png
-        currentWorkingDirectory = os.getcwd()
-        memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
-        fileName = memberID + ".png"
-        print('start copy ...')
-        try:
-            filePath = memberPhotosPath + fileName
-            print('output - ', filePath)
-            image_result = open(filePath,'wb')
-            image_result.write(image_64_decode)
-        except:
-            print('4.')
-            continue
-        
-    return 'DONE WITH COPY'
-    
-@app.route('/copyJPGtoPNG/')
-def copyJPGtoPNG():
-    print('begin copyJPGtoPNG ...')
-    currentWorkingDirectory = os.getcwd()
-    memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
-    count = 0
-    members=db.session.query(Member).filter(Member.PhotoStatus == 1)
-    
-    for m in members:
-        memberID = m.Member_ID
-        count += 1
-        print(str(count), memberID)
-        fileName = memberID + ".jpg"
-        jpgFilePath = memberPhotosPath + memberID + ".jpg"
-        pngFilePath = memberPhotosPath + memberID + ".png"
-
-        print('input - ',jpgFilePath)
-       
-        try:
-            im1 = Image.open(r"{jpgFilePath}")
-        except:
-            print('file was not found? or ??? ...')
-            # file wasn't found
-            continue
-
-        try:
-            print('output - ',pngFilePath)
-            im1.save(r"{pngFilePath}")
-        except:
-            print('could not write output? or ??? ...')
-            # could not write output file
-            continue
-    # END FOR LOOP
-    return 'DONE WITH COPY'
+    @app.route('/test')
+    def test():
+        #test error logging
+        y = x / 0
+        return 

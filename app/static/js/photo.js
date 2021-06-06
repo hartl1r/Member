@@ -71,7 +71,8 @@
     console.log('take# - ',takeNumber)
 
     canvas.getContext("2d").drawImage(video, 0, 0);
-    img.src = canvas.toDataURL("image/png");
+    img.src = canvas.toDataURL("image/jpeg",.5);
+
     img.id = 'img_' + String(takeNumber)
     screenshotsContainer.prepend(img);
     const imgBtn = document.createElement("BUTTON");
@@ -113,7 +114,8 @@
     photo = document.getElementById(imgID)
     memberID = document.getElementById('memberID').value
     dataURL = photo.src
-    
+    //alert(dataURL)
+
     // SEND IMAGE TO SERVER
     $.ajax({
       type: "POST",

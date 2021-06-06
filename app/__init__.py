@@ -16,9 +16,14 @@ db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
 
 from app import routes, models, errors
+print('app.debug - ',app.debug)
 
 if not app.debug:
+    #shopID = session['shop_ID']
+    shopID = 'RA'
+    
     if app.config['MAIL_SERVER']:
+        print('setting up mail ...')
         # set up email
         auth = None
         if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
@@ -29,9 +34,10 @@ if not app.debug:
         mail_handler = SMTPHandler(
             mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
             fromaddr='no-reply@' + app.config['MAIL_SERVER'],
-            toaddrs=app.config['ADMINS'], subject='VWC Front desk',
+            toaddrs=app.config['ADMINS'], subject='VWC Front desk - '+ shopID,
             credentials=auth, secure=secure)
         mail_handler.setLevel(logging.ERROR)
+        print('addHandler ...')
         app.logger.addHandler(mail_handler)
 
         # logger
@@ -43,6 +49,7 @@ if not app.debug:
             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
         file_handler.setLevel(logging.INFO)
         app.logger.addHandler(file_handler)
-
+        print('before setLevel info')
         app.logger.setLevel(logging.INFO)
-        app.logger.info('VWC Front Desk startup')
+        
+        app.logger.info('VWC Front Desk - ' + shopID)

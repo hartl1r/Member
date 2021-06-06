@@ -32,7 +32,7 @@ var isCoordinator = document.getElementById('isCoordinator').value
 
 document.getElementById('BWcertifiedID').classList.add('indeterminate')
 if (staffID == '604875' || staffID == '373608') {
-    document.getElementById('copyJPGtoPNGBtn').style.display='block'
+    document.getElementById('testBtn').style.display='block'
 }
 if (isDBA == 'True' | isManager == 'True') {
     setManagerPermissions()
@@ -730,7 +730,7 @@ function updatePassword() {
 
 function showPhoto() {
     memberID = document.getElementById('memberID').value
-    url = "/static/memberPhotos/"+memberID + ".png"
+    url = "/static/memberPhotos/"+memberID + ".jpg"
     //CacheStorage.delete(url)
     
     photoImgModal = document.getElementById('photoImgID')
