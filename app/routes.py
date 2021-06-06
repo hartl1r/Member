@@ -2179,6 +2179,7 @@ def changeScheduleYear(year):
 
 @app.route("/savePhotoPOST", methods=['POST'])
 def savePhotoPOST():
+    //print('savePhotoPOST')
     memberID = request.form['memberID']
     currentWorkingDirectory = os.getcwd()
     memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
