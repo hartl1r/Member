@@ -1,7 +1,16 @@
 {% extends "base.html" %}
-
+     
 {% block content %}
-    <h1>404 Page</h1>
+<div style=text-align:center>
+    <h1>VILLAGES WOODWORKERS CLUB</h1>
+    <h3>Front Desk System</h3>
+</div> 
+<br><br>
+<div style=text-align:center>
+    <!-- <h1>404 Page</h1>
     <h1>File not found.</h1>
+    <br>     -->
+    <h2>{{errorMsg}}</h2>
     <p><a href="{{ url_for('index') }}">Back</a></p>
+</div>
 {% endblock %}

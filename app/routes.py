@@ -1,5 +1,5 @@
 # routes.py
-from flask import session, render_template, flash, redirect, url_for, request, jsonify, json, make_response, after_this_request
+from flask import session, render_template, flash, redirect, url_for, request, jsonify, json, make_response, after_this_request, abort
 from sqlalchemy.sql.expression import false, true
 from flask_wtf import FlaskForm
 
@@ -32,10 +32,11 @@ import os, fnmatch
 from base64 import b64decode
 from io import BytesIO
 from PIL import Image
+#from errors import merry
 
 import logging
 
-logging.basicConfig(filename='record.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+logging.basicConfig(filename='member_errors.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 @app.route('/')
 @app.route('/index/')
@@ -755,7 +756,17 @@ def saveCertification():
     # GET MEMBER RECORD 
     member = db.session.query(Member).filter(Member.Member_ID == memberID).first()
     fieldsChanged = 0
-     
+
+    # SHOULD NOT SET CERTIFIED WITHOUT A CERTIFICATION DATE
+    if certifiedRA and (certifiedRAdate == '' or certifiedRAdate == '1900-01-01'):
+        flash('The certified date for RA is missing.','danger')
+        return redirect(url_for('index',villageID=memberID))
+   
+    print(certifiedBW,certifiedBWdate)
+    if certifiedBW and (certifiedBWdate == '' or certifiedBWdate == '1900-01-01'):
+        flash('The certified date for BW is missing.','danger')
+        return redirect(url_for('index',villageID=memberID))
+
     if certifiedRA != member.Certified:
         logChange('Certified RA',memberID,certifiedRA,member.Certified)
         member.Certified = certifiedRA
@@ -2109,7 +2120,7 @@ def newVolunteerApplication():
     
 
 
-
+#@merry._try
 def getStaffID():
     if 'staffID' in session:
         staffID = session['staffID']
@@ -2179,7 +2190,6 @@ def changeScheduleYear(year):
 
 @app.route("/savePhotoPOST", methods=['POST'])
 def savePhotoPOST():
-    //print('savePhotoPOST')
     memberID = request.form['memberID']
     currentWorkingDirectory = os.getcwd()
     memberPhotosPath = currentWorkingDirectory + "/app/static/memberPhotos/"
@@ -2210,29 +2220,10 @@ def savePhotoPOST():
         return make_response (f"{msg}")
     
 
-    #  SAVE TO DATABASE
-    # DOES IMAGE EXIST?
-    # photo = db.session.query(MemberPhotos).filter(MemberPhotos.memberID == memberID).first()
-    # if photo:
-    #     # REPLACE CURRENT PHOTO
-    #     photo.memberPhoto = image
-    #     photo.commit
-    # else:
-    #     try:
-    #         insertSQL = "INSERT INTO tblMember_Photos (Member_ID, Member_Photo) "
-    #         insertSQL += "VALUES ('" + memberID + "', '" + img + "'"
-    #         db.session.execute(insertSQL)
-    #         msg="SUCCESS"
-    #     except:
-    #         msg="Error saving photo."
-    # return jsonify(msg=msg)
-
-    #return redirect(url_for('index') )   
-
-
-
-    @app.route('/test')
-    def test():
-        #test error logging
-        y = x / 0
-        return 
+@app.route('/test')
+def test():
+    #test error logging
+    #abort(404,description="Division by zero test.")
+    x=3
+    y = x / 0
+    return 

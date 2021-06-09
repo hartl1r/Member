@@ -1,8 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>500 Error page</h1>
+<div style=text-align:center>
+    <h1>VILLAGES WOODWORKERS CLUB</h1>
+    <h3>Front Desk System</h3>
+</div> 
+<br><br>
+
+<div style=text-align:center>
+    <!-- <h1>500 Error page</h1> -->
+    <h2 style=font-weight:700px>{{errorMsg}}</h2>
+    <br>
     <h1>An unexpected error has occurred</h1>
     <p>The administration has been notified.  Sorry for the inconvenience!</p>
     <p><a href="{{ url_for('index') }}">Back</a>></p>
+</div>
 {% endblock %}

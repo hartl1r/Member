@@ -19,8 +19,10 @@ from app import routes, models, errors
 print('app.debug - ',app.debug)
 
 if not app.debug:
-    #shopID = session['shop_ID']
-    shopID = 'RA'
+    if 'shopID' in session:
+        shopID = session['shop_ID']
+    else:
+        shopID = 'RA'
     
     if app.config['MAIL_SERVER']:
         print('setting up mail ...')
@@ -41,15 +43,16 @@ if not app.debug:
         app.logger.addHandler(mail_handler)
 
         # logger
-        if not os.path.exists('logs'):
-            os.mkdir('logs')
-        file_handler = RotatingFileHandler('logs/VWC.log', maxBytes=10240,
-                                        backupCount=10)
-        file_handler.setFormatter(logging.Formatter(
-            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
-        file_handler.setLevel(logging.INFO)
-        app.logger.addHandler(file_handler)
-        print('before setLevel info')
-        app.logger.setLevel(logging.INFO)
+        # if not os.path.exists('logs'):
+        #     os.mkdir('logs')
+        # file_handler = RotatingFileHandler('logs/VWC.log', maxBytes=10240,
+        #                                 backupCount=10)
+        # file_handler.setFormatter(logging.Formatter(
+        #     '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+        # file_handler.setLevel(logging.INFO)
+        # app.logger.addHandler(file_handler)
+        # print('before setLevel info')
+        # app.logger.setLevel(logging.INFO)
         
-        app.logger.info('VWC Front Desk - ' + shopID)
+        # app.logger.info('VWC Front Desk - ' + shopID)
+from app import routes, models, errors
