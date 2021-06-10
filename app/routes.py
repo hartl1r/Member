@@ -1,5 +1,6 @@
 # routes.py
-from flask import session, render_template, flash, redirect, url_for, request, jsonify, json, make_response, after_this_request, abort
+from flask import session, render_template, flash, redirect, url_for, request,\
+jsonify, json, make_response, after_this_request, abort
 from sqlalchemy.sql.expression import false, true
 from flask_wtf import FlaskForm
 
@@ -32,18 +33,28 @@ import os, fnmatch
 from base64 import b64decode
 from io import BytesIO
 from PIL import Image
+
+from app import errors
+from app import mail
+
+
 #from errors import merry
 
-import logging
+#import logging
+#logging.basicConfig(level=logging.DEBUG)
 
-logging.basicConfig(filename='member_errors.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+#from logging.config import fileConfig
+#ileConfig('logging.cfg')
+#logging.basicConfig(filename='member_errors.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 @app.route('/')
 @app.route('/index/')
 def index():
-    app.logger.info('Info level log')
-    app.logger.warning('Warning level log')
+    #app.logger.info('Processing default request')
+    # app.logger.info('Info level log')
+    # app.logger.warning('Warning level log')
     currentURL = app.config['CURRENT_URL']
+    #abort('test',500)
 
     # GET CURRENT SCHEDULE YEAR
     currentScheduleYear = db.session.query(ControlVariables.monitorYear).filter(ControlVariables.Shop_Number==1).scalar()
