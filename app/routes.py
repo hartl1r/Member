@@ -35,6 +35,7 @@ from io import BytesIO
 from PIL import Image
 
 from app import errors
+#from app import logging
 from app import mail
 
 
@@ -1823,7 +1824,7 @@ def printMemberSchedule():
     return render_template("rptMemberSchedule.html",displayName=displayName,\
     lastTrainingRA=lastTrainingRAstr, needsTrainingRA=needsTrainingRA,\
     lastTrainingBW=lastTrainingBWstr, needsTrainingBW=needsTrainingBW,\
-    schedule=schedule,todays_date=todays_dateSTR,thisYear=thisYear,lastYear=lastYear)
+    schedule=schedule,todays_date=todays_dateSTR,thisYear=thisYear,lastYear=lastYear,memberID=memberID)
 
 @app.route("/shiftChange")
 def shiftChange():
@@ -2165,7 +2166,7 @@ def savePhoto():
     print('/savePhoto rtn ...')
     memberID = request.form['memberID']
     img = request.form['dataURL']
-    print('img-',img)
+    print('type img-',type(img))
     print('after img = ')
     # DOES IMAGE EXIST?
     photo = db.session.query(MemberPhoto).filter(MemberPhoto.memberID == memberID).first()
@@ -2234,7 +2235,8 @@ def savePhotoPOST():
 @app.route('/test')
 def test():
     #test error logging
+
     #abort(404,description="Division by zero test.")
     x=3
-    y = x / 0
-    return 
+    #y = x / 0
+    return render_template("x.html")

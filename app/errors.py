@@ -9,15 +9,18 @@ from app import app, db
 @app.errorhandler(404)
 def not_found_error(error):
     print('error:',error)
+    app.logger.error(error)
     return render_template('404.html',errorMsg=error), 404
 
 @app.errorhandler(500)
 def internal_error(error):
-    print('error:',error)
+    #print('error:',error)
+    #app.logger.error(error)
     db.session.rollback()
     return render_template('500.html',errorMsg=error), 500
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    return render_template('500.html',errorMsg = e),500
+    #app.logger.error(e)
+    return render_template('500.html',errorMsg = e),000
     
