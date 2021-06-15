@@ -1,23 +1,18 @@
 # __init__.py
+import logging
+from logging.handlers import SMTPHandler, RotatingFileHandler
+import os
 
-from flask import Flask, session
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 from config import Config
-
-import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
-
-from app import routes, models, errors
-
-import logging
-from logging.handlers import SMTPHandler
-from logging.handlers import RotatingFileHandler
 
 if not app.debug:
     if app.config['MAIL_SERVER']:
@@ -47,3 +42,7 @@ if not app.debug:
 
     app.logger.setLevel(logging.INFO)
     app.logger.info('VWC FRONT DESK LOG')
+
+
+from app import routes, models, errors
+

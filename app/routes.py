@@ -35,7 +35,7 @@ from io import BytesIO
 from PIL import Image
 
 from app import errors
-#from app import logging
+from app import logging
 from app import mail
 
 
@@ -53,7 +53,7 @@ from app import mail
 def index():
     #app.logger.info('Processing default request')
     # app.logger.info('Info level log')
-    # app.logger.warning('Warning level log')
+    #app.logger.warning('Warning level log')
     currentURL = app.config['CURRENT_URL']
     #abort('test',500)
 
@@ -2234,9 +2234,16 @@ def savePhotoPOST():
 
 @app.route('/test')
 def test():
-    #test error logging
+    # THIS WILL GENERATE A STATUS 403 ERROR AND SEND THE TEXT FOLLOWING description=
+    #abort(403, description="Resource not found.")
 
+    # FORCED ERROR MESSAGE
+    app.logger.error('test error message')
     #abort(404,description="Division by zero test.")
+    
+    # THIS WILL GENERATE A DIVISION BY ZERO ERROR
     x=3
-    #y = x / 0
+    y = x / 0
+
+    # THIS WILL CAUSE A FILE NOT FOUND ERROR
     return render_template("x.html")
