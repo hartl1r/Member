@@ -2128,7 +2128,7 @@ def newVolunteerApplication():
         db.session.rollback()
 
     # DISPLAY NEW MEMBER RECORD SO STAFF CAN ENTER REMAINING DATA
-    logChange('NEW VOLUNTEER',memberID,memberID,memberID)
+    #logChange('NEW VOLUNTEER',villageID,villageID,villageID)
     return redirect(url_for('index',villageID=villageID,todaysDate=todaySTR))
     
 
